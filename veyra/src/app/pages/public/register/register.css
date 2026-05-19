@@ -17,7 +17,6 @@
   background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(173, 198, 255, 1) 100%);
 }
 
-/* Cartão Central */
 .register-card {
   width: 100%;
   max-width: 500px;
@@ -63,6 +62,7 @@
 }
 
 .input-group input[type="text"],
+.input-group input[type="email"],
 .input-group input[type="password"] {
   width: 100%;
   padding: 14px 16px;
@@ -76,8 +76,33 @@
   background: #8F9FBC;
 }
 
+.input-group input::placeholder {
+  color: #E2E8F0; 
+}
+
 .input-group input:focus {
   border-color: #3B82F6;
+}
+
+.error-group {
+  margin-bottom: 24px;
+}
+
+.input-error {
+  border-color: #EF4444 !important; 
+}
+
+.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.error-text {
+  color: #EF4444;
+  font-size: 12px;
+  font-weight: 500;
+  display: block;
+  margin-top: 6px;
+  margin-left: 2px;
 }
 
 .password-wrapper {
@@ -109,7 +134,6 @@
   color: #1E293B;
 }
 
-/* Botão Register */
 .btn-register {
   width: 100%;
   background-color: #004395;
@@ -126,4 +150,20 @@
 
 .btn-register:hover {
   background-color: #1D4ED8;
+}
+
+.login-redirect-text {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 14px;
+  color: #001A42;
+}
+
+.login-redirect-text a {
+  color: #004395;
+  text-decoration: none;
+}
+
+.login-redirect-text a:hover {
+  text-decoration: underline;
 }

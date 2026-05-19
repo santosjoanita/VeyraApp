@@ -6,23 +6,37 @@
       <p>Infrastructure & Credential Management</p>
     </div>
 
-    <form class="register-form">
+    <form class="register-form" [formGroup]="registerForm">
       
-      <div class="input-group">
-        <label for="username">Username</label>
-        <input type="text" id="username">
+      <div class="input-group error-group">
+        <input 
+          type="text" 
+          id="username" 
+          formControlName="username" 
+          placeholder="Username"
+          [class.input-error]="usernameControl?.hasError('pattern') && usernameControl?.touched">
+        
+        @if (usernameControl?.hasError('pattern') && usernameControl?.touched) {
+          <span class="error-text">Your username needs to have at least one uppercase letter</span>
+        }
+      </div>
+
+      <div class="input-group error-group">
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          placeholder="Email"
+          [class.input-error]="emailControl?.hasError('email') && emailControl?.touched">
+        
+        @if (emailControl?.hasError('email') && emailControl?.touched) {
+          <span class="error-text">Please enter a valid email address</span>
+        }
       </div>
 
       <div class="input-group">
-        <label for="e-mail">E-mail</label>
-        <input type="text" id="e-mail">
-      </div>
-
-      <div class="input-group">
-        <label for="password">Encrypted Password</label>
         <div class="password-wrapper">
-          <input [type]="showPassword() ? 'text' : 'password'" id="password">
-          
+          <input [type]="showPassword() ? 'text' : 'password'" id="password" placeholder="Encrypted Passkey">
           <button type="button" class="eye-btn" (click)="togglePassword()">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -32,8 +46,13 @@
         </div>
       </div>
 
-      <button type="button" class="btn-register">Register</button>
+      <button type="button" class="btn-register" [disabled]="registerForm.invalid">Register</button>
       
     </form>
+
+    <p class="login-redirect-text">
+      Already have an account? Login<a href="/login"><strong> here</strong></a>
+    </p>
+
   </div>
 </div>

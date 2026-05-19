@@ -10,8 +10,6 @@ import { RouterLink } from '@angular/router';
 })
 export class Login {
   showPassword = signal<boolean>(false);
-
-
   togglePassword(): void {
     this.showPassword.set(!this.showPassword());
   }

@@ -17,14 +17,12 @@
   background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(173, 198, 255, 1) 100%);
 }
 
-/* Cartão Central */
 .login-card {
   width: 100%;
   max-width: 500px;
   padding: 48px 40px;
   box-sizing: border-box;
 }
-
 
 .login-header {
   text-align: center;
@@ -54,25 +52,27 @@
   margin-bottom: 24px;
 }
 
-/* Inputs gerais */
 .input-group input[type="text"],
 .input-group input[type="password"] {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #E2E8F0;
   border-radius: 10px;
-  font-size: 10px;
+  font-size: 15px; 
   outline: none;
   box-sizing: border-box;
-  color: rgba(0, 0, 0, 43);
+  color: #000000; 
   transition: border-color 0.2s;
   background: #8F9FBC;
+}
+
+.input-group input::placeholder {
+  color: #E2E8F0; 
 }
 
 .input-group input:focus {
   border-color: #3B82F6;
 }
-
 
 .password-header {
   display: flex;
@@ -81,20 +81,16 @@
   margin-bottom: 8px;
 }
 
-
-
 .forgot-link {
   font-size: 13px;
-  color: #3B82F6;
+  color: #004395;
   text-decoration: none;
   font-weight: 600;
-
 }
 
 .forgot-link:hover {
   text-decoration: underline;
 }
-
 
 .password-wrapper {
   position: relative;
@@ -124,15 +120,14 @@
   color: #1E293B;
 }
 
-/* Botão Login */
 .btn-login {
   width: 100%;
   background-color: #004395;
   color: #FFFFFF;
-  padding: 10px;
+  padding: 14px; 
   border: none;
   border-radius: 10px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   margin-top: 8px;
@@ -143,17 +138,17 @@
   background-color: #1D4ED8;
 }
 
-
 .register-text {
   text-align: center;
   margin-top: 32px;
   font-size: 14px;
-  color: #64748B;
+  color: #001A42; 
 }
 
 .register-text a {
-  color: #1E293B;
+  color: #004395; 
   text-decoration: none;
+  font-weight: bold;
 }
 
 .register-text a:hover {
