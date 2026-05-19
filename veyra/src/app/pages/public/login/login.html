@@ -8,34 +8,33 @@
 
     <form class="login-form">
       
-      <div class="input-group">
+  <div class="input-group">
         <input type="text" id="username" placeholder="E-MAIL | USERNAME">
       </div>
 
       <div class="input-group">
-        
-        <div class="password-header">
-          <label for="password"></label>
-          <a href="#" class="forgot-link">Forgot?</a>
-        </div>
-        
-        <div class="password-wrapper">
-          <input type="password" id="password" placeholder="ENCRYPTED PASSKEY">
-          <button type="button" class="eye-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+       <div class="password-header">
+         <label for="password"></label>
+          </div>
+  
+      <div class="password-wrapper">
+        <input [type]="showPassword() ? 'text' : 'password'" id="password" placeholder="ENCRYPTED PASSKEY">
+    
+        <button type="button" class="eye-btn" (click)="togglePassword()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
               <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-          </button>
-        </div>
+          </svg>
+        </button>
       </div>
+</div>
 
       <button type="button" class="btn-login">Login</button>
       
     </form>
 
     <p class="register-text">
-      Don't have an account? Register <a href="#"><strong> here</strong></a>
+      Don't have an account? Register <a href="/register"><strong> here</strong></a>
     </p>
 
   </div>

@@ -1,17 +1,14 @@
 import { Component, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
-  imports: [RouterLink],
-  templateUrl: './login.html',
-  styleUrl: './login.css',
+  imports: [],
+  templateUrl: './register.html',
+  styleUrl: './register.css',
 })
-export class Login {
+export class Register {
   showPassword = signal<boolean>(false);
-
-
   togglePassword(): void {
     this.showPassword.set(!this.showPassword());
   }

@@ -1,0 +1,129 @@
+:host {
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  font-family: 'Geist', sans-serif;
+}
+
+.register-background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background: #ffffff;
+  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(173, 198, 255, 1) 100%);
+}
+
+/* Cartão Central */
+.register-card {
+  width: 100%;
+  max-width: 500px;
+  padding: 48px 40px;
+  box-sizing: border-box;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.register-header h1 {
+  font-size: 32px;
+  font-weight: 800;
+  color: #001A42;
+  margin: 0 0 8px 0;
+  letter-spacing: 1px;
+}
+
+.register-header p {
+  font-size: 15px;
+  color: #001A42;
+  margin: 0;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 24px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #001A42;
+  margin-bottom: 8px;
+}
+
+.input-group input[type="text"],
+.input-group input[type="password"] {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+  color: #000000; 
+  transition: border-color 0.2s;
+  background: #8F9FBC;
+}
+
+.input-group input:focus {
+  border-color: #3B82F6;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-wrapper input {
+  padding-right: 48px;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 12px; 
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.eye-btn:hover {
+  color: #1E293B;
+}
+
+/* Botão Register */
+.btn-register {
+  width: 100%;
+  background-color: #004395;
+  color: #FFFFFF;
+  padding: 14px; 
+  border: none;
+  border-radius: 10px;
+  font-size: 18px; 
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.2s;
+}
+
+.btn-register:hover {
+  background-color: #1D4ED8;
+}
