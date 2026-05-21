@@ -1,9 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.css',
+  styleUrl: './sidebar.css'
 })
-export class Sidebar {}
+export class Sidebar {
+  isCollapsed = signal<boolean>(false);
+
+  toggleSidebar() {
+    this.isCollapsed.set(!this.isCollapsed());
+  }
+}

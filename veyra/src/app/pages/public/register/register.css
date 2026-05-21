@@ -127,3 +127,18 @@
 .btn-register:hover {
   background-color: #1D4ED8;
 }
+.login-redirect-text {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 14px;
+  color: #001A42;
+}
+
+.login-redirect-text a {
+  color: #004395;
+  text-decoration: none;
+}
+
+.login-redirect-text a:hover {
+  text-decoration: underline;
+}
