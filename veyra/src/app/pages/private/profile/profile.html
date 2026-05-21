@@ -12,8 +12,8 @@
         <div class="stats-grid">
     <div class="stat-card">
         <h1>Dexter Morgan</h1>
-        <h3>Email:</h3>
-        <h3>Profile: Admin</h3>
+        <span class="stat-label"><strong>Email:</strong> morgan.dexter@branditdigitalmedia.com</span>
+        <span class="stat-label-profile"><strong>Profile:</strong> Admin</span>
     </div>
     <div class="stat-card personal-info">
   <div class="stat-title">
@@ -39,7 +39,6 @@
       <label>Password</label>
       <div class="password-wrapper">
         <input [type]="showPassword ? 'text' : 'password'" value="12345678" class="profile-input">
-        
         <span class="material-symbols-outlined eye-icon" (click)="togglePassword()">
           {{ showPassword ? 'visibility_off' : 'visibility' }}
         </span>
@@ -63,8 +62,22 @@
 </div>
     <div class="stat-card">
        <h1>Settings</h1>
+       <span class="stat-label">Enable Activity Log</span>
+       <label class="switch">
+            <input type="checkbox">
+            <span class="slider round"></span>
+       </label>
+       <span class="stat-label">Enable 2FA for my account.</span>
+       <label class="switch">
+            <input type="checkbox">
+            <span class="slider round"></span>
+       </label>
+       <span class="stat-label">Choose your Theme</span>
+       <select class="dropdown">
+        <option value="volvo">Dark</option>
+        <option value="saab" selected>Light</option>
+    </select>
     </div>
         </div>
-    </div>
     </div>
 </div>
