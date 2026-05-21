@@ -234,3 +234,52 @@ input:checked + .slider:before {
   outline: none;
   transition: all 0.2s;
 }
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  width: 100%;
+}
+
+.btn-cancel {
+  background-color: transparent;
+  color: #64748B;
+  border: 1px solid var(--border-light, #E2E8F0);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-main, 'Geist', sans-serif);
+}
+
+.btn-cancel:hover {
+  background-color: #F1F5F9;
+  color: #0F172A;
+}
+
+.btn-save {
+  background-color: var(--brand-primary, #004395);
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: var(--font-main, 'Geist', sans-serif);
+}
+
+.btn-save:hover {
+  background-color: #003377;
+}
+
+.profile-input:disabled {
+  background-color: #F8FAFC;
+  color: #64748B;
+  cursor: not-allowed;
+  border-color: #E2E8F0;
+}
