@@ -162,6 +162,7 @@
 .login-redirect-text a {
   color: #004395;
   text-decoration: none;
+  font-weight: bold;
 }
 
 .login-redirect-text a:hover {
