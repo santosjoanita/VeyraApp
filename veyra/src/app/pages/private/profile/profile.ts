@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; 
 
@@ -13,4 +13,11 @@ import { Header } from '../../../core/components/header/header';
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
-export class Profile {}
+export class Profile {
+   showPassword = false;
+
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+  }
+}

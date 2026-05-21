@@ -18,4 +18,149 @@
   flex: 1;
   background: var(--bg-gradient-radial);
 }
+.stats-grid {
+  display: grid;
+  gap: 20px; 
+}
 
+.stat-title{
+    display:flex;
+    justify-content: space-between;
+}
+
+.stat-card{
+    background: white;
+    border-radius: 8px;
+    padding: 3px;
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.btn-edit-stat{
+  margin: 10px;
+  width: fit-content;
+  height: fit-content;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  background-color: var(--bg-page, #F8FAFC);
+  color: var(--brand-primary, #004395);
+  border: 1px solid var(--border-light, #E2E8F0);
+  font-family: var(--font-main, 'Geist', sans-serif);
+}
+
+.btn-edit-stat .add-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.btn-edit-stat:hover {
+  background-color: var(--brand-primary, #004395);
+  border-color: var(--brand-primary, #004395);
+  color: var(--text-white, #FFFFFF);
+  box-shadow: 0px 4px 12px rgba(0, 67, 149, 0.15);
+}
+
+.info-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px 20px; 
+}
+
+@media (max-width: 1400px) {
+  .info-fields-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 12px;
+  color: #64748B;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.profile-input {
+  background-color: var(--bg-page, #F8FAFC);
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--brand-secondary, #001A42);
+  font-family: var(--font-main, 'Geist', sans-serif);
+  outline: none;
+  transition: all 0.2s;
+  width: 90%;
+  box-sizing: border-box; 
+}
+
+.profile-input:focus {
+  border-color: var(--brand-primary, #004395);
+  background-color: #FFFFFF;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper .profile-input {
+  padding-right: 40px; 
+}
+
+.eye-icon {
+  position: absolute;
+  right: 12px;
+  color: #94A3B8;
+  cursor: pointer;
+  font-size: 20px;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.eye-icon:hover {
+  color: var(--brand-primary, #004395);
+}
+
+.change-password-link {
+  font-size: 12px;
+  color: var(--brand-primary, #004395);
+  margin-top: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  align-self: flex-start;
+  text-decoration: none;
+}
+
+.change-password-link:hover {
+  text-decoration: underline;
+  color: var(--brand-secondary, #001A42);
+}
+
+.role-display {
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748B;
+  background-color: #F1F5F9;
+  border-radius: 8px;
+  border: 1px dashed #CBD5E1; 
+  display: flex;
+  align-items: center;
+  height: 40px; 
+  box-sizing: border-box;
+  width: 90%
+}
