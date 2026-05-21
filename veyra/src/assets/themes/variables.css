@@ -1,0 +1,18 @@
+:root {
+  --brand-primary: #004395;    
+  --brand-secondary: #001A42; 
+  --brand-accent: #3B82F6;       
+  
+  --bg-sidebar: #ADC6FF;         
+  --bg-input: #8F9FBC;           
+  --bg-page: #F8FAFC;            
+  
+  --bg-gradient-radial: radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgba(217, 227, 255, 1) 100%);
+  
+  --text-white: #FFFFFF;
+  --text-black: #000000;
+  --error-red: #EF4444;
+  --border-light: #E2E8F0;
+  
+  --font-main: 'Geist', sans-serif;
+}
