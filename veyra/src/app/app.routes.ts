@@ -15,6 +15,10 @@ export const routes: Routes = [
   //private
   {
     path: 'dashboard',
-    loadComponent: () => import('./pages/private/dashboard/dashboard').then(m => m.Dashboard)      }
-    
+    loadComponent: () => import('./pages/private/dashboard/dashboard').then(m => m.Dashboard)      
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./pages/private/profile/profile').then(m => m.Profile)
+  }
 ];
