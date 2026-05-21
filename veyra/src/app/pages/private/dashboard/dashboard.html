@@ -5,8 +5,8 @@
     
     <app-header></app-header>
 
-    <main class="page-body">
-      <router-outlet>
+    <div class="page-body">
+
         <div class="dashboard-header">
   <h2>Good Morning, Dexter Morgan!</h2>
 </div>
@@ -56,11 +56,80 @@
       </svg>
     </div>
   </div>
-
 </div>
-      </router-outlet>
-    </main>
 
+<div class="dashboard-bottom-row">
+  
+  <div class="projects-section card-container">
+    <h3>Overall Projects</h3>
+    <table class="projects-table">
+      <thead>
+        <tr>
+          <th>Project Name</th>
+          <th>Due Date</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw-bold">Veyra Dashboard Redesign</td>
+          <td>25 May 2026</td>
+          <td class="text-center">
+            <button class="action-btn delete-btn" title="Delete Project">-</button>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Brandit Mobile App</td>
+          <td>10 Jun 2026</td>
+          <td class="text-center">
+            <button class="action-btn delete-btn" title="Delete Project">-</button>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Client Portal API</td>
+          <td>14 Jul 2026</td>
+          <td class="text-center">
+            <button class="action-btn delete-btn" title="Delete Project">-</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="activity-section card-container">
+    <h3>Activity Log</h3>
+    <h6>Track all changes</h6>
+    
+    <div class="search-wrapper-activity">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" placeholder="Search activities...">
+    </div>
+
+    <ul class="activity-list">
+      <li>
+        <div class="activity-content">
+          <p><strong>Dexter Morgan</strong> logged in</p>
+          <span class="activity-time">Just now</span>
+        </div>
+      </li>
+      <li>
+        <div class="activity-content">
+          <p><strong>Admin</strong> created "Client Portal API"</p>
+          <span class="activity-time">2 hours ago</span>
+        </div>
+      </li>
+      <li>
+        <div class="activity-content">
+          <p>Project "Old Website" was deleted</p>
+          <span class="activity-time">Yesterday</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
   </div>
 
 </div>
