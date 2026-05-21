@@ -8,7 +8,6 @@
       <h1 class="page-title">Workers</h1>
 
       <div class="toolbar">
-        
         <div class="search-wrapper">
           <span class="material-symbols-outlined search-icon">search</span>
           <input type="text" placeholder="Search workers..." class="search-input">
@@ -44,59 +43,43 @@
             </tr>
           </thead>
           <tbody>
-            
-            <tr>
-              <td class="fw-bold">Dexter Morgan</td>
-              <td class="text-muted">dexter@veyra.com</td>
-              <td>
-                <select class="role-dropdown">
-                  <option value="admin" selected>Admin</option>
-                  <option value="worker">Worker</option>
-                </select>
-              </td>
-              <td>
-                <span class="status-badge status-active">Active</span>
-              </td>
-              <td class="text-muted">2 hours ago</td>
-              <td class="actions-cell">
-                <button class="action-icon" title="View Details">
-                  <span class="material-symbols-outlined">description</span>
-                </button>
-                <button class="action-icon" title="Edit">
-                  <span class="material-symbols-outlined">edit</span>
-                </button>
-                <button class="action-icon delete" title="Delete">
-                  <span class="material-symbols-outlined">delete</span>
-                </button>
-              </td>
-            </tr>
-
-            <tr>
-              <td class="fw-bold">Debra Morgan</td>
-              <td class="text-muted">debra@veyra.com</td>
-              <td>
-                <select class="role-dropdown">
-                  <option value="admin">Admin</option>
-                  <option value="worker" selected>Worker</option>
-                </select>
-              </td>
-              <td>
-                <span class="status-badge status-inactive">Inactive</span>
-              </td>
-              <td class="text-muted">3 days ago</td>
-              <td class="actions-cell">
-                <button class="action-icon" title="View Details">
-                  <span class="material-symbols-outlined">description</span>
-                </button>
-                <button class="action-icon" title="Edit">
-                  <span class="material-symbols-outlined">edit</span>
-                </button>
-                <button class="action-icon delete" title="Delete">
-                  <span class="material-symbols-outlined">delete</span>
-                </button>
-              </td>
-            </tr>
-
+            @for (worker of workersList; track worker.id) {
+              <tr>
+                <td class="fw-bold">{{ worker.name }}</td>
+                <td class="text-muted">{{ worker.email }}</td>
+                <td>
+                  <select class="role-dropdown" (change)="changeProfile(worker.id, $event)">
+                    <option value="admin" [selected]="worker.role === 'admin'">Admin</option>
+                    <option value="worker" [selected]="worker.role === 'worker'">Worker</option>
+                  </select>
+                </td>
+                <td>
+                  <span class="status-badge" 
+                        [class.status-active]="worker.status === 'active'"
+                        [class.status-inactive]="worker.status === 'inactive'">
+                    {{ worker.status | titlecase }}
+                  </span>
+                </td>
+                <td class="text-muted">{{ worker.lastAccess || 'Never' }}</td>
+                <td class="actions-cell">
+                  <button class="action-icon" title="View Details" (click)="viewWorker(worker.id)">
+                    <span class="material-symbols-outlined">description</span>
+                  </button>
+                  <button class="action-icon" title="Edit" (click)="editWorker(worker.id)">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="action-icon delete" title="Delete" (click)="deleteWorker(worker.id)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center text-muted" style="padding: 40px 0;">
+                  No workers found.
+                </td>
+              </tr>
+            }
           </tbody>
         </table>
       </div>
