@@ -1,0 +1,89 @@
+<div class="page-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <app-header></app-header>
+
+    <div class="page-body">
+      <h1 class="page-title">Workers</h1>
+
+      <div class="toolbar">
+        <div class="search-wrapper">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input type="text" placeholder="Search workers..." class="search-input">
+        </div>
+
+        <div class="toolbar-actions">
+          <div class="filter-wrapper">
+            <span class="material-symbols-outlined filter-icon">filter_list</span>
+            <select class="filter-dropdown">
+              <option value="all">All</option>
+              <option value="admin">Admin</option>
+              <option value="worker">Worker</option>
+            </select>
+          </div>
+
+          <button class="btn-add">
+            <span class="material-symbols-outlined add-icon">add</span>
+            Add Worker
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container card-container">
+        <table class="workers-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Profile</th>
+              <th>Status</th>
+              <th>Last Access</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (worker of workersList; track worker.id) {
+              <tr>
+                <td class="fw-bold">{{ worker.name }}</td>
+                <td class="text-muted">{{ worker.email }}</td>
+                <td>
+                  <select class="role-dropdown" (change)="changeProfile(worker.id, $event)">
+                    <option value="admin" [selected]="worker.role === 'admin'">Admin</option>
+                    <option value="worker" [selected]="worker.role === 'worker'">Worker</option>
+                  </select>
+                </td>
+                <td>
+                  <span class="status-badge" 
+                        [class.status-active]="worker.status === 'active'"
+                        [class.status-inactive]="worker.status === 'inactive'">
+                    {{ worker.status | titlecase }}
+                  </span>
+                </td>
+                <td class="text-muted">{{ worker.lastAccess || 'Never' }}</td>
+                <td class="actions-cell">
+                  <button class="action-icon" title="View Details" (click)="viewWorker(worker.id)">
+                    <span class="material-symbols-outlined">description</span>
+                  </button>
+                  <button class="action-icon" title="Edit" (click)="editWorker(worker.id)">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="action-icon delete" title="Delete" (click)="deleteWorker(worker.id)">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center text-muted" style="padding: 40px 0;">
+                  No workers found.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>

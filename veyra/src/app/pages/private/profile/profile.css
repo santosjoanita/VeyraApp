@@ -18,27 +18,28 @@
   flex: 1;
   background: var(--bg-gradient-radial);
 }
+
 .stats-grid {
   display: grid;
+  grid-template-columns: 1fr; 
   gap: 20px; 
 }
 
-.stat-title{
-    display:flex;
-    justify-content: space-between;
+.stat-title {
+  display: flex;
+  justify-content: space-between;
 }
 
-.stat-card{
-    background: white;
-    border-radius: 8px;
-    padding: 5px;
-    padding-left: 15px;
-    display: flex;
-    flex-direction: column;
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 5px;
+  padding-left: 15px;
+  display: flex;
+  flex-direction: column;
 }
 
-
-.btn-edit-stat{
+.btn-edit-stat {
   margin: 10px;
   width: fit-content;
   height: fit-content;
@@ -121,20 +122,6 @@
   padding-right: 40px; 
 }
 
-.eye-icon {
-  position: absolute;
-  right: 12px;
-  color: #94A3B8;
-  cursor: pointer;
-  font-size: 20px;
-  user-select: none;
-  transition: color 0.2s;
-}
-
-.eye-icon:hover {
-  color: var(--brand-primary, #004395);
-}
-
 .change-password-link {
   font-size: 12px;
   color: var(--brand-primary, #004395);
@@ -171,9 +158,9 @@
   margin-right: 12px;
 }
 
-.stat-label-profile{
-    margin-bottom: 20px;
-    margin-top: 20px;
+.stat-label-profile {
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 
 .switch {
@@ -246,4 +233,53 @@ input:checked + .slider:before {
   color: var(--brand-secondary, #001A42);
   outline: none;
   transition: all 0.2s;
+}
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  width: 100%;
+}
+
+.btn-cancel {
+  background-color: transparent;
+  color: #64748B;
+  border: 1px solid var(--border-light, #E2E8F0);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-main, 'Geist', sans-serif);
+}
+
+.btn-cancel:hover {
+  background-color: #F1F5F9;
+  color: #0F172A;
+}
+
+.btn-save {
+  background-color: var(--brand-primary, #004395);
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: var(--font-main, 'Geist', sans-serif);
+}
+
+.btn-save:hover {
+  background-color: #003377;
+}
+
+.profile-input:disabled {
+  background-color: #F8FAFC;
+  color: #64748B;
+  cursor: not-allowed;
+  border-color: #E2E8F0;
 }

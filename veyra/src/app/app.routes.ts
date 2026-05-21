@@ -20,5 +20,9 @@ export const routes: Routes = [
   {
     path: 'profile',
     loadComponent: () => import('./pages/private/profile/profile').then(m => m.Profile)
+  },
+  {
+    path: 'workerslist',
+    loadComponent:() => import('./pages/private/workers/workers').then(m => m.Workers)
   }
 ];

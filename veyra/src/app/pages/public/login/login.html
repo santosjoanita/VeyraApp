@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 <div class="login-background">
   <div class="login-card">
     
@@ -8,31 +9,27 @@
 
     <form class="login-form">
       
-  <div class="input-group">
-        <input type="text" id="username" placeholder="E-mail or Username">
+      <div class="input-group">
+        <input type="text" id="username" name="usernameOrEmail" [(ngModel)]="loginData.usernameOrEmail" placeholder="E-MAIL | USERNAME">
       </div>
 
       <div class="input-group">
-       <div class="password-header">
-         <label for="password"></label>
-          </div>
+        <label for="password">Password</label>
   
-      <div class="password-wrapper">
-        <input [type]="showPassword() ? 'text' : 'password'" id="password" placeholder="Encrypted Passkey">
-    
-        <button type="button" class="eye-btn" (click)="togglePassword()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-          </svg>
-        </button>
+        <div class="password-wrapper">
+          <input [type]="showPassword ? 'text' : 'password'" id="password" name="password" [(ngModel)]="loginData.password" class="input" placeholder="ENCRYPTED PASSWORD">
+      
+          <span class="material-symbols-outlined eye-icon" (click)="togglePassword()">
+            {{ showPassword ? 'visibility_off' : 'visibility' }}
+          </span>
+        </div>
       </div>
-</div>
-    <a href="/dashboard" class="btn-login">Login</a>      
+      
+      <button type="button" class="btn-login" (click)="onLogin()">Login</button>      
     </form>
 
     <p class="register-text">
-      Don't have an account? Register <a href="/register"><strong> here</strong></a>
+      Don't have an account? Register <a routerLink="/register"><strong> here</strong></a>
     </p>
 
   </div>

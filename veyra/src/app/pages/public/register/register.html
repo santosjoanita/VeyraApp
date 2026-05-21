@@ -8,35 +8,20 @@
 
     <form class="register-form" [formGroup]="registerForm">
       
-      <div class="input-group error-group">
-        <input 
-          type="text" 
-          id="username" 
-          formControlName="username" 
-          placeholder="Username"
-          [class.input-error]="usernameControl?.hasError('pattern') && usernameControl?.touched">
-        
-        @if (usernameControl?.hasError('pattern') && usernameControl?.touched) {
-          <span class="error-text">Your username needs to have at least one uppercase letter</span>
-        }
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" [(ngModel)]="registerData.username">
       </div>
 
-      <div class="input-group error-group">
-        <input 
-          type="email" 
-          id="email" 
-          formControlName="email" 
-          placeholder="Email"
-          [class.input-error]="emailControl?.hasError('email') && emailControl?.touched">
-        
-        @if (emailControl?.hasError('email') && emailControl?.touched) {
-          <span class="error-text">Please enter a valid email address</span>
-        }
+      <div class="input-group">
+        <label for="email">E-mail</label>
+        <input type="text" id="email" name="email" [(ngModel)]="registerData.email">
       </div>
 
       <div class="input-group">
         <div class="password-wrapper">
-          <input [type]="showPassword() ? 'text' : 'password'" id="password" placeholder="Encrypted Passkey">
+          <input [type]="showPassword() ? 'text' : 'password'" id="password" name="password" [(ngModel)]="registerData.password">
+          
           <button type="button" class="eye-btn" (click)="togglePassword()">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -45,11 +30,12 @@
           </button>
         </div>
       </div>
-      <button href="/login" type="button" class="btn-register" [disabled]="registerForm.invalid">Register</button>
+
+      <button type="button" class="btn-register" (click)="onRegister()">Register</button>
       
     </form>
      <p class="login-redirect-text">
-      Already have an account? Login<a href="/login"><strong> here</strong></a>
+      Already have an account? Login <a routerLink="/login"><strong>here</strong></a>
     </p>
   </div>
 </div>
