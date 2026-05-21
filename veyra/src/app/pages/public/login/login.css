@@ -120,6 +120,7 @@
 }
 
 .btn-login {
+  text-decoration: none;
   width: 96%;
   background-color: #004395;
   color: #FFFFFF;
