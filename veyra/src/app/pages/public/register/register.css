@@ -13,8 +13,7 @@
   align-items: center;
   height: 100vh;
   width: 100%;
-  background: #ffffff;
-  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(173, 198, 255, 1) 100%);
+  background: var(--bg-gradient-radial);
 }
 
 .register-card {
@@ -151,7 +150,6 @@
 .btn-register:hover {
   background-color: #1D4ED8;
 }
-
 .login-redirect-text {
   text-align: center;
   margin-top: 32px;
@@ -162,7 +160,6 @@
 .login-redirect-text a {
   color: #004395;
   text-decoration: none;
-  font-weight: bold;
 }
 
 .login-redirect-text a:hover {

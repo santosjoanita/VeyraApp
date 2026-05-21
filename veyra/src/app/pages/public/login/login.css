@@ -13,8 +13,7 @@
   align-items: center;
   height: 100vh;
   width: 100%;
-  background: #ffffff;
-  background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(173, 198, 255, 1) 100%);
+  background: var(--bg-gradient-radial);
 }
 
 .login-card {
@@ -121,7 +120,7 @@
 }
 
 .btn-login {
-  width: 100%;
+  width: 96%;
   background-color: #004395;
   color: #FFFFFF;
   padding: 14px; 
@@ -132,6 +131,7 @@
   cursor: pointer;
   margin-top: 8px;
   transition: background-color 0.2s;
+  text-align: center;
 }
 
 .btn-login:hover {

@@ -1,3 +1,145 @@
-<div class="dashboard-background">
+<div class="dashboard-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
     
+    <app-header></app-header>
+
+    <div class="page-body">
+
+        <div class="dashboard-header">
+  <h2>Good Morning, Dexter Morgan!</h2>
+</div>
+
+<div class="stats-grid">
+
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </div>
+     <div class="stat-info">
+      <span class="stat-title">Total Projects</span>
+      <span class="stat-value">5</span>
+    </div>
+    <button class="btn-add-stat">
+      <span class="add-icon">+</span> Add Project
+    </button>
+  </div>
+  
+
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+    </div>
+     <div class="stat-info">
+      <span class="stat-title">Total Workers</span>
+      <span class="stat-value">4</span>
+    </div>
+     <button class="btn-add-stat">
+      <span class="add-icon">+</span> Add Worker
+    </button>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+        <line x1="9" y1="22" x2="9" y2="22"></line>
+        <line x1="15" y1="22" x2="15" y2="22"></line>
+        <path d="M9 6h6"></path>
+        <path d="M9 10h6"></path>
+        <path d="M9 14h6"></path>
+      </svg>
+    </div>
+    <div class="stat-info">
+      <span class="stat-title">Total Clients</span>
+      <span class="stat-value">12</span>
+    </div>
+      <button class="btn-add-stat">
+      <span class="add-icon">+</span> Add Client
+    </button>
+  </div>
+</div>
+
+<div class="dashboard-bottom-row">
+  
+  <div class="projects-section card-container">
+    <h3>Overall Projects</h3>
+    <table class="projects-table">
+      <thead>
+        <tr>
+          <th>Project Name</th>
+          <th>Due Date</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="fw-bold">Veyra Dashboard Redesign</td>
+          <td>25 May 2026</td>
+          <td class="text-center">
+            <button class="action-btn delete-btn" title="Delete Project">-</button>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Brandit Mobile App</td>
+          <td>10 Jun 2026</td>
+          <td class="text-center">
+            <button class="action-btn delete-btn" title="Delete Project">-</button>
+          </td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Client Portal API</td>
+          <td>14 Jul 2026</td>
+          <td class="text-center">
+            <button class="action-btn delete-btn" title="Delete Project">-</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="activity-section card-container">
+    <h3>Activity Log</h3>
+    <h6>Track all changes</h6>
+    
+    <div class="search-wrapper-activity">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" placeholder="Search activities...">
+    </div>
+
+    <ul class="activity-list">
+      <li>
+        <div class="activity-content">
+          <p><strong>Dexter Morgan</strong> logged in</p>
+          <span class="activity-time">Just now</span>
+        </div>
+      </li>
+      <li>
+        <div class="activity-content">
+          <p><strong>Admin</strong> created "Client Portal API"</p>
+          <span class="activity-time">2 hours ago</span>
+        </div>
+      </li>
+      <li>
+        <div class="activity-content">
+          <p>Project "Old Website" was deleted</p>
+          <span class="activity-time">Yesterday</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+  </div>
+
 </div>

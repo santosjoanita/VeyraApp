@@ -1,0 +1,50 @@
+:root {
+  --brand-primary: #004395;    
+  --brand-secondary: #001A42; 
+  --brand-accent: #3B82F6;       
+  
+  --bg-sidebar: #ADC6FF;         
+  --bg-input: #8F9FBC;           
+  --bg-page: #F8FAFC;            
+  
+  --bg-gradient-radial: radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgba(217, 227, 255, 1) 100%);
+  
+  --text-white: #FFFFFF;
+  --text-black: #000000;
+  --error-red: #EF4444;
+  --border-light: #E2E8F0;
+  
+  --font-main: 'Geist', sans-serif;
+}
+
+/* --- BOTÃO ADD (só cores e etc) --- */
+.btn-add-stat {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+
+  background-color: var(--bg-page);
+  color: var(--brand-primary);
+  border: 1px solid var(--border-light);
+  font-family: var(--font-main);
+}
+
+.btn-add-stat .add-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.btn-add-stat:hover {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: var(--text-white);
+  box-shadow: 0px 4px 12px rgba(0, 67, 149, 0.15);
+}
