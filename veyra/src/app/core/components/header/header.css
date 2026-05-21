@@ -20,6 +20,15 @@
   align-items: center;
   gap: 24px;
 }
+.profile-link {
+  text-decoration: none; 
+  color: inherit;        
+  cursor: pointer;
+}
+
+.profile-link:hover .user-name {
+  color: var(--brand-primary, #004395); 
+}
 
 .search-wrapper {
   position: relative;
