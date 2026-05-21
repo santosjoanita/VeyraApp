@@ -16,7 +16,6 @@
   background: var(--bg-gradient-radial);
 }
 
-/* Cartão Central */
 .login-card {
   width: 100%;
   max-width: 500px;
@@ -53,14 +52,13 @@
   margin-bottom: 24px;
 }
 
-/* Inputs gerais */
 .input-group input[type="text"],
 .input-group input[type="password"] {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #E2E8F0;
   border-radius: 10px;
-  font-size: 10px;
+  font-size: 15px;
   outline: none;
   box-sizing: border-box;
   color: rgba(0, 0, 0, 43);
