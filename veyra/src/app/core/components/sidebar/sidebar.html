@@ -1,33 +1,32 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
 
 <aside class="sidebar-container" [class.collapsed]="isCollapsed()">
-  
   <div class="sidebar-header" (click)="toggleSidebar()" title="Abrir/Fechar Menu">
     <div class="logo-wrapper">
-    <img src="/logo.jpg" alt="Logo">
+      <img src="/logo.jpg" alt="Logo">
     </div>
     <span class="brand-name">VEYRA</span>
   </div>
 
   <nav class="nav-menu">
     <a href="/dashboard" class="nav-item active">
-      <span class="icon">𓃑</span>
+      <span class="material-symbols-outlined">bar_chart</span>
       <span class="nav-text">Dashboard</span>
     </a>
-    
+
     <a href="/clients" class="nav-item">
-      <span class="icon">👥</span>
+      <span class="material-symbols-outlined">group</span>
       <span class="nav-text">Clients</span>
     </a>
-    
+
     <a href="/projects" class="nav-item">
-      <span class="icon">🗂</span>
+      <span class="material-symbols-outlined">folder_open</span>
       <span class="nav-text">Projects</span>
     </a>
 
     <a href="/workers" class="nav-item">
-      <span class="icon">👷</span>
+      <span class="material-symbols-outlined">work</span>
       <span class="nav-text">Workers</span>
     </a>
   </nav>
-
 </aside>
