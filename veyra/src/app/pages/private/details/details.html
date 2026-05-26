@@ -21,38 +21,54 @@
           </div>
         </div>
 
-        <button class="btn-edit-stat">
-          <span class="add-icon">✎</span> Edit Profile
-        </button>
+        @if (!isEditing) {
+          <button class="btn-edit-stat" (click)="startEditing()">
+            <span class="add-icon">✎</span> Edit Profile
+          </button>
+        }
       </div>
 
-      <div class="details-grid">
+      <div class="details-grid" [class.worker-layout]="entityType === 'worker'">
         
         <div class="stat-card info-card">
-          <h2>Information</h2>
+          <h2>Personal Information</h2>
           
           <div class="info-list">
             <div class="info-item">
+              <label>Name</label>
+              <input type="text" [(ngModel)]="data.name" class="profile-input" [disabled]="!isEditing">
+            </div>
+
+            <div class="info-item">
               <label>Email Address</label>
-              <p>{{ data.email || 'N/A' }}</p>
+              <input type="email" [(ngModel)]="data.email" class="profile-input" [disabled]="!isEditing">
             </div>
             
             <div class="info-item">
               <label>Phone Number</label>
-              <p>{{ data.phone || 'N/A' }}</p>
-            </div>
-
-            <div class="info-item">
-              <label>User Role</label>
-              <div class="role-display">{{ data.role | titlecase }}</div>
+              <input type="text" [(ngModel)]="data.phone" class="profile-input" [disabled]="!isEditing" placeholder="N/A">
             </div>
 
             <div class="info-item">
               <label>Time Created</label>
-              <p>{{ data.createdAt | date:'dd MMM yyyy, HH:mm' }}</p>
+              <input type="text" [value]="data.createdAt | date:'dd MMM yyyy, HH:mm'" class="profile-input" [disabled]="true">
             </div>
           </div>
+
+          @if (isEditing) {
+            <div class="form-actions">
+              <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
+              <button class="btn-save" (click)="saveChanges()">Save Changes</button>
+            </div>
+          }
         </div>
+
+        @if (entityType === 'client') {
+          <div class="stat-card notes-card">
+            <h2>Notes</h2>
+            <textarea [(ngModel)]="data.notes" class="notes-textarea" [disabled]="!isEditing" placeholder="No notes available for this client."></textarea>
+          </div>
+        }
 
         <div class="stat-card projects-card">
           <h2>Projects</h2>

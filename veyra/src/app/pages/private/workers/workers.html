@@ -48,7 +48,9 @@
                 <td class="fw-bold">{{ worker.name }}</td>
                 <td class="text-muted">{{ worker.email }}</td>
                 <td>
-                  <select class="role-dropdown" (change)="changeProfile(worker.id, $event)">
+                  <select class="role-dropdown" 
+                          (click)="$event.stopPropagation()" 
+                          (change)="changeProfile(worker.id, $event)">
                     <option value="admin" [selected]="worker.role === 'admin'">Admin</option>
                     <option value="worker" [selected]="worker.role === 'worker'">Worker</option>
                   </select>
@@ -62,13 +64,15 @@
                 </td>
                 <td class="text-muted">{{ worker.lastAccess || 'Never' }}</td>
                 <td class="actions-cell">
-                  <button class="action-icon" title="View Details" (click)="viewWorker(worker.id)">
+                  <button class="action-icon" title="View Details" (click)="$event.stopPropagation(); viewWorker(worker.id)">
                     <span class="material-symbols-outlined">description</span>
                   </button>
-                  <button class="action-icon" title="Edit" (click)="editWorker(worker.id)">
+                  
+                  <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editWorker(worker.id)">
                     <span class="material-symbols-outlined">edit</span>
                   </button>
-                  <button class="action-icon delete" title="Delete" (click)="deleteWorker(worker.id)">
+                  
+                  <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); deleteWorker(worker.id)">
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
