@@ -6,8 +6,7 @@
       <p>Infrastructure & Credential Management</p>
     </div>
 
-    <form class="register-form" [formGroup]="registerForm">
-      
+<form class="register-form">      
       <div class="input-group">
         <label for="username">Username</label>
         <input type="text" id="username" name="username" [(ngModel)]="registerData.username">
@@ -19,6 +18,8 @@
       </div>
 
       <div class="input-group">
+                <label for="username">Password</label>
+
         <div class="password-wrapper">
           <input [type]="showPassword() ? 'text' : 'password'" id="password" name="password" [(ngModel)]="registerData.password">
           
