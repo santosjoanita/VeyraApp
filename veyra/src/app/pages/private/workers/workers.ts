@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
 import { Header } from '../../../core/components/header/header';
@@ -17,7 +18,7 @@ export interface Worker {
 @Component({
   selector: 'app-workers',
   standalone: true,
-  imports: [CommonModule, Sidebar, Header], 
+  imports: [CommonModule, Sidebar, Header, RouterModule], 
   templateUrl: './workers.html',
   styleUrl: './workers.css'
 })

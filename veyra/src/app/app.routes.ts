@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { Details } from './pages/private/details/details';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -32,5 +33,8 @@ export const routes: Routes = [
   {
     path: 'details',
     loadComponent:() => import('./pages/private/details/details').then(m => m.Details)
+  },
+  { 
+    path: 'details/:type/:id', component: Details
   }
 ];

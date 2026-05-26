@@ -1,21 +1,95 @@
-<div class="details-content">
-    <app-sidebar>
-        <div class="main-content">
-            <app-header>
+<div class="page-container">
+  <app-sidebar></app-sidebar>
 
-            </app-header>
+  <div class="main-content">
+    <app-header></app-header>
 
-            <div class="page-body">
-                <h1 class="page-title">{{ currentUser.role | titlecase }} Details</h1>
-
-                <div class="details-card card-container">
-                    <div class="details-header">
-                        <h1>{{ currentUser.firstName }} {{ currentUser.lastName }}</h1>
-                        <span class="stat-label-profile"><strong>Profile:</strong> {{ currentUser.role | titlecase }}</span>
-
-                    </div>
+    <div class="page-body">
+      
+      <div class="details-header">
+        <div class="details-title-section">
+          <h1>{{ data.name }}</h1>
+          <div class="details-badges">
+            <span class="stat-label"><strong>Profile:</strong> {{ data.role | titlecase }}</span>
+            <span class="stat-label"><strong>Status:</strong> 
+              <span class="status-badge" 
+                    [class.status-active]="data.isActive" 
+                    [class.status-inactive]="!data.isActive">
+                {{ data.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </span>
+          </div>
         </div>
+
+        <button class="btn-edit-stat">
+          <span class="add-icon">✎</span> Edit Profile
+        </button>
+      </div>
+
+      <div class="details-grid">
+        
+        <div class="stat-card info-card">
+          <h2>Information</h2>
+          
+          <div class="info-list">
+            <div class="info-item">
+              <label>Email Address</label>
+              <p>{{ data.email || 'N/A' }}</p>
             </div>
+            
+            <div class="info-item">
+              <label>Phone Number</label>
+              <p>{{ data.phone || 'N/A' }}</p>
+            </div>
+
+            <div class="info-item">
+              <label>User Role</label>
+              <div class="role-display">{{ data.role | titlecase }}</div>
+            </div>
+
+            <div class="info-item">
+              <label>Time Created</label>
+              <p>{{ data.createdAt | date:'dd MMM yyyy, HH:mm' }}</p>
+            </div>
+          </div>
         </div>
-    </app-sidebar>
+
+        <div class="stat-card projects-card">
+          <h2>Projects</h2>
+          
+          <table class="details-table">
+            <thead>
+              <tr>
+                <th>Project Name</th>
+                <th>End Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (project of projects; track project.id) {
+                <tr>
+                  <td class="fw-bold">{{ project.name }}</td>
+                  <td>{{ project.endDate | date:'dd MMM yyyy' }}</td>
+                  <td>
+                    <span class="project-status" 
+                          [class.p-active]="project.status === 'active'"
+                          [class.p-completed]="project.status === 'completed'"
+                          [class.p-paused]="project.status === 'paused'">
+                      {{ project.status | titlecase }}
+                    </span>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="text-muted text-center" style="padding: 20px;">No projects associated.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
 </div>

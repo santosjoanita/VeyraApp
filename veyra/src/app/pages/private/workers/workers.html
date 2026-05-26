@@ -42,9 +42,9 @@
               <th class="text-center">Actions</th>
             </tr>
           </thead>
-          <tbody>
+        <tbody>
             @for (worker of workersList; track worker.id) {
-              <tr>
+              <tr routerLink="/details/worker/{{ worker.id }}" class="clickable-row">
                 <td class="fw-bold">{{ worker.name }}</td>
                 <td class="text-muted">{{ worker.email }}</td>
                 <td>
