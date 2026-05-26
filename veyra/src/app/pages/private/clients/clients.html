@@ -29,6 +29,7 @@
               <th>Email</th>
               <th>Phone</th>
               <th>Status</th>
+              <th>Active Projects</th>
               <th>Created At</th>
               <th class="text-center">Actions</th>
             </tr>
@@ -47,6 +48,8 @@
                     {{ client.isActive ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
+
+                <td>{{ client.ActiveProjects }}</td>
                 
                 <td class="text-muted">{{ client.createdAt | date:'dd MMM yyyy' }}</td>
                 

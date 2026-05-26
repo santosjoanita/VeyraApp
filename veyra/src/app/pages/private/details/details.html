@@ -1,0 +1,21 @@
+<div class="details-content">
+    <app-sidebar>
+        <div class="main-content">
+            <app-header>
+
+            </app-header>
+
+            <div class="page-body">
+                <h1 class="page-title">{{ currentUser.role | titlecase }} Details</h1>
+
+                <div class="details-card card-container">
+                    <div class="details-header">
+                        <h1>{{ currentUser.firstName }} {{ currentUser.lastName }}</h1>
+                        <span class="stat-label-profile"><strong>Profile:</strong> {{ currentUser.role | titlecase }}</span>
+
+                    </div>
+        </div>
+            </div>
+        </div>
+    </app-sidebar>
+</div>

@@ -15,6 +15,7 @@ export interface Client {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  ActiveProjects?: number;
 }
 
 @Component({
@@ -37,7 +38,8 @@ export class Clients {
       notes: 'VIP Client',
       isActive: true,
       createdAt: '2025-01-15T10:00:00Z',
-      updatedAt: '2025-02-20T14:30:00Z'
+      updatedAt: '2025-02-20T14:30:00Z',
+      ActiveProjects: 3
     },
     {
       id: 'c2',
@@ -47,7 +49,8 @@ export class Clients {
       notes: 'Pending contract renewal',
       isActive: false,
       createdAt: '2025-03-05T09:15:00Z',
-      updatedAt: '2025-03-10T11:00:00Z'
+      updatedAt: '2025-03-10T11:00:00Z',
+      ActiveProjects: 0
     }
   ];
 
