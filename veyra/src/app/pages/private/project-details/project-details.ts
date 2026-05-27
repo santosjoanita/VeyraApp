@@ -26,11 +26,21 @@ export class ProjectDetails implements OnInit {
 
   visiblePasswords: { [key: string]: boolean } = {};
 
+  showClientModal: boolean = false;
+  showWorkerModal: boolean = false;
+
+  clientSearchQuery: string = '';
+  workerSearchQuery: string = '';
+
+  allClients: any[] = [];
+  allWorkers: any[] = [];
+
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.projectId = this.route.snapshot.paramMap.get('id') || 'p1';
     this.loadSimulatedData();
+    this.loadGlobalLists();
   }
 
   loadSimulatedData(): void {
@@ -81,6 +91,73 @@ export class ProjectDetails implements OnInit {
     });
   }
 
+  loadGlobalLists(): void{
+    this.allClients = [
+      { id: 'c1', name: 'Acme Corp', email: 'contact@acmecorp.com' },
+      { id: 'c2', name: 'Global Industries', email: 'info@globa.com' },
+      { id: 'c3', name: 'TechFlow Solutions', email: 'hello@techflow.pt' }
+    ];
+
+    this.allWorkers = [
+      { id: 'w1', name: 'Dexter Morgan', email: 'dexter@brandit.pt', role: 'admin' },
+      { id: 'w2', name: 'Debra Morgan', email: 'debra@brandit.pt', role: 'worker' },
+      { id: 'w3', name: 'Angel Batista', email: 'angel@brandit.pt', role: 'worker' },
+      { id: 'w4', name: 'Vince Masuka', email: 'masuka@brandit.pt', role: 'worker' }
+    ];
+  }
+
+  get filteredClients(){
+    return this.allClients.filter(client => 
+      client.name.toLowerCase().includes(this.clientSearchQuery.toLowerCase())
+    );
+  }
+
+  get filteredWorkers(){
+    return this.allWorkers.filter(worker => 
+      worker.name.toLowerCase().includes(this.workerSearchQuery.toLowerCase())
+    );
+  }
+
+  openClientModal(): void{
+    this.clientSearchQuery ='';
+    this.showClientModal = true;
+  }
+  closeClientModal(): void{
+    this.showClientModal = false;
+  }
+
+  openWorkerModal(): void{
+    this.workerSearchQuery ='',
+    this.showWorkerModal = true;
+  }
+
+  closeWorkerModal(): void{
+    this.showWorkerModal = false;
+  }
+isClientAssigned(clientId: string): boolean {
+    return this.assignedClients.some(c => c.id === clientId);
+  }
+
+  isWorkerAssigned(workerId: string): boolean {
+    return this.assignedTeam.some(w => w.userId === workerId);
+  }
+  confirmAssignClient(client: any): void{
+    if(this.isClientAssigned(client.id)) return;
+    this.assignedClients.push(client);
+    this.closeClientModal();
+  }
+
+  confirmAssignWorker(worker: any): void{
+    if(this.isWorkerAssigned(worker.userId)) return;
+    this.assignedTeam.push({
+      userId: worker.id,
+      name: worker.name,
+      role: worker.role,
+      assignedAt: new Date().toISOString()
+    });
+    this.closeWorkerModal();
+  }
+
   togglePasswordVisibility(id: string): void {
     this.visiblePasswords[id] = !this.visiblePasswords[id];
   }
@@ -109,5 +186,13 @@ export class ProjectDetails implements OnInit {
 
   assignTeamMember(): void {
     console.log('Atribuir membro da equipa...');
+  }
+  
+  removeClient(clientId: string): void {
+    this.assignedClients = this.assignedClients.filter(c => c.id !== clientId);
+  }
+
+  removeWorker(workerId: string): void {
+    this.assignedTeam = this.assignedTeam.filter(w => w.userId !== workerId);
   }
 }
