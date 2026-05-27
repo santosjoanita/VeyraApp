@@ -36,5 +36,9 @@ export const routes: Routes = [
   },
   { 
     path: 'details/:type/:id', component: Details
+  },
+  {
+    path: 'projectslist',
+    loadComponent:() => import('./pages/private/projects/projects').then(m => m.Projects)
   }
 ];
