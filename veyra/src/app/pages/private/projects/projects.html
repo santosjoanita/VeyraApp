@@ -10,13 +10,13 @@
       <div class="toolbar">
         <div class="search-wrapper">
           <span class="material-symbols-outlined search-icon">search</span>
-          <input type="text" placeholder="Search projects..." class="search-input">
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search projects..." class="search-input">
         </div>
 
         <div class="toolbar-actions">
           <div class="filter-wrapper">
             <span class="material-symbols-outlined filter-icon">filter_list</span>
-            <select class="filter-dropdown">
+            <select [(ngModel)]="selectedStatus" class="filter-dropdown">
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="completed">Completed</option>
@@ -43,7 +43,14 @@
         <table class="projects-table">
           <thead>
             <tr>
-              <th>Project Name</th>
+             <th>
+                <div class="th-sortable" (click)="toggleSort()" style="cursor: pointer;">
+                  <span>Project Name</span>
+                  <span class="material-symbols-outlined sort-icon" style="font-size: 16px; vertical-align: middle;">
+                    {{ sortOrder === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
+                  </span>
+                </div>
+              </th>
               <th>Client(s) Associated</th>
               <th>Due Date</th>
               <th>Assigned Team</th>
@@ -52,7 +59,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (project of projectsList; track project.id) {
+            @for (project of displayedProjects; track project.id) {
               <tr routerLink="/details/project/{{ project.id }}" class="clickable-row">
                 
                 <td class="fw-bold">{{ project.name }}</td>
@@ -107,10 +114,10 @@
     </div>
   </div>
 </div>
+
 @if (showDeleteModal) {
   <app-confirm-delete 
     [itemName]="projectToDeleteName"
-    (cancel)="showDeleteModal = false" 
     (confirm)="handleConfirmDelete()"
     (close)="showDeleteModal = false">
   </app-confirm-delete>
