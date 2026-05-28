@@ -157,3 +157,11 @@
     (save)="handleSaveClient($event)">
   </app-add-client-modal>
 }
+@if (showDeleteModal) {
+  <app-confirm-delete 
+    [itemName]="itemToDeleteName"
+    (cancel)="showDeleteModal = false" 
+    (confirm)="handleConfirmDelete()"
+    (close)="showDeleteModal = false">
+  </app-confirm-delete>
+}

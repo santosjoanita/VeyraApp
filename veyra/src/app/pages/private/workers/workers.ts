@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
 import { Header } from '../../../core/components/header/header';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker'; 
+import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 
 export interface Worker {
   id?: string | number; 
@@ -19,13 +20,15 @@ export interface Worker {
 @Component({
   selector: 'app-workers',
   standalone: true,
-  imports: [CommonModule, Sidebar, Header, RouterModule, AddWorkerModal], 
+  imports: [CommonModule, Sidebar, Header, RouterModule, AddWorkerModal, ConfirmDelete], 
   templateUrl: './workers.html',
   styleUrl: './workers.css'
 })
 export class Workers {
   showAddWorker = false;
-  
+  showDeleteModal = false;
+  workerToDeleteId: string | null = null;
+  workerToDeleteName: string = '';
   // Enquanto a api não vem
   workersList: Worker[] = [
     {
@@ -89,5 +92,18 @@ export class Workers {
     } else {
       console.error('Cannot change profile: Worker ID is missing.');
     }
+  }
+   openDeleteModal(worker: any) {
+    this.workerToDeleteId = worker.id;
+    this.workerToDeleteName = worker.name; 
+    this.showDeleteModal = true;
+  }
+
+    handleConfirmDelete() {
+    if (this.workerToDeleteId) {
+      this.workersList = this.workersList.filter(w => w.id !== this.workerToDeleteId);
+    }
+    this.showDeleteModal = false; 
+    this.workerToDeleteId = null;
   }
 }

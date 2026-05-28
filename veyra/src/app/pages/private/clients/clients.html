@@ -71,7 +71,7 @@
                     <span class="material-symbols-outlined">edit</span>
                   </button>
                   
-                  <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); deleteClient(client.id)">
+                  <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); openDeleteModal(client)">
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
@@ -90,3 +90,11 @@
     </div>
   </div>
 </div>
+@if (showDeleteModal) {
+  <app-confirm-delete 
+    [itemName]="clientToDeleteName"
+    (cancel)="showDeleteModal = false" 
+    (confirm)="handleConfirmDelete()"
+    (close)="showDeleteModal = false">
+  </app-confirm-delete>
+}

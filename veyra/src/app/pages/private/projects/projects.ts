@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
 import { Header } from '../../../core/components/header/header';
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
+import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 
 export interface Project {
   id: string;
@@ -23,12 +24,15 @@ export interface Project {
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, RouterModule, Sidebar, Header, AddProjectModal],
+  imports: [CommonModule, RouterModule, Sidebar, Header, AddProjectModal, ConfirmDelete],
   templateUrl: './projects.html',
   styleUrl: './projects.css'
 })
 export class Projects {
   showAddProject = false;
+  showDeleteModal = false;
+  projectToDeleteId: string | null = null;
+  projectToDeleteName: string = '';
 
   clientsList = [
     { id: 'c1', name: 'Acme Corp' },
@@ -113,8 +117,18 @@ handleSaveProject(newProjectData: any) {
     console.log('Edit project ID:', id);
   }
 
-  deleteProject(id: string): void {
-    console.log('Delete project ID:', id);
+    openDeleteModal(project: any) {
+    this.projectToDeleteId = project.id;
+    this.projectToDeleteName = project.name; 
+    this.showDeleteModal = true;
+  }
+
+    handleConfirmDelete() {
+    if (this.projectToDeleteId) {
+      this.projectsList = this.projectsList.filter(p => p.id !== this.projectToDeleteId);
+    }
+    this.showDeleteModal = false; 
+    this.projectToDeleteId = null;
   }
   
 }
