@@ -9,20 +9,7 @@ import { AddProjectModal } from '../../../core/components/modals/add-project/add
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 
 import { DataHandlerService } from '../../../core/services/data-handler.service'; 
-
-export interface Project {
-  id: string;
-  name: string;
-  clientId: string; 
-  clientName: string; 
-  status: 'active' | 'completed' | 'paused';
-  startDate: string;
-  endDate: string; 
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-  assignedTeam: { userId: string, name: string }[]; 
-}
+import {Project} from '../../../core/class/project.model';
 
 @Component({
   selector: 'app-projects',

@@ -7,16 +7,10 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
-import { DataHandlerService } from '../../../core/services/data-handler.service';
 
-export interface Worker {
-  id: string | number;
-  name: string;
-  email: string;
-  role: string;
-  status: 'active' | 'inactive';
-  lastAccess?: string;
-}
+import { DataHandlerService } from '../../../core/services/data-handler.service';
+import {Worker} from '../../../core/class/worker.model';
+
 
 @Component({
   selector: 'app-workers',

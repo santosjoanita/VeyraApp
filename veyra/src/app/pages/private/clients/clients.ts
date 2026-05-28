@@ -7,18 +7,10 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { AddClientModal } from '../../../core/components/modals/add-client/add-client';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
-import { DataHandlerService } from '../../../core/services/data-handler.service'; 
 
-export interface Client {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  notes?: string;
-  isActive: boolean;
-  ActiveProjects?: number; 
-  createdAt: string;     
-}
+import { DataHandlerService } from '../../../core/services/data-handler.service'; 
+import {Client} from '../../../core/class/client.model';
+
 
 @Component({
   selector: 'app-clients',
