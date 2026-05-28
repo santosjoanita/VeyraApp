@@ -22,7 +22,7 @@
             <span class="stat-title">Total Projects</span>
             <span class="stat-value">{{ totalProjects }}</span>
           </div>
-          <button class="btn-add-stat">
+          <button class="btn-add-stat" (click)="showAddProject = true">
             <span class="add-icon">+</span> Add Project
           </button>
         </div>
@@ -40,7 +40,7 @@
             <span class="stat-title">Total Workers</span>
             <span class="stat-value">{{ totalWorkers }}</span>
           </div>
-          <button class="btn-add-stat">
+          <button class="btn-add-stat" (click)="showAddWorker = true">
             <span class="add-icon">+</span> Add Worker
           </button>
         </div>
@@ -60,7 +60,7 @@
             <span class="stat-title">Total Clients</span>
             <span class="stat-value">{{ totalClients }}</span>
           </div>
-          <button class="btn-add-stat">
+          <button class="btn-add-stat" (click)="showAddClient = true">
             <span class="add-icon">+</span> Add Client
           </button>
         </div>
@@ -135,3 +135,25 @@
     </div>
   </div>
 </div>
+
+@if (showAddProject) {
+  <app-add-project-modal 
+    [clients]="availableClients"
+    (close)="showAddProject = false" 
+    (save)="handleSaveProject($event)">
+  </app-add-project-modal>
+}
+
+@if (showAddWorker) {
+  <app-add-worker-modal 
+    (close)="showAddWorker = false" 
+    (save)="handleSaveWorker($event)">
+  </app-add-worker-modal>
+}
+
+@if (showAddClient) {
+  <app-add-client-modal 
+    (close)="showAddClient = false" 
+    (save)="handleSaveClient($event)">
+  </app-add-client-modal>
+}

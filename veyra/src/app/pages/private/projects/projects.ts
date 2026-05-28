@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 
 import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
 import { Header } from '../../../core/components/header/header';
+import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 
 export interface Project {
   id: string;
@@ -22,12 +23,19 @@ export interface Project {
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, RouterModule, Sidebar, Header],
+  imports: [CommonModule, RouterModule, Sidebar, Header, AddProjectModal],
   templateUrl: './projects.html',
   styleUrl: './projects.css'
 })
 export class Projects {
-  
+  showAddProject = false;
+
+  clientsList = [
+    { id: 'c1', name: 'Acme Corp' },
+    { id: 'c2', name: 'Global Industries' },
+    { id: 'c3', name: 'TechFlow Solutions' }
+  ];
+
   projectsList: Project[] = [
     {
       id: 'p1',
@@ -75,6 +83,27 @@ export class Projects {
       ]
     }
   ];
+handleSaveProject(newProjectData: any) {
+    console.log('Fazer POST /projects com:', newProjectData);
+    
+    const foundClientName = this.clientsList.find(c => c.id === newProjectData.clientId)?.name || 'Unknown Client';
+
+    this.projectsList.push({
+      id: 'p_new_' + Math.random().toString(36).substr(2, 9), 
+      name: newProjectData.name,
+      clientId: newProjectData.clientId,
+      clientName: foundClientName,
+      status: newProjectData.status,
+      startDate: newProjectData.startDate,
+      endDate: newProjectData.endDate,
+      createdAt: new Date().toISOString(), 
+      updatedAt: new Date().toISOString(), 
+      description: newProjectData.description,
+      assignedTeam: []
+    });
+    
+    this.showAddProject = false;
+  }
 
   viewProject(id: string): void {
     console.log('View project ID:', id);
@@ -87,4 +116,5 @@ export class Projects {
   deleteProject(id: string): void {
     console.log('Delete project ID:', id);
   }
+  
 }

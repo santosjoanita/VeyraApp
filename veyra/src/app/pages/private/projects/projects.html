@@ -24,10 +24,18 @@
             </select>
           </div>
 
-          <button class="btn-add">
+          <button class="btn-add" (click)="showAddProject = true">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Project
           </button>
+
+          @if (showAddProject) {
+            <app-add-project-modal 
+              [clients]="clientsList"
+              (close)="showAddProject = false" 
+              (save)="handleSaveProject($event)">
+            </app-add-project-modal>
+          }
         </div>
       </div>
 

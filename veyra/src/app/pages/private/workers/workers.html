@@ -23,10 +23,17 @@
             </select>
           </div>
 
-          <button class="btn-add">
+           <button class="btn-add" (click)="showAddWorker = true">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Worker
           </button>
+
+          @if (showAddWorker) {
+            <app-add-worker-modal 
+              (close)="showAddWorker = false" 
+              (save)="handleSaveWorker($event)">
+            </app-add-worker-modal>
+          }
         </div>
       </div>
 

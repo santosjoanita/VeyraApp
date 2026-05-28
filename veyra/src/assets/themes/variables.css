@@ -18,7 +18,7 @@
 }
 
 /* --- BOTÃO ADD (só cores e etc) --- */
-.btn-add-stat {
+.btn-add-stat, .btn-save, .btn-cancel {
   width: 100%;
   padding: 10px;
   border-radius: 10px;
@@ -48,6 +48,25 @@
   color: var(--text-white);
   box-shadow: 0px 4px 12px rgba(0, 67, 149, 0.15);
 }
+
+.btn-cancel {
+  background-color: transparent;
+  color: #64748B;
+  border: 1px solid var(--border-light, #E2E8F0);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-main, 'Geist', sans-serif);
+}
+
+.btn-cancel:hover {
+  background-color: #F1F5F9;
+  color: #0F172A;
+}
+
 /* --- Temas para os modais --- */
 .modal-overlay {
   position: fixed;

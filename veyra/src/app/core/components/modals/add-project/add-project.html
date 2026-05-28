@@ -11,12 +11,12 @@
     <div class="modal-body">
       <div class="form-group">
         <label>Project Name *</label>
-        <input type="text" [(ngModel)]="formData.name" class="form-input">
+        <input type="text" [(ngModel)]="formData.name" class="form-input" required>
       </div>
       
       <div class="form-group">
         <label>Client *</label>
-        <select [(ngModel)]="formData.clientId" class="form-input">
+        <select [(ngModel)]="formData.clientId" class="form-input" required>
           <option value="" disabled selected>Select a client...</option>
           @for (client of clients; track client.id) {
             <option [value]="client.id">{{ client.name }}</option>
@@ -26,18 +26,18 @@
 
       <div style="display: flex; gap: 12px;">
         <div class="form-group" style="flex: 1;">
-          <label>Start Date</label>
-          <input type="date" [(ngModel)]="formData.startDate" class="form-input">
+          <label>Start Date *</label>
+          <input type="date" [(ngModel)]="formData.startDate" class="form-input" required>
         </div>
         <div class="form-group" style="flex: 1;">
-          <label>Due Date</label>
-          <input type="date" [(ngModel)]="formData.endDate" class="form-input">
+          <label>Due Date *</label>
+          <input type="date" [(ngModel)]="formData.endDate" class="form-input" required>
         </div>
       </div>
 
       <div class="form-group">
-        <label>Status</label>
-        <select [(ngModel)]="formData.status" class="form-input">
+        <label>Status *</label>
+        <select [(ngModel)]="formData.status" class="form-input" required>
           <option value="active">Active</option>
           <option value="paused">Paused</option>
           <option value="completed">Completed</option>
@@ -46,13 +46,13 @@
 
       <div class="form-group">
         <label>Description</label>
-        <textarea [(ngModel)]="formData.description" class="form-input" style="min-height: 80px; resize: none;"></textarea>
+        <textarea [(ngModel)]="formData.description" class="form-input" style="min-height: 80px; resize: none;" ></textarea>
       </div>
     </div>
 
     <div class="modal-footer">
       <button class="btn-cancel" (click)="cancel()">Cancel</button>
-      <button class="btn-save" (click)="submitForm()">Create Project</button>
+      <button class="btn-save" (click)="submitForm()">Save Project</button>
     </div>
 
   </div>
