@@ -1,0 +1,235 @@
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+<div class="page-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <app-header></app-header>
+
+    <div class="page-body">
+      
+      <div class="details-header">
+        <div class="details-title-section">
+          <div class="title-with-badge">
+            <h1>{{ projectData.name }}</h1>
+            <span class="project-status" 
+                  [class.p-active]="projectData.status === 'active'"
+                  [class.p-completed]="projectData.status === 'completed'"
+                  [class.p-paused]="projectData.status === 'paused'">
+              {{ projectData.status | titlecase }}
+            </span>
+          </div>
+          
+          <div class="details-badges">
+            <span class="stat-label">
+              <span class="material-symbols-outlined icon-small">calendar_today</span>
+              <strong>Start:</strong> {{ projectData.startDate | date:'dd MMM yyyy' }}
+            </span>
+            <span class="stat-label">
+              <span class="material-symbols-outlined icon-small">event_upcoming</span>
+              <strong>Due:</strong> {{ projectData.endDate | date:'dd MMM yyyy' }}
+            </span>
+          </div>
+        </div>
+
+        @if (!isEditing) {
+          <button class="btn-edit-stat" (click)="startEditing()">
+            <span class="add-icon">✎</span> Edit Project
+          </button>
+        }
+      </div>
+
+      <div class="project-grid">
+        
+        <div class="stat-card desc-card">
+          <h2>Project Description</h2>
+          <textarea [(ngModel)]="projectData.description" 
+                    class="notes-textarea" 
+                    [disabled]="!isEditing" 
+                    placeholder="Sem descrição disponível..."></textarea>
+          
+          @if (isEditing) {
+            <div class="form-actions">
+              <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
+              <button class="btn-save" (click)="saveChanges()">Save Changes</button>
+            </div>
+          }
+        </div>
+
+        <div class="stat-card credentials-card">
+          <div class="card-header">
+            <h2>Credentials & Accesses</h2>
+            <button class="btn-icon-small" title="Add Credential" (click)="addCredential()">
+              <span class="material-symbols-outlined">add</span>
+            </button>
+          </div>
+          
+          <div class="credentials-list">
+            @for (cred of credentials; track cred.id) {
+              <div class="credential-item">
+                <div class="cred-header">
+                  <span class="cred-type">{{ cred.type | uppercase }}</span>
+                  <span class="cred-label">{{ cred.label }}</span>
+                </div>
+                
+                <div class="cred-body">
+                  @for (property of cred.data | keyvalue; track property.key) {
+                    <div class="cred-field">
+                      <span class="field-label">{{ property.key }}:</span>
+                      
+                      @if (property.key === 'password') {
+                        <div class="password-display">
+                          <input [type]="visiblePasswords[cred.id] ? 'text' : 'password'" 
+                                 [value]="property.value" 
+                                 class="password-field-readonly" 
+                                 readonly>
+                          <button class="eye-btn" (click)="togglePasswordVisibility(cred.id)">
+                            <span class="material-symbols-outlined">
+                              {{ visiblePasswords[cred.id] ? 'visibility_off' : 'visibility' }}
+                            </span>
+                          </button>
+                        </div>
+                      } @else {
+                        <span class="field-value">{{ property.value }}</span>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            } @empty {
+              <p class="text-muted">No credentials added yet.</p>
+            }
+          </div>
+        </div>
+
+        <div class="stat-card team-card">
+          <div class="card-header">
+            <h2>Assigned Clients</h2>
+            <button class="btn-icon-small" title="Assign Client" (click)="openClientModal()">
+              <span class="material-symbols-outlined">person_add</span>
+            </button>
+          </div>
+          
+          <ul class="person-list">
+            @for (client of assignedClients; track client.id) {
+              <li class="person-item">
+                <div class="person-avatar client-avatar">
+                  {{ client.name.charAt(0) }}
+                </div>
+                <div class="person-info">
+                  <span class="person-name">{{ client.name }}</span>
+                  <span class="person-sub">{{ client.email }}</span>
+                </div>
+                <button class="btn-icon-small delete-btn" title="Remove Client" (click)="removeClient(client.id)">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+                </button>
+              </li>
+            } @empty {
+              <p class="text-muted">No clients assigned.</p>
+            }
+          </ul>
+        </div>
+
+        <div class="stat-card team-card">
+          <div class="card-header">
+            <h2>Assigned Team</h2>
+            <button class="btn-icon-small" title="Assign Team Member" (click)="openWorkerModal()">
+              <span class="material-symbols-outlined">group_add</span>
+            </button>
+          </div>
+          
+          <ul class="person-list">
+            @for (worker of assignedTeam; track worker.userId) {
+              <li class="person-item">
+                <div class="person-avatar worker-avatar">
+                  {{ worker.name.charAt(0) }}
+                </div>
+                <div class="person-info">
+                  <span class="person-name">{{ worker.name }}</span>
+                  <span class="person-sub role-badge">{{ worker.role | titlecase }}</span>
+                </div>
+                <button class="btn-icon-small delete-btn" title="Remove Team Member" (click)="removeWorker(worker.userId)">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+                </button>
+              </li>
+            } @empty {
+              <p class="text-muted">No team members assigned.</p>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (showClientModal) {
+  <div class="modal-overlay" (click)="closeClientModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Assign Client</h3>
+        <button class="modal-close" (click)="closeClientModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
+      <div class="modal-search">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input type="text" [(ngModel)]="clientSearchQuery" placeholder="Search client by name..." class="search-input">
+      </div>
+
+      <div class="modal-list">
+        @for (client of filteredClients; track client.id) {
+          <div class="modal-list-item">
+            <div class="person-info">
+              <span class="person-name">{{ client.name }}</span>
+              <span class="person-sub">{{ client.email }}</span>
+            </div>
+            <button class="btn-assign" 
+                    [disabled]="isClientAssigned(client.id)" 
+                    (click)="confirmAssignClient(client)">
+              {{ isClientAssigned(client.id) ? 'Assigned' : 'Assign' }}
+            </button>
+          </div>
+        } @empty {
+          <p class="text-muted text-center" style="margin-top:20px">No clients found.</p>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@if (showWorkerModal) {
+  <div class="modal-overlay" (click)="closeWorkerModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Assign Team Member</h3>
+        <button class="modal-close" (click)="closeWorkerModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      
+      <div class="modal-search">
+        <span class="material-symbols-outlined search-icon">search</span>
+        <input type="text" [(ngModel)]="workerSearchQuery" placeholder="Search worker by name..." class="search-input">
+      </div>
+
+      <div class="modal-list">
+        @for (worker of filteredWorkers; track worker.id) {
+          <div class="modal-list-item">
+            <div class="person-info">
+              <span class="person-name">{{ worker.name }} <span class="role-badge" style="font-size:10px">{{ worker.role }}</span></span>
+              <span class="person-sub">{{ worker.email }}</span>
+            </div>
+            <button class="btn-assign" 
+                    [disabled]="isWorkerAssigned(worker.id)" 
+                    (click)="confirmAssignWorker(worker)">
+              {{ isWorkerAssigned(worker.id) ? 'Assigned' : 'Assign' }}
+            </button>
+          </div>
+        } @empty {
+          <p class="text-muted text-center" style="margin-top:20px">No workers found.</p>
+        }
+      </div>
+    </div>
+  </div>
+}

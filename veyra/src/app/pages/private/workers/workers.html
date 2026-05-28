@@ -23,10 +23,17 @@
             </select>
           </div>
 
-          <button class="btn-add">
+           <button class="btn-add" (click)="showAddWorker = true">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Worker
           </button>
+
+          @if (showAddWorker) {
+            <app-add-worker-modal 
+              (close)="showAddWorker = false" 
+              (save)="handleSaveWorker($event)">
+            </app-add-worker-modal>
+          }
         </div>
       </div>
 
@@ -72,7 +79,7 @@
                     <span class="material-symbols-outlined">edit</span>
                   </button>
                   
-                  <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); deleteWorker(worker.id)">
+                  <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); openDeleteModal(worker)">
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
@@ -91,3 +98,11 @@
     </div>
   </div>
 </div>
+@if (showDeleteModal) {
+                    <app-confirm-delete 
+                      [itemName]="workerToDeleteName"
+                      (cancel)="showDeleteModal = false" 
+                      (confirm)="handleConfirmDelete()"
+                      (close)="showDeleteModal = false">
+                    </app-confirm-delete>
+                  }

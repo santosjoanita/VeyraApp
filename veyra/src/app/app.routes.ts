@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Details } from './pages/private/details/details';
+import { ProjectDetails } from './pages/private/project-details/project-details';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,10 +14,9 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/public/register/register').then(m => m.Register)
   },
 
-  //private
   {
     path: 'dashboard',
-    loadComponent: () => import('./pages/private/dashboard/dashboard').then(m => m.Dashboard)      
+    loadComponent: () => import('./pages/private/dashboard/dashboard').then(m => m.Dashboard)       
   },
   {
     path: 'profile',
@@ -34,6 +34,15 @@ export const routes: Routes = [
     path: 'details',
     loadComponent:() => import('./pages/private/details/details').then(m => m.Details)
   },
+  {
+    path: 'projectslist',
+    loadComponent:() => import('./pages/private/projects/projects').then(m => m.Projects)
+  },
+
+  { 
+    path: 'details/project/:id', component: ProjectDetails
+  },
+
   { 
     path: 'details/:type/:id', component: Details
   }

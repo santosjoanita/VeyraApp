@@ -14,10 +14,17 @@
         </div>
 
         <div class="toolbar-actions">
-          <button class="btn-add">
+           <button class="btn-add" (click)="showAddClient = true">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Client
           </button>
+
+          @if (showAddClient) {
+            <app-add-client-modal 
+              (close)="showAddClient = false" 
+              (save)="handleSaveClient($event)">
+            </app-add-client-modal>
+          }
         </div>
       </div>
 
@@ -64,7 +71,7 @@
                     <span class="material-symbols-outlined">edit</span>
                   </button>
                   
-                  <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); deleteClient(client.id)">
+                  <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); openDeleteModal(client)">
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
@@ -83,3 +90,11 @@
     </div>
   </div>
 </div>
+@if (showDeleteModal) {
+  <app-confirm-delete 
+    [itemName]="clientToDeleteName"
+    (cancel)="showDeleteModal = false" 
+    (confirm)="handleConfirmDelete()"
+    (close)="showDeleteModal = false">
+  </app-confirm-delete>
+}

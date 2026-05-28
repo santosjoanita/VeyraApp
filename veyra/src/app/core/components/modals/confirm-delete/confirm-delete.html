@@ -1,0 +1,33 @@
+<div class="modal-overlay" (click)="cancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h3>Confirm Delete</h3>
+      <button class="modal-close" (click)="cancel()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body" style="padding: 24px; text-align: center;">
+      <span class="material-symbols-outlined" style="font-size: 55px; color: #EF4444; margin-bottom: 16px;">
+        warning
+      </span>
+      
+      <h4>Are you sure?</h4>
+      
+      <p>
+        Do you really want to delete <strong>{{ itemName }}</strong>?<br>
+        This action cannot be undone.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="cancel()">Cancel</button>
+      
+      <button class="btn-delete" (click)="confirmDelete()" >
+        Yes, Delete
+      </button>
+    </div>
+
+  </div>
+</div>
