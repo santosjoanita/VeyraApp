@@ -4,8 +4,8 @@ import { RouterModule } from '@angular/router';
 
 import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
 import { Header } from '../../../core/components/header/header';
+import { AddClientModal} from '../../../core/components/modals/add-client/add-client';
 
-// Interface baseada no JSON que forneceste
 export interface Client {
   id: string;
   name: string;
@@ -21,11 +21,29 @@ export interface Client {
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, RouterModule, Sidebar, Header],
+  imports: [CommonModule, RouterModule, Sidebar, Header, AddClientModal],
   templateUrl: './clients.html',
   styleUrl: './clients.css' 
 })
 export class Clients {
+  showAddClient = false;
+  handleSaveClient(newClientData: any) {
+    console.log('Fazer POST /clients com:', newClientData);
+    
+    this.clientsList.push({
+      id: 'c_new_' + Math.random().toString(36).substr(2, 9), 
+      name: newClientData.name,
+      email: newClientData.email,
+      phone: newClientData.phone,
+      notes: newClientData.notes,
+      isActive: newClientData.isActive || false,
+      createdAt: newClientData.createdAt || new Date().toISOString(),
+      updatedAt: newClientData.updatedAt || new Date().toISOString(),
+      ActiveProjects: newClientData.ActiveProjects || 0
+    });
+    
+    this.showAddClient = false;
+  }
 
   //simulei a lista da API mas com json
   

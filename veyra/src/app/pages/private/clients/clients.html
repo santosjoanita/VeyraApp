@@ -14,10 +14,17 @@
         </div>
 
         <div class="toolbar-actions">
-          <button class="btn-add">
+           <button class="btn-add" (click)="showAddClient = true">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Client
           </button>
+
+          @if (showAddClient) {
+            <app-add-client-modal 
+              (close)="showAddClient = false" 
+              (save)="handleSaveClient($event)">
+            </app-add-client-modal>
+          }
         </div>
       </div>
 
