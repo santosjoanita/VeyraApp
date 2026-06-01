@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -12,11 +12,10 @@ import { RouterModule } from '@angular/router';
 export class Header {
   currentUser = {
     name: 'Dexter Morgan',
-    role: 'admin'
+    role: 'admin',
   };
 
   logout() {
     console.log('User signed out');
-
   }
 }

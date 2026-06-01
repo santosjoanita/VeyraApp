@@ -1,25 +1,28 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../../core/services/Auth-Service'; 
+import { AuthService } from '../../../core/services/user/user-auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [RouterLink, FormsModule],
   templateUrl: './register.html',
-  styleUrl: './register.css'
+  styleUrl: './register.css',
 })
-export class Register{
+export class Register {
   showPassword = signal<boolean>(false);
-  
+
   registerData = {
     username: '',
     email: '',
-    password: ''
+    password: '',
   };
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+  ) {}
 
   togglePassword(): void {
     this.showPassword.set(!this.showPassword());
