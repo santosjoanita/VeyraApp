@@ -1,6 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/services/Auth-Service'; 
 
 @Component({
   selector: 'app-register',
@@ -18,7 +19,7 @@ export class Register{
     password: ''
   };
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   togglePassword(): void {
     this.showPassword.set(!this.showPassword());
@@ -30,24 +31,13 @@ export class Register{
       return;
     }
 
-    const usersStr = localStorage.getItem('veyra_users');
-    const users = usersStr ? JSON.parse(usersStr) : [];
-
-    const exists = users.find((u: any) => u.email === this.registerData.email || u.username === this.registerData.username);
-    if (exists) {
-      alert('Username ou E-mail já existem!');
+    const result = this.authService.register(this.registerData);
+    if (!result.success) {
+      alert(result.message);
       return;
     }
 
-    const newUser = {
-      ...this.registerData,
-      role: users.length === 0 ? 'admin' : 'worker'
-    };
-    
-    users.push(newUser);
-    localStorage.setItem('veyra_users', JSON.stringify(users));
-    
-    alert('Registo com sucesso! Podes fazer o login.');
+    alert(result.message);
     this.router.navigate(['/login']);
   }
 }
