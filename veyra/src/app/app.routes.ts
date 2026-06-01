@@ -45,5 +45,9 @@ export const routes: Routes = [
 
   { 
     path: 'details/:type/:id', component: Details
+  },
+  {
+    path: 'not-permitted',
+    loadComponent: () => import('./pages/public/not-permitted/not-permitted').then(m => m.NotPermitted)
   }
 ];

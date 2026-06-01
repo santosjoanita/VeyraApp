@@ -1,1 +1,19 @@
-<p>not-permitted works!</p>
+<div class="not-permitted-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    
+    <app-header></app-header>
+    <div class="page-body">
+      <div class="alert-icon">!</div>
+      <h1>You do not have permission to access the requested page</h1>
+
+      <div class="actions">
+        <a routerLink="/login" class="login-link">
+          <button type="button" class="btn-add-stat">Login as a different user</button>
+        </a>
+        <button type="button" class="text-button" (click)="goBack()">Go back</button>
+      </div>
+  </div>
+  </div>
+</div>

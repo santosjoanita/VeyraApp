@@ -1,0 +1,81 @@
+:host {
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  font-family: 'Geist', sans-serif;
+}
+
+.not-permitted-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-gradient-radial);
+  overflow-y: auto;
+}
+
+.page-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: min(700px, 90vw);
+  width: 100%;
+  text-align: center;
+  border-radius: 28px;
+  padding: 40px 32px;
+  margin: 24px auto 0;
+}
+
+.alert-icon {
+  margin: 0 auto 24px;
+  width: 110px;
+  height: 110px;
+  line-height: 110px;
+  border-radius: 50%;
+  border: 6px solid #d70b0b;
+  color: #d70b0b;
+  font-size: 4rem;
+  font-weight: 700;
+}
+
+.page-body h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.actions {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.text-button {
+  min-width: 240px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  background: transparent;
+  color: var(--brand-primary, #004395);
+  text-decoration: none;
+}
+.text-button:hover {
+  color: var(--brand-acent, #0f4ac7);
+}
+
+
+.login-link {
+  text-decoration: none;
+}
