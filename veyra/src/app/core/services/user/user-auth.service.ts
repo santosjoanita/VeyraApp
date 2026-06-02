@@ -43,7 +43,7 @@ export class AuthService {
     const users = this.getUsers();
 
     if (users.some((u: any) => u.email === user.email || u.username === user.username)) {
-      return { success: false, message: 'Username ou E-mail já existem!' };
+      return { success: false, message: 'Username or E-mail already exist!' };
     }
 
     const newUser = {
@@ -53,7 +53,7 @@ export class AuthService {
 
     users.push(newUser);
     localStorage.setItem(this.usersKey, JSON.stringify(users));
-    return { success: true, message: 'Registo com sucesso! Podes fazer o login.' };
+    return { success: true, message: 'Registered with success. You can now Log In' };
   }
 
   setRedirectUrl(url: string): void {
