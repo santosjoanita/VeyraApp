@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface DashboardMetrics {
-  clients: { total: number; active: number };
-  projects: { total: number; active: number };
-  workers: { total: number; active: number };
-}
+import { DashboardMetrics } from '../../../core/class/dashboard.model';
 
 @Injectable({
   providedIn: 'root',
