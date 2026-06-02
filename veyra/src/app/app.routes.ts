@@ -51,6 +51,6 @@ export const routes: Routes = [
   {
     path: 'not-permitted',
     loadComponent: () =>
-      import('./pages/public/not-permitted/not-permitted').then((m) => m.NotPermitted),
+      import('./pages/private/not-permitted/not-permitted').then((m) => m.NotPermitted),
   },
 ];
