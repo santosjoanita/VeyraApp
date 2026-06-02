@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,8 +7,9 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { AddClientModal } from '../../../core/components/modals/add-client/add-client';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
-
 import { DataHandlerService } from '../../../core/services/data-handler.service';
+
+import { ClientsService } from '../../../core/services/clients/clients.service';
 import { Client } from '../../../core/class/client.model';
 
 @Component({
@@ -26,9 +27,7 @@ import { Client } from '../../../core/class/client.model';
   templateUrl: './clients.html',
   styleUrl: './clients.css',
 })
-export class Clients {
-  constructor(private dataHandler: DataHandlerService) {}
-
+export class Clients implements OnInit {
   showAddClient = false;
   showDeleteModal = false;
   itemToDeleteId: string | null = null;
@@ -38,6 +37,22 @@ export class Clients {
   sortOrder: 'asc' | 'desc' = 'asc';
 
   clientsList: Client[] = [];
+
+  constructor(
+    private dataHandler: DataHandlerService,
+    private clientsService: ClientsService,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadClients();
+  }
+
+  loadClients() {
+    this.clientsService.getClients().subscribe({
+      next: (data) => (this.clientsList = data),
+      error: (err) => console.error('Erro ao carregar clientes', err),
+    });
+  }
 
   get displayedClients(): Client[] {
     let result = this.dataHandler.filterArray(this.clientsList, this.searchQuery, [
@@ -52,28 +67,16 @@ export class Clients {
   }
 
   handleSaveClient(newClientData: any) {
-    this.clientsList.push({
-      id: 'c_new_' + Math.random().toString(36).substr(2, 9),
-      name: newClientData.name,
-      email: newClientData.email,
-      phone: newClientData.phone,
-      notes: newClientData.notes,
-      isActive: true,
-      ActiveProjects: 0,
-      createdAt: new Date().toISOString(),
+    this.clientsService.createClient(newClientData).subscribe({
+      next: (createdClient) => {
+        this.clientsList.push(createdClient);
+        this.showAddClient = false;
+      },
+      error: (err) => console.error('Erro ao criar cliente', err),
     });
-    this.showAddClient = false;
   }
 
-  viewClient(id: string): void {
-    console.log('View client ID:', id);
-  }
-
-  editClient(id: string): void {
-    console.log('Edit client ID:', id);
-  }
-
-  openDeleteModal(client: any) {
+  openDeleteModal(client: Client) {
     this.itemToDeleteId = client.id;
     this.itemToDeleteName = client.name;
     this.showDeleteModal = true;
@@ -81,9 +84,14 @@ export class Clients {
 
   handleConfirmDelete() {
     if (this.itemToDeleteId) {
-      this.clientsList = this.clientsList.filter((c) => c.id !== this.itemToDeleteId);
+      this.clientsService.deleteClient(this.itemToDeleteId).subscribe({
+        next: () => {
+          this.clientsList = this.clientsList.filter((c) => c.id !== this.itemToDeleteId);
+          this.showDeleteModal = false;
+          this.itemToDeleteId = null;
+        },
+        error: (err) => console.error('Erro ao apagar cliente', err),
+      });
     }
-    this.showDeleteModal = false;
-    this.itemToDeleteId = null;
   }
 }

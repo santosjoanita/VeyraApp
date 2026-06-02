@@ -1,46 +1,51 @@
-import { Component, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/user/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
 export class Register {
-  showPassword = signal<boolean>(false);
-
-  registerData = {
-    username: '',
+  credentials = {
+    name: '',
     email: '',
     password: '',
   };
 
+  showPassword = false;
+  errorMessage = '';
+
   constructor(
-    private router: Router,
     private authService: AuthService,
+    private router: Router,
   ) {}
 
-  togglePassword(): void {
-    this.showPassword.set(!this.showPassword());
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
-  onRegister(): void {
-    if (!this.registerData.username || !this.registerData.email || !this.registerData.password) {
-      alert('Por favor, preenche todos os campos.');
+  handleRegister() {
+    this.errorMessage = '';
+
+    if (!this.credentials.name || !this.credentials.email || !this.credentials.password) {
+      this.errorMessage = 'Por favor, preenche todos os campos.';
       return;
     }
 
-    const result = this.authService.register(this.registerData);
-    if (!result.success) {
-      alert(result.message);
-      return;
-    }
-
-    alert(result.message);
-    this.router.navigate(['/login']);
+    this.authService.register(this.credentials).subscribe({
+      next: () => {
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Erro no registo', err);
+        this.errorMessage = 'Não foi possível efetuar o registo. Tenta novamente.';
+      },
+    });
   }
 }

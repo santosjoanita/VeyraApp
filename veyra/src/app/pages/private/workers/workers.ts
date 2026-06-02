@@ -1,28 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
+import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
-
 import { DataHandlerService } from '../../../core/services/data-handler.service';
-import {Worker} from '../../../core/class/worker.model';
-
+import { WorkersService } from '../../../core/services/workers/workers.service';
+import { Worker } from '../../../core/class/worker.model';
 
 @Component({
   selector: 'app-workers',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, Sidebar, Header, AddWorkerModal, ConfirmDelete],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    Sidebar,
+    Header,
+    AddWorkerModal,
+    ConfirmDelete,
+  ],
   templateUrl: './workers.html',
-  styleUrl: './workers.css'
+  styleUrl: './workers.css',
 })
-export class Workers {
-  
-  constructor(private dataHandler: DataHandlerService) {}
-
+export class Workers implements OnInit {
   showAddWorker = false;
   showDeleteModal = false;
   itemToDeleteId: string | number | null = null;
@@ -32,15 +36,32 @@ export class Workers {
   sortOrder: 'asc' | 'desc' = 'asc';
   selectedRole: string = 'all';
 
-  workersList: Worker[] = [
-    { id: 1, name: 'Dexter Morgan', email: 'dexter@veyra.com', role: 'admin', status: 'active', lastAccess: '2 hours ago' },
-    { id: 2, name: 'Debra Morgan', email: 'debra@veyra.com', role: 'worker', status: 'inactive', lastAccess: '3 days ago' },
-    { id: 3, name: 'Angel Batista', email: 'angel@veyra.com', role: 'worker', status: 'active', lastAccess: 'Yesterday' }
-  ];
+  workersList: Worker[] = [];
+
+  constructor(
+    private dataHandler: DataHandlerService,
+    private workersService: WorkersService,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadWorkers();
+  }
+
+  loadWorkers() {
+    this.workersService.getWorkers().subscribe({
+      next: (data) => (this.workersList = data),
+      error: (err) => console.error('Erro ao carregar workers', err),
+    });
+  }
 
   get displayedWorkers(): Worker[] {
-    let result = this.dataHandler.filterArray(this.workersList, this.searchQuery, ['name', 'email']);
-    result = this.dataHandler.filterArrayByValue(result, 'role', this.selectedRole);
+    let result = this.dataHandler.filterArray(this.workersList, this.searchQuery, [
+      'name',
+      'email',
+    ]);
+    if (this.selectedRole !== 'all') {
+      result = this.dataHandler.filterArrayByValue(result, 'role', this.selectedRole);
+    }
     return this.dataHandler.sortArray(result, 'name', this.sortOrder);
   }
 
@@ -49,44 +70,31 @@ export class Workers {
   }
 
   handleSaveWorker(newWorkerData: any) {
-    this.workersList.push({
-      id: 'w_new_' + Math.random().toString(36).substr(2, 9),
-      name: newWorkerData.name,
-      email: newWorkerData.email,
-      role: newWorkerData.role,
-      status: 'active',
-      lastAccess: 'Just now'
+    this.workersService.createWorker(newWorkerData).subscribe({
+      next: (createdWorker) => {
+        this.workersList.push(createdWorker);
+        this.showAddWorker = false;
+      },
+      error: (err) => console.error('Erro ao criar worker', err),
     });
-    this.showAddWorker = false;
   }
 
-  openDeleteModal(worker: any) {
+  openDeleteModal(worker: Worker) {
     this.itemToDeleteId = worker.id;
-    this.itemToDeleteName = worker.name;
+    this.itemToDeleteName = worker.name || worker.email;
     this.showDeleteModal = true;
   }
 
   handleConfirmDelete() {
     if (this.itemToDeleteId) {
-      this.workersList = this.workersList.filter(w => w.id !== this.itemToDeleteId);
+      this.workersService.deleteWorker(this.itemToDeleteId).subscribe({
+        next: () => {
+          this.workersList = this.workersList.filter((w) => w.id !== this.itemToDeleteId);
+          this.showDeleteModal = false;
+          this.itemToDeleteId = null;
+        },
+        error: (err) => console.error('Erro ao apagar worker', err),
+      });
     }
-    this.showDeleteModal = false;
-    this.itemToDeleteId = null;
-  }
-
-  changeProfile(id: string | number, event: any): void {
-    const newRole = event.target.value;
-    const worker = this.workersList.find(w => w.id === id);
-    if (worker) {
-      worker.role = newRole;
-    }
-  }
-
-  viewWorker(id: string | number): void {
-    console.log('View worker ID:', id);
-  }
-
-  editWorker(id: string | number): void {
-    console.log('Edit worker ID:', id);
   }
 }
