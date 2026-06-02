@@ -12,8 +12,8 @@ export const authGuard: CanActivateFn = (route, state) => {
     return false;
   }
 
+  // Bloqueia quem não tem a permissão certa para a página
   const expectedRole = route.data?.['expectedRole'];
-
   if (expectedRole && expectedRole !== userRole) {
     router.navigate(['/not-permitted']);
     return false;
