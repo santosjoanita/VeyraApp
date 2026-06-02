@@ -10,13 +10,13 @@
       <div class="toolbar">
         <div class="search-wrapper">
           <span class="material-symbols-outlined search-icon">search</span>
-          <input type="text" placeholder="Search workers..." class="search-input">
+          <input type="text" [(ngModel)]="searchQuery" placeholder="Search workers..." class="search-input">
         </div>
 
         <div class="toolbar-actions">
           <div class="filter-wrapper">
             <span class="material-symbols-outlined filter-icon">filter_list</span>
-            <select class="filter-dropdown">
+            <select [(ngModel)]="selectedRole" class="filter-dropdown">
               <option value="all">All</option>
               <option value="admin">Admin</option>
               <option value="worker">Worker</option>
@@ -41,7 +41,14 @@
         <table class="workers-table">
           <thead>
             <tr>
-              <th>Username</th>
+              <th>
+                <div class="th-sortable" (click)="toggleSort()" style="cursor: pointer;">
+                  <span>Username</span>
+                  <span class="material-symbols-outlined sort-icon" style="font-size: 16px; vertical-align: middle;">
+                    {{ sortOrder === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
+                  </span>
+                </div>
+              </th>
               <th>Email</th>
               <th>Profile</th>
               <th>Status</th>
@@ -50,7 +57,7 @@
             </tr>
           </thead>
         <tbody>
-            @for (worker of workersList; track worker.id) {
+            @for (worker of displayedWorkers; track worker.id) {
               <tr routerLink="/details/worker/{{ worker.id }}" class="clickable-row">
                 <td class="fw-bold">{{ worker.name }}</td>
                 <td class="text-muted">{{ worker.email }}</td>
@@ -87,7 +94,7 @@
             } @empty {
               <tr>
                 <td colspan="6" class="text-center text-muted" style="padding: 40px 0;">
-                  No workers found.
+                  No workers found matching your criteria.
                 </td>
               </tr>
             }
@@ -98,11 +105,11 @@
     </div>
   </div>
 </div>
+
 @if (showDeleteModal) {
-                    <app-confirm-delete 
-                      [itemName]="workerToDeleteName"
-                      (cancel)="showDeleteModal = false" 
-                      (confirm)="handleConfirmDelete()"
-                      (close)="showDeleteModal = false">
-                    </app-confirm-delete>
-                  }
+  <app-confirm-delete 
+    [itemName]="itemToDeleteName"
+    (confirm)="handleConfirmDelete()"
+    (close)="showDeleteModal = false">
+  </app-confirm-delete>
+}

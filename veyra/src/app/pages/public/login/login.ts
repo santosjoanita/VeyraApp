@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/services/user/user-auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,10 +15,13 @@ export class Login {
 
   loginData = {
     usernameOrEmail: '',
-    password: ''
+    password: '',
   };
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+  ) {}
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
@@ -29,17 +33,11 @@ export class Login {
       return;
     }
 
-    const usersStr = localStorage.getItem('veyra_users');
-    const users = usersStr ? JSON.parse(usersStr) : [];
+    const success = this.authService.login(this.loginData.usernameOrEmail, this.loginData.password);
 
-    const validUser = users.find((u: any) => 
-      (u.email === this.loginData.usernameOrEmail || u.username === this.loginData.usernameOrEmail) &&
-      u.password === this.loginData.password
-    );
-
-    if (validUser) {
-      localStorage.setItem('veyra_current_user', JSON.stringify(validUser));
-      this.router.navigate(['/dashboard']);
+    if (success) {
+      const redirectUrl = this.authService.popRedirectUrl();
+      this.router.navigateByUrl(redirectUrl ?? '/dashboard');
     } else {
       alert('Credenciais incorretas. Tenta de novo ou regista uma conta.');
     }

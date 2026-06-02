@@ -32,6 +32,27 @@
   margin-bottom: 24px;
 }
 
+.th-sortable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none; 
+}
+
+.th-sortable:hover {
+  color: var(--brand-primary, #004395);
+}
+
+.sort-icon {
+  font-size: 16px;
+  color: #94A3B8;
+  transition: transform 0.2s ease;
+}
+
+.th-sortable:hover .sort-icon {
+  color: var(--brand-primary, #004395);
+}
 .search-wrapper {
   position: relative;
   width: 300px;

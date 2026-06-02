@@ -1,38 +1,35 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router'; 
+import { FormsModule } from '@angular/forms'; 
 
 import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
 import { Header } from '../../../core/components/header/header';
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 
-export interface Project {
-  id: string;
-  name: string;
-  clientId: string; 
-  clientName: string; 
-  status: 'active' | 'completed' | 'paused';
-  startDate: string;
-  endDate: string; 
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-  assignedTeam: { userId: string, name: string }[]; 
-}
+import { DataHandlerService } from '../../../core/services/data-handler.service'; 
+import {Project} from '../../../core/class/project.model';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, RouterModule, Sidebar, Header, AddProjectModal, ConfirmDelete],
+  imports: [CommonModule, RouterModule, FormsModule, Sidebar, Header, AddProjectModal, ConfirmDelete],
   templateUrl: './projects.html',
   styleUrl: './projects.css'
 })
 export class Projects {
+  
+  constructor(private dataHandler: DataHandlerService) {}
+
   showAddProject = false;
   showDeleteModal = false;
   projectToDeleteId: string | null = null;
   projectToDeleteName: string = '';
+
+  searchQuery: string = '';
+  sortOrder: 'asc' | 'desc' = 'asc';
+  selectedStatus: string = 'all';
 
   clientsList = [
     { id: 'c1', name: 'Acme Corp' },
@@ -87,9 +84,18 @@ export class Projects {
       ]
     }
   ];
-handleSaveProject(newProjectData: any) {
-    console.log('Fazer POST /projects com:', newProjectData);
-    
+
+  get displayedProjects(): Project[] {
+    let result = this.dataHandler.filterArray(this.projectsList, this.searchQuery, ['name', 'clientName']);
+    result = this.dataHandler.filterArrayByValue(result, 'status', this.selectedStatus);
+    return this.dataHandler.sortArray(result, 'name', this.sortOrder);
+  }
+  
+  toggleSort(): void {
+    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+  }
+
+  handleSaveProject(newProjectData: any) {
     const foundClientName = this.clientsList.find(c => c.id === newProjectData.clientId)?.name || 'Unknown Client';
 
     this.projectsList.push({
@@ -109,26 +115,20 @@ handleSaveProject(newProjectData: any) {
     this.showAddProject = false;
   }
 
-  viewProject(id: string): void {
-    console.log('View project ID:', id);
-  }
+  viewProject(id: string): void { console.log('View project ID:', id); }
+  editProject(id: string): void { console.log('Edit project ID:', id); }
 
-  editProject(id: string): void {
-    console.log('Edit project ID:', id);
-  }
-
-    openDeleteModal(project: any) {
+  openDeleteModal(project: any) {
     this.projectToDeleteId = project.id;
     this.projectToDeleteName = project.name; 
     this.showDeleteModal = true;
   }
 
-    handleConfirmDelete() {
+  handleConfirmDelete() {
     if (this.projectToDeleteId) {
       this.projectsList = this.projectsList.filter(p => p.id !== this.projectToDeleteId);
     }
     this.showDeleteModal = false; 
     this.projectToDeleteId = null;
   }
-  
 }
