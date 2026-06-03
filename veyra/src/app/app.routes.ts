@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { Details } from './pages/private/details/details';
-import { ProjectDetails } from './pages/private/project-details/project-details';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,44 +12,43 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('./pages/public/register/register').then((m) => m.Register),
   },
-
-  {
-    path: 'dashboard',
-    loadComponent: () => import('./pages/private/dashboard/dashboard').then((m) => m.Dashboard),
-  },
-  {
-    path: 'profile',
-    loadComponent: () => import('./pages/private/profile/profile').then((m) => m.Profile),
-  },
-  {
-    path: 'workerslist',
-    loadComponent: () => import('./pages/private/workers/workers').then((m) => m.Workers),
-  },
-  {
-    path: 'clientslist',
-    loadComponent: () => import('./pages/private/clients/clients').then((m) => m.Clients),
-  },
-  {
-    path: 'details',
-    loadComponent: () => import('./pages/private/details/details').then((m) => m.Details),
-  },
-  {
-    path: 'projectslist',
-    loadComponent: () => import('./pages/private/projects/projects').then((m) => m.Projects),
-  },
-
-  {
-    path: 'details/project/:id',
-    component: ProjectDetails,
-  },
-
-  {
-    path: 'details/:type/:id',
-    component: Details,
-  },
   {
     path: 'not-permitted',
     loadComponent: () =>
       import('./pages/private/not-permitted/not-permitted').then((m) => m.NotPermitted),
   },
+
+  {
+    path: 'dashboard',
+    loadChildren: () =>
+      import('./pages/private/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'clients',
+    loadChildren: () =>
+      import('./pages/private/clients/clients.routes').then((m) => m.CLIENTS_ROUTES),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'projects',
+    loadChildren: () =>
+      import('./pages/private/projects/projects.routes').then((m) => m.PROJECTS_ROUTES),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'workers',
+    loadChildren: () =>
+      import('./pages/private/workers/workers.routes').then((m) => m.WORKERS_ROUTES),
+    canActivate: [authGuard],
+    data: { expectedRole: 'admin' },
+  },
+  {
+    path: 'profile',
+    loadChildren: () =>
+      import('./pages/private/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
+    canActivate: [authGuard],
+  },
+
+  { path: '**', redirectTo: 'login' },
 ];
