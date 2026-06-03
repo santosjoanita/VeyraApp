@@ -11,6 +11,7 @@ import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-w
 import { AddClientModal } from '../../../core/components/modals/add-client/add-client';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 import { DashboardMetrics } from '../../../core/class/dashboard.model';
+import { AuthService } from '../../../core/services/user/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -103,8 +104,21 @@ export class Dashboard implements OnInit {
     return this._totalClients();
   }
 
+  private authService = inject(AuthService);
+  currentUser = { name: '' };
   ngOnInit(): void {
     this.loadDashboardData();
+    this.authService.getMe().subscribe({
+      next: (userData) => {
+        if (userData) {
+          this.currentUser = userData;
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao ir buscar o nome para a dashboard', err);
+        this.currentUser = { name: 'User' };
+      },
+    });
   }
 
   loadDashboardData() {

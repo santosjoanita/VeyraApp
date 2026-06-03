@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
@@ -7,9 +7,8 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root',
 })
 export class AuthService {
+  private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/auth`;
-
-  constructor(private http: HttpClient) {}
 
   register(data: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/register`, data);
@@ -20,6 +19,9 @@ export class AuthService {
   }
 
   getMe(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/me`);
+    const token = localStorage.getItem('accessToken');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<any>(`${this.apiUrl}/me`, { headers });
   }
 }

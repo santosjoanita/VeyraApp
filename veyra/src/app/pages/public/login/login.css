@@ -159,20 +159,3 @@
 .btn-login:hover {
   background-color: #1D4ED8;
 }
-
-.register-text {
-  text-align: center;
-  margin-top: 32px;
-  font-size: 14px;
-  color: #001A42; 
-}
-
-.register-text a {
-  color: #004395; 
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.register-text a:hover {
-  text-decoration: underline;
-}
