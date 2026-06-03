@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { DashboardService } from '../../../core/services/dashboard/dashboard.service';
-import { DashboardMetrics } from '../../../core/class/dashboard.model';
+import { AuthService } from '../../../core/services/user/auth.service';
 
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
@@ -26,7 +26,11 @@ import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/co
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  metrics: DashboardMetrics | null = null;
+  private dashboardService = inject(DashboardService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
+  metrics: any = null;
   isLoading = true;
 
   showAddProject = false;
@@ -41,29 +45,51 @@ export class Dashboard implements OnInit {
   projectsList: any[] = [];
   activityList: any[] = [];
   availableClients: any[] = [];
-
-  constructor(private dashboardService: DashboardService) {}
+  currentUser = { name: localStorage.getItem('userName') || 'User' };
 
   ngOnInit(): void {
-    this.dashboardService.getMetrics().subscribe({
-      next: (data) => {
-        this.metrics = data;
-        this.isLoading = false;
-
-        if (data) {
-          const rawData = data as any;
-
-          this.totalProjects = rawData.totalProjects || 0;
-          this.totalWorkers = rawData.totalWorkers || 0;
-          this.totalClients = rawData.totalClients || 0;
-          this.projectsList = rawData.recentProjects || [];
-          this.activityList = rawData.recentActivities || [];
-          this.availableClients = rawData.clientsList || [];
+    this.authService.getMe().subscribe({
+      next: (userData) => {
+        if (userData) {
+          const actualUser = userData.user || userData;
+          this.currentUser = actualUser;
+          this.cdr.detectChanges();
         }
       },
       error: (err) => {
-        console.error('Erro ao carregar dashboard', err);
+        console.error('Erro ao ir buscar o nome para a dashboard', err);
+        this.cdr.detectChanges();
+      },
+    });
+
+    this.dashboardService.getMetrics().subscribe({
+      next: (data) => {
         this.isLoading = false;
+        console.log('dashboard responses', data);
+
+        if (data) {
+          this.metrics = data;
+          const rawData = data as any;
+
+          this.totalProjects = rawData.projects?.total || 0;
+          this.totalWorkers = rawData.workers?.total || 0;
+          this.totalClients = rawData.clients?.total || 0;
+
+          this.metrics.totalProjects = this.totalProjects;
+          this.metrics.totalWorkers = this.totalWorkers;
+          this.metrics.totalClients = this.totalClients;
+
+          this.projectsList = rawData.projectsList || rawData.recentProjects || [];
+          this.activityList = rawData.activityList || rawData.recentActivities || [];
+          this.availableClients = rawData.clientsList || [];
+        }
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error while loading dashboard', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
       },
     });
   }

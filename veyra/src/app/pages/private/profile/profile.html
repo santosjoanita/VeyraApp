@@ -2,7 +2,6 @@
   <app-sidebar></app-sidebar>
 
   <div class="main-content">
-    
     <app-header></app-header>
 
     <div class="page-body">
@@ -41,7 +40,7 @@
             <div class="form-group">
               <label>Password</label>
               <div class="password-wrapper">
-                <input [type]="showPassword ? 'text' : 'password'" [value]="currentUser.password" class="profile-input" [disabled]="!isEditing">
+                <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="currentUser.password" name="password" class="profile-input" [disabled]="!isEditing">
                 <span class="material-symbols-outlined eye-icon" (click)="togglePassword()">
                   {{ showPassword ? 'visibility_off' : 'visibility' }}
                 </span>
@@ -53,7 +52,7 @@
 
             <div class="form-group">
               <label>Email Address</label>
-              <input type="email" [value]="currentUser.email" class="profile-input" [disabled]="!isEditing">
+              <input type="email" [(ngModel)]="currentUser.email" name="email" class="profile-input" [disabled]="!isEditing">
             </div>
 
             <div class="form-group">
@@ -79,18 +78,18 @@
           
           <span class="stat-label">Enable Activity Log</span>
           <label class="switch">
-            <input type="checkbox" [checked]="settings.activityLog">
+            <input type="checkbox" [(ngModel)]="settings.activityLog" name="activityLog">
             <span class="slider round"></span>
           </label>
           
           <span class="stat-label">Enable 2FA for my account.</span>
           <label class="switch">
-            <input type="checkbox" [checked]="settings.twoFactorAuth">
+            <input type="checkbox" [(ngModel)]="settings.twoFactorAuth" name="twoFactorAuth">
             <span class="slider round"></span>
           </label>
           
           <span class="stat-label">Choose your Theme</span>
-          <select class="dropdown" [value]="settings.theme">
+          <select class="dropdown" [(ngModel)]="settings.theme" name="theme">
             <option value="dark">Dark</option>
             <option value="light">Light</option>
           </select>

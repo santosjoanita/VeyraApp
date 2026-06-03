@@ -14,7 +14,10 @@ import { RegisterUser } from '../modals/register-user/register-user';
 export class Header implements OnInit {
   private authService = inject(AuthService);
 
-  currentUser = { name: 'Loading...', role: '' };
+  currentUser = {
+    name: localStorage.getItem('userName') || 'Admin',
+    role: localStorage.getItem('userRole') || 'admin',
+  };
 
   isModalOpen = false;
 
@@ -22,18 +25,18 @@ export class Header implements OnInit {
     this.authService.getMe().subscribe({
       next: (userData) => {
         if (userData) {
-          this.currentUser = userData;
+          const actualUser = userData.user || userData;
+          this.currentUser.name = actualUser.name || this.currentUser.name;
+          localStorage.setItem('userName', this.currentUser.name);
         }
       },
-      error: (err) => {
-        console.error('Error fetching user profile for header', err);
-        this.currentUser = { name: 'User', role: 'worker' };
-      },
+      error: (err) => console.error('Erro silencioso no header', err),
     });
   }
 
   logout(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userName');
   }
 }

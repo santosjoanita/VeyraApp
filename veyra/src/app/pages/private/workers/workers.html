@@ -58,7 +58,7 @@
           </thead>
         <tbody>
             @for (worker of displayedWorkers; track worker.id) {
-              <tr routerLink="/workers/details/{{ worker.id }}" class="clickable-row">
+              <tr [routerLink]="['/workers/details', worker.id]" class="clickable-row">
                 <td class="fw-bold">{{ worker.name }}</td>
                 <td class="text-muted">{{ worker.email }}</td>
                 <td>

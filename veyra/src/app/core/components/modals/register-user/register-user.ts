@@ -1,8 +1,7 @@
-import { Component, inject, signal, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Output, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/user/auth.service';
-import { WorkersService } from '../../../../core/services/workers/workers.service';
 
 @Component({
   selector: 'app-register-user',
@@ -13,45 +12,56 @@ import { WorkersService } from '../../../../core/services/workers/workers.servic
 })
 export class RegisterUser {
   private authService = inject(AuthService);
-  private workersService = inject(WorkersService);
-
-  @Output() close = new EventEmitter<void>();
-  errorMessage = signal('');
+  private cdr = inject(ChangeDetectorRef);
 
   registerData = {
-    name: { first: '', last: '' },
+    name: '',
     email: '',
     password: '',
     role: 'worker',
   };
 
-  onRegister() {
-    this.errorMessage.set('');
+  isLoading = false;
 
-    if (
-      !this.registerData.name.first ||
-      !this.registerData.name.last ||
-      !this.registerData.email ||
-      !this.registerData.password
-    ) {
-      this.errorMessage.set('Por favor, preencha todos os campos.');
+  @Output() close = new EventEmitter<void>();
+  @Output() saved = new EventEmitter<any>();
+
+  closeModal(): void {
+    this.close.emit();
+    this.resetForm();
+    this.cdr.detectChanges();
+  }
+
+  handleRegister(): void {
+    if (!this.registerData.name || !this.registerData.email || !this.registerData.password) {
+      alert('Please fill in all mandatory fields.');
       return;
     }
 
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
     this.authService.register(this.registerData).subscribe({
-      next: () => {
-        alert('Utilizador criado com sucesso!');
-        this.workersService.triggerRefresh();
-        this.close.emit();
+      next: (response) => {
+        this.isLoading = false;
+        this.saved.emit(response);
+        this.closeModal();
       },
       error: (err) => {
-        console.error('Erro ao registar utilizador', err);
-        this.errorMessage.set('Erro ao criar o utilizador. Verifique os dados.');
+        this.isLoading = false;
+        console.error('Error registering new user:', err);
+        alert('Failed to register user. Please try again.');
+        this.cdr.detectChanges();
       },
     });
   }
 
-  closeModal() {
-    this.close.emit();
+  private resetForm(): void {
+    this.registerData = {
+      name: '',
+      email: '',
+      password: '',
+      role: 'worker',
+    };
   }
 }

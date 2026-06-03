@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -14,6 +14,9 @@ import { AuthService } from '../../../core/services/user/auth.service';
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
   currentUser = {
     firstName: '',
     lastName: '',
@@ -31,13 +34,7 @@ export class Profile implements OnInit {
   isEditing = false;
   showPassword = false;
 
-  private backupUser: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-    password: string;
-  } = {
+  private backupUser = {
     firstName: '',
     lastName: '',
     email: '',
@@ -45,47 +42,57 @@ export class Profile implements OnInit {
     password: '',
   };
 
-  constructor(private authService: AuthService) {}
-
   ngOnInit(): void {
     this.authService.getMe().subscribe({
       next: (data) => {
         if (data) {
+          const actualUser = data.user || data;
+          const nameParts = (actualUser.name || '').split(' ');
+
           this.currentUser = {
-            firstName: data.name?.first || '',
-            lastName: data.name?.last || '',
-            email: data.email || '',
-            role: data.role || 'worker',
+            firstName: nameParts[0] || '',
+            lastName: nameParts.slice(1).join(' ') || '',
+            email: actualUser.email || '',
+            role: actualUser.role || 'worker',
             password: '••••••••',
           };
 
           this.backupUser = { ...this.currentUser };
+
+          this.cdr.detectChanges();
         }
       },
-      error: (err) => console.error('Erro ao carregar perfil', err),
+      error: (err) => {
+        console.error('Error while loading profile', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
   startEditing(): void {
     this.isEditing = true;
+    this.cdr.detectChanges();
   }
 
   cancelEditing(): void {
     this.isEditing = false;
     this.currentUser = { ...this.backupUser };
+    this.cdr.detectChanges();
   }
 
   saveChanges(): void {
-    console.log('Dados a enviar para a API:', this.currentUser);
+    console.log('Data to send to API:', this.currentUser);
     this.isEditing = false;
     this.backupUser = { ...this.currentUser };
+    this.cdr.detectChanges();
   }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
+    this.cdr.detectChanges();
   }
 
   changePassword(): void {
-    alert('Funcionalidade de alteração de palavra-passe ativa.');
+    alert('Active this to implement password change functionality!');
   }
 }

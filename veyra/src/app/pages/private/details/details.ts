@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -7,6 +7,7 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { ClientsService } from '../../../core/services/clients/clients.service';
 import { ProjectsService } from '../../../core/services/projects/projects.service';
+import { WorkersService } from '../../../core/services/workers/workers.service';
 
 @Component({
   selector: 'app-details',
@@ -19,6 +20,8 @@ export class Details implements OnInit {
   private route = inject(ActivatedRoute);
   private clientsService = inject(ClientsService);
   private projectsService = inject(ProjectsService);
+  private workersService = inject(WorkersService);
+  private cdr = inject(ChangeDetectorRef);
 
   data: any = {};
   projects: any[] = [];
@@ -29,8 +32,20 @@ export class Details implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    const currentUrl = this.route.snapshot.pathFromRoot.map((r) => r.routeConfig?.path).join('/');
+
+    if (currentUrl.includes('workers')) {
+      this.entityType = 'worker';
+    } else {
+      this.entityType = 'client';
+    }
+
     if (id) {
-      this.loadClientData(id);
+      if (this.entityType === 'worker') {
+        this.loadWorkerData(id);
+      } else {
+        this.loadClientData(id);
+      }
     }
   }
 
@@ -39,23 +54,49 @@ export class Details implements OnInit {
       next: (clientData) => {
         this.data = clientData;
         this.backupData = { ...clientData };
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('Erro ao carregar cliente', err),
+      error: (err) => {
+        console.error('Error loading client data:', err);
+        this.cdr.detectChanges();
+      },
     });
 
     this.projectsService.getProjects(id).subscribe({
-      next: (projectsList) => (this.projects = projectsList),
-      error: (err) => console.error('Erro ao carregar projetos do cliente', err),
+      next: (projectsList) => {
+        this.projects = projectsList;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading client projects:', err);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  loadWorkerData(id: string) {
+    this.workersService.getWorkerById(id).subscribe({
+      next: (workerData) => {
+        this.data = workerData;
+        this.backupData = { ...workerData };
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading worker data:', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
   startEditing() {
     this.isEditing = true;
+    this.cdr.detectChanges();
   }
 
   cancelEditing() {
     this.isEditing = false;
     this.data = { ...this.backupData };
+    this.cdr.detectChanges();
   }
 
   saveChanges() {
@@ -65,8 +106,12 @@ export class Details implements OnInit {
           this.data = updatedClient;
           this.backupData = { ...updatedClient };
           this.isEditing = false;
+          this.cdr.detectChanges();
         },
-        error: (err) => console.error('Erro ao atualizar cliente', err),
+        error: (err) => {
+          console.error('Error updating client data:', err);
+          this.cdr.detectChanges();
+        },
       });
     }
   }
