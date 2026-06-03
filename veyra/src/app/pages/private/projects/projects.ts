@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { Sidebar } from '../../../core/components/sidebar/sidebar';
@@ -8,9 +8,8 @@ import { Header } from '../../../core/components/header/header';
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 import { DataHandlerService } from '../../../core/services/data-handler.service';
-
 import { ProjectsService } from '../../../core/services/projects/projects.service';
-import { Project } from '../../../core/class/project.model';
+import { ClientsService } from '../../../core/services/clients/clients.service';
 
 @Component({
   selector: 'app-projects',
@@ -28,68 +27,137 @@ import { Project } from '../../../core/class/project.model';
   styleUrl: './projects.css',
 })
 export class Projects implements OnInit {
-  showAddProject = false;
-  showDeleteModal = false;
-  itemToDeleteId: string | null = null;
-  itemToDeleteName: string = '';
+  private dataHandler = inject(DataHandlerService);
+  private projectsService = inject(ProjectsService);
+  private clientsService = inject(ClientsService);
+  private router = inject(Router);
 
-  searchQuery: string = '';
-  sortOrder: 'asc' | 'desc' = 'asc';
-  selectedStatus: string = 'all';
+  private _showAddProject = signal(false);
+  private _showDeleteModal = signal(false);
+  private _projectToDeleteName = signal('');
+  private _projectToDeleteId = signal<string | null>(null);
+  private _sortOrder = signal<'asc' | 'desc'>('asc');
+  private _projectsList = signal<any[]>([]);
+  private _clientsList = signal<any[]>([]);
+  private _searchQuery = signal('');
+  private _selectedStatus = signal('all');
 
-  projectsList: Project[] = [];
-
-  constructor(
-    private dataHandler: DataHandlerService,
-    private projectsService: ProjectsService,
-  ) {}
-
-  ngOnInit(): void {
-    this.loadProjects();
+  get showAddProject() {
+    return this._showAddProject();
+  }
+  set showAddProject(value: boolean) {
+    this._showAddProject.set(value);
   }
 
-  loadProjects() {
-    this.projectsService.getProjects().subscribe({
-      next: (data) => (this.projectsList = data),
-      error: (err) => console.error('Erro ao carregar projetos', err),
-    });
+  get showDeleteModal() {
+    return this._showDeleteModal();
+  }
+  set showDeleteModal(value: boolean) {
+    this._showDeleteModal.set(value);
   }
 
-  get displayedProjects(): Project[] {
-    let result = this.dataHandler.filterArray(this.projectsList, this.searchQuery, ['name']);
+  get projectToDeleteName() {
+    return this._projectToDeleteName();
+  }
+  set projectToDeleteName(value: string) {
+    this._projectToDeleteName.set(value);
+  }
+
+  get sortOrder() {
+    return this._sortOrder();
+  }
+  set sortOrder(value: 'asc' | 'desc') {
+    this._sortOrder.set(value);
+  }
+
+  get projectsList() {
+    return this._projectsList();
+  }
+  get clientsList() {
+    return this._clientsList();
+  }
+
+  get searchQuery() {
+    return this._searchQuery();
+  }
+  set searchQuery(value: string) {
+    this._searchQuery.set(value);
+  }
+
+  get selectedStatus() {
+    return this._selectedStatus();
+  }
+  set selectedStatus(value: string) {
+    this._selectedStatus.set(value);
+  }
+
+  private _displayedProjects = computed(() => {
+    let result = this.dataHandler.filterArray(this._projectsList(), this.searchQuery, ['name']);
     if (this.selectedStatus !== 'all') {
       result = this.dataHandler.filterArrayByValue(result, 'status', this.selectedStatus);
     }
     return this.dataHandler.sortArray(result, 'name', this.sortOrder);
+  });
+
+  get displayedProjects() {
+    return this._displayedProjects();
+  }
+
+  ngOnInit(): void {
+    this.loadProjects();
+    this.loadClients();
+  }
+
+  loadProjects() {
+    this.projectsService.getProjects().subscribe({
+      next: (data) => this._projectsList.set(data),
+      error: (err) => console.error('Erro ao carregar projetos', err),
+    });
+  }
+
+  loadClients() {
+    this.clientsService.getClients().subscribe({
+      next: (data) => this._clientsList.set(data),
+      error: (err) => console.error('Erro ao carregar lista de clientes para o modal', err),
+    });
   }
 
   toggleSort(): void {
-    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+  }
+
+  viewProject(id: string): void {
+    this.router.navigate(['/projects/details', id]);
+  }
+
+  editProject(id: string): void {
+    this.router.navigate(['/projects/details', id]);
   }
 
   handleSaveProject(newProjectData: any) {
     this.projectsService.createProject(newProjectData).subscribe({
       next: (createdProject) => {
-        this.projectsList.push(createdProject);
-        this.showAddProject = false;
+        this._projectsList.update((list) => [...list, createdProject]);
+        this._showAddProject.set(false);
       },
       error: (err) => console.error('Erro ao criar projeto', err),
     });
   }
 
-  openDeleteModal(project: Project) {
-    this.itemToDeleteId = project.id;
-    this.itemToDeleteName = project.name;
-    this.showDeleteModal = true;
+  openDeleteModal(project: any) {
+    this._projectToDeleteId.set(project.id);
+    this._projectToDeleteName.set(project.name);
+    this._showDeleteModal.set(true);
   }
 
   handleConfirmDelete() {
-    if (this.itemToDeleteId) {
-      this.projectsService.deleteProject(this.itemToDeleteId).subscribe({
+    const id = this._projectToDeleteId();
+    if (id) {
+      this.projectsService.deleteProject(id).subscribe({
         next: () => {
-          this.projectsList = this.projectsList.filter((p) => p.id !== this.itemToDeleteId);
-          this.showDeleteModal = false;
-          this.itemToDeleteId = null;
+          this._projectsList.update((list) => list.filter((p) => p.id !== id));
+          this._showDeleteModal.set(false);
+          this._projectToDeleteId.set(null);
         },
         error: (err) => console.error('Erro ao apagar projeto', err),
       });
