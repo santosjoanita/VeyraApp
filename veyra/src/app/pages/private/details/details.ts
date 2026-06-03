@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -7,8 +7,6 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { ClientsService } from '../../../core/services/clients/clients.service';
 import { ProjectsService } from '../../../core/services/projects/projects.service';
-import { Client } from '../../../core/class/client.model';
-import { Project } from '../../../core/class/project.model';
 
 @Component({
   selector: 'app-details',
@@ -18,17 +16,16 @@ import { Project } from '../../../core/class/project.model';
   styleUrl: './details.css',
 })
 export class Details implements OnInit {
-  client: Client | null = null;
-  clientProjects: Project[] = [];
+  private route = inject(ActivatedRoute);
+  private clientsService = inject(ClientsService);
+  private projectsService = inject(ProjectsService);
 
+  data: any = {};
+  projects: any[] = [];
+  entityType = 'client';
   isEditing = false;
-  editData: Partial<Client> = {};
 
-  constructor(
-    private route: ActivatedRoute,
-    private clientsService: ClientsService,
-    private projectsService: ProjectsService,
-  ) {}
+  private backupData = {};
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -39,31 +36,34 @@ export class Details implements OnInit {
 
   loadClientData(id: string) {
     this.clientsService.getClientById(id).subscribe({
-      next: (data) => {
-        this.client = data;
-        this.editData = { ...data };
+      next: (clientData) => {
+        this.data = clientData;
+        this.backupData = { ...clientData };
       },
       error: (err) => console.error('Erro ao carregar cliente', err),
     });
 
     this.projectsService.getProjects(id).subscribe({
-      next: (projects) => (this.clientProjects = projects),
+      next: (projectsList) => (this.projects = projectsList),
       error: (err) => console.error('Erro ao carregar projetos do cliente', err),
     });
   }
 
-  toggleEdit() {
-    this.isEditing = !this.isEditing;
-    if (!this.isEditing && this.client) {
-      this.editData = { ...this.client };
-    }
+  startEditing() {
+    this.isEditing = true;
   }
 
-  saveClient() {
-    if (this.client) {
-      this.clientsService.updateClient(this.client.id, this.editData).subscribe({
+  cancelEditing() {
+    this.isEditing = false;
+    this.data = { ...this.backupData };
+  }
+
+  saveChanges() {
+    if (this.data && this.data.id) {
+      this.clientsService.updateClient(this.data.id, this.data).subscribe({
         next: (updatedClient) => {
-          this.client = updatedClient;
+          this.data = updatedClient;
+          this.backupData = { ...updatedClient };
           this.isEditing = false;
         },
         error: (err) => console.error('Erro ao atualizar cliente', err),

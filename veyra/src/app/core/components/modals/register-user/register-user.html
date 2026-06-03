@@ -1,0 +1,51 @@
+<div class="modal-overlay">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3>Criar Novo Utilizador</h3>
+      <button type="button" class="close-btn" (click)="closeModal()">✕</button>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-message">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <form (ngSubmit)="onRegister()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" [(ngModel)]="registerData.name.first" name="firstName" required>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" [(ngModel)]="registerData.name.last" name="lastName" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" [(ngModel)]="registerData.email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" [(ngModel)]="registerData.password" name="password" required>
+      </div>
+
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select id="role" [(ngModel)]="registerData.role" name="role" required>
+          <option value="worker">Worker </option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Create User</button>
+      </div>
+    </form>
+  </div>
+</div>

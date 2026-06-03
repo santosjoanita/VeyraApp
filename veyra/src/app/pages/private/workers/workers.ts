@@ -103,6 +103,9 @@ export class Workers implements OnInit {
 
   ngOnInit(): void {
     this.loadWorkers();
+    this.workersService.refresh.subscribe(() => {
+      this.loadWorkers();
+    });
   }
 
   loadWorkers() {
@@ -116,15 +119,15 @@ export class Workers implements OnInit {
     this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }
 
-  viewWorker(id: string): void {
+  viewWorker(id: string | number): void {
     this.router.navigate(['/workers/details', id]);
   }
 
-  editWorker(id: string): void {
+  editWorker(id: string | number): void {
     this.router.navigate(['/workers/details', id]);
   }
 
-  changeProfile(id: string, event: Event) {
+  changeProfile(id: string | number, event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const newRole = selectElement.value;
 

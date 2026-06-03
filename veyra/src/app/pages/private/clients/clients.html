@@ -14,16 +14,13 @@
         </div>
 
         <div class="toolbar-actions">
-           <button class="btn-add" (click)="showAddClient = true">
+           <button class="btn-add" (click)="showAddClient.set(true)">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Client
           </button>
 
-          @if (showAddClient) {
-            <app-add-client-modal 
-              (close)="showAddClient = false" 
-              (save)="handleSaveClient($event)">
-            </app-add-client-modal>
+          @if (showAddClient()) {
+            <app-add-client-modal (close)="showAddClient.set(false)"></app-add-client-modal>
           }
         </div>
       </div>
@@ -36,7 +33,7 @@
                 <div class="th-sortable" (click)="toggleSort()" style="cursor: pointer;">
                   <span>Name</span>
                   <span class="material-symbols-outlined sort-icon" style="font-size: 16px; vertical-align: middle;">
-                    {{ sortOrder === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
+                    {{ sortOrder() === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
                   </span>
                 </div>
               </th>
@@ -49,7 +46,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (client of displayedClients; track client.id) {
+            @for (client of displayedClients(); track client.id) {
               
               <tr routerLink="/clients/details/{{ client.id }}" class="clickable-row">
                 
@@ -65,7 +62,7 @@
                   </span>
                 </td>
 
-                <td>{{ client.ActiveProjects || 0 }}</td>
+                <td>{{ $any(client).ActiveProjects || $any(client).activeProjects || 0 }}</td>
                 
                 <td class="text-muted">{{ client.createdAt | date:'dd MMM yyyy' }}</td>
                 
@@ -98,10 +95,10 @@
   </div>
 </div>
 
-@if (showDeleteModal) {
+@if (showDeleteModal()) {
   <app-confirm-delete 
-    [itemName]="itemToDeleteName"
+    [itemName]="itemToDeleteName()"
     (confirm)="handleConfirmDelete()"
-    (close)="showDeleteModal = false">
+    (close)="showDeleteModal.set(false)">
   </app-confirm-delete>
 }
