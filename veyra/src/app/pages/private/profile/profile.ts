@@ -1,54 +1,45 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router'; 
+import { FormsModule } from '@angular/forms';
 
-import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
+import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
+import { AuthService } from '../../../core/services/user/auth.service';
+import { User } from '../../../core/class/user.model';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, RouterModule, Sidebar, Header], 
+  imports: [CommonModule, FormsModule, Sidebar, Header],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
-export class Profile {
-  showPassword = false;
-  isEditing = false; 
+export class Profile implements OnInit {
+  user: User | null = null;
+  isEditing = false;
+  editData: Partial<User> = {};
 
-  currentUser = {
-    firstName: 'Dexter',
-    lastName: 'Morgan',
-    email: 'morgan.dexter@branditdigitalmedia.com',
-    password: 'password123',
-    role: 'admin'
-  };
+  constructor(private authService: AuthService) {}
 
-  settings = {
-    activityLog: true,
-    twoFactorAuth: false,
-    theme: 'light'
-  };
-
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
+  ngOnInit(): void {
+    this.authService.getMe().subscribe({
+      next: (data) => {
+        this.user = data;
+        this.editData = { ...data };
+      },
+      error: (err) => console.error('Erro ao carregar perfil', err),
+    });
   }
 
-  startEditing(): void {
-    this.isEditing = true; 
+  toggleEdit() {
+    this.isEditing = !this.isEditing;
+    if (!this.isEditing && this.user) {
+      this.editData = { ...this.user };
+    }
   }
 
-  saveChanges(): void {
-    console.log('Save changes to API:', this.currentUser);
-    this.isEditing = false; 
-  }
-
-  cancelEditing(): void {
-    console.log('Edit cancelled');
-    this.isEditing = false; 
-  }
-
-  changePassword(): void {
-    console.log('Change password clicked');
+  saveProfile() {
+    console.log('Dados do perfil a enviar para a API:', this.editData);
+    this.isEditing = false;
   }
 }

@@ -6,32 +6,32 @@ import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class ProjectAccessesService {
-  private apiUrl = `${environment.apiUrl}/project-accesses`;
+export class VacationsService {
+  private apiUrl = `${environment.apiUrl}/vacations`;
 
   constructor(private http: HttpClient) {}
 
-  getAccesses(projectId?: string): Observable<any[]> {
+  getVacations(userId?: string): Observable<any[]> {
     let params = new HttpParams();
-    if (projectId) {
-      params = params.set('projectId', projectId);
+    if (userId) {
+      params = params.set('userId', userId);
     }
     return this.http.get<any[]>(this.apiUrl, { params });
   }
 
-  getAccessById(id: string): Observable<any> {
+  getVacationById(id: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  createAccess(data: any): Observable<any> {
+  createVacation(data: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, data);
   }
 
-  updateAccess(id: string, data: any): Observable<any> {
+  updateVacation(id: string, data: any): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/${id}`, data);
   }
 
-  deleteAccess(id: string): Observable<any> {
+  deleteVacation(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 }

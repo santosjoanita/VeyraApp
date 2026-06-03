@@ -1,92 +1,173 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
+import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
-
 import { DataHandlerService } from '../../../core/services/data-handler.service';
-import {Worker} from '../../../core/class/worker.model';
-
+import { WorkersService } from '../../../core/services/workers/workers.service';
+import { Worker } from '../../../core/class/worker.model';
 
 @Component({
   selector: 'app-workers',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, Sidebar, Header, AddWorkerModal, ConfirmDelete],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    Sidebar,
+    Header,
+    AddWorkerModal,
+    ConfirmDelete,
+  ],
   templateUrl: './workers.html',
-  styleUrl: './workers.css'
+  styleUrl: './workers.css',
 })
-export class Workers {
-  
-  constructor(private dataHandler: DataHandlerService) {}
+export class Workers implements OnInit {
+  private dataHandler = inject(DataHandlerService);
+  private workersService = inject(WorkersService);
+  private router = inject(Router);
 
-  showAddWorker = false;
-  showDeleteModal = false;
-  itemToDeleteId: string | number | null = null;
-  itemToDeleteName: string = '';
+  private _showAddWorker = signal(false);
+  private _showDeleteModal = signal(false);
+  private _itemToDeleteId = signal<string | number | null>(null);
+  private _itemToDeleteName = signal('');
+  private _sortOrder = signal<'asc' | 'desc'>('asc');
+  private _workersList = signal<Worker[]>([]);
+  private _searchQuery = signal('');
+  private _selectedRole = signal('all');
 
-  searchQuery: string = '';
-  sortOrder: 'asc' | 'desc' = 'asc';
-  selectedRole: string = 'all';
+  get showAddWorker() {
+    return this._showAddWorker();
+  }
+  set showAddWorker(value: boolean) {
+    this._showAddWorker.set(value);
+  }
 
-  workersList: Worker[] = [
-    { id: 1, name: 'Dexter Morgan', email: 'dexter@veyra.com', role: 'admin', status: 'active', lastAccess: '2 hours ago' },
-    { id: 2, name: 'Debra Morgan', email: 'debra@veyra.com', role: 'worker', status: 'inactive', lastAccess: '3 days ago' },
-    { id: 3, name: 'Angel Batista', email: 'angel@veyra.com', role: 'worker', status: 'active', lastAccess: 'Yesterday' }
-  ];
+  get showDeleteModal() {
+    return this._showDeleteModal();
+  }
+  set showDeleteModal(value: boolean) {
+    this._showDeleteModal.set(value);
+  }
 
-  get displayedWorkers(): Worker[] {
-    let result = this.dataHandler.filterArray(this.workersList, this.searchQuery, ['name', 'email']);
-    result = this.dataHandler.filterArrayByValue(result, 'role', this.selectedRole);
+  get itemToDeleteName() {
+    return this._itemToDeleteName();
+  }
+  set itemToDeleteName(value: string) {
+    this._itemToDeleteName.set(value);
+  }
+
+  get sortOrder() {
+    return this._sortOrder();
+  }
+  set sortOrder(value: 'asc' | 'desc') {
+    this._sortOrder.set(value);
+  }
+
+  get workersList() {
+    return this._workersList();
+  }
+
+  get searchQuery() {
+    return this._searchQuery();
+  }
+  set searchQuery(value: string) {
+    this._searchQuery.set(value);
+  }
+
+  get selectedRole() {
+    return this._selectedRole();
+  }
+  set selectedRole(value: string) {
+    this._selectedRole.set(value);
+  }
+
+  private _displayedWorkers = computed(() => {
+    let result = this.dataHandler.filterArray(this._workersList(), this.searchQuery, [
+      'name',
+      'email',
+    ]);
+    if (this.selectedRole !== 'all') {
+      result = this.dataHandler.filterArrayByValue(result, 'role', this.selectedRole);
+    }
     return this.dataHandler.sortArray(result, 'name', this.sortOrder);
+  });
+
+  get displayedWorkers() {
+    return this._displayedWorkers();
+  }
+
+  ngOnInit(): void {
+    this.loadWorkers();
+  }
+
+  loadWorkers() {
+    this.workersService.getWorkers().subscribe({
+      next: (data) => this._workersList.set(data),
+      error: (err) => console.error('Erro ao carregar workers', err),
+    });
   }
 
   toggleSort(): void {
-    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+  }
+
+  viewWorker(id: string): void {
+    this.router.navigate(['/workers/details', id]);
+  }
+
+  editWorker(id: string): void {
+    this.router.navigate(['/workers/details', id]);
+  }
+
+  changeProfile(id: string, event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const newRole = selectElement.value;
+
+    this.workersService.updateWorker(id, { role: newRole }).subscribe({
+      next: () => {
+        this._workersList.update((list) =>
+          list.map((w) => (w.id === id ? { ...w, role: newRole } : w)),
+        );
+      },
+      error: (err) => {
+        console.error('Erro ao atualizar cargo do worker', err);
+        this.loadWorkers();
+      },
+    });
   }
 
   handleSaveWorker(newWorkerData: any) {
-    this.workersList.push({
-      id: 'w_new_' + Math.random().toString(36).substr(2, 9),
-      name: newWorkerData.name,
-      email: newWorkerData.email,
-      role: newWorkerData.role,
-      status: 'active',
-      lastAccess: 'Just now'
+    this.workersService.createWorker(newWorkerData).subscribe({
+      next: (createdWorker) => {
+        this._workersList.update((list) => [...list, createdWorker]);
+        this._showAddWorker.set(false);
+      },
+      error: (err) => console.error('Erro ao criar worker', err),
     });
-    this.showAddWorker = false;
   }
 
-  openDeleteModal(worker: any) {
-    this.itemToDeleteId = worker.id;
-    this.itemToDeleteName = worker.name;
-    this.showDeleteModal = true;
+  openDeleteModal(worker: Worker) {
+    this._itemToDeleteId.set(worker.id || null);
+    this._itemToDeleteName.set(worker.name || worker.email);
+    this._showDeleteModal.set(true);
   }
 
   handleConfirmDelete() {
-    if (this.itemToDeleteId) {
-      this.workersList = this.workersList.filter(w => w.id !== this.itemToDeleteId);
+    const id = this._itemToDeleteId();
+    if (id) {
+      this.workersService.deleteWorker(id).subscribe({
+        next: () => {
+          this._workersList.update((list) => list.filter((w) => w.id !== id));
+          this._showDeleteModal.set(false);
+          this._itemToDeleteId.set(null);
+        },
+        error: (err) => console.error('Erro ao apagar worker', err),
+      });
     }
-    this.showDeleteModal = false;
-    this.itemToDeleteId = null;
-  }
-
-  changeProfile(id: string | number, event: any): void {
-    const newRole = event.target.value;
-    const worker = this.workersList.find(w => w.id === id);
-    if (worker) {
-      worker.role = newRole;
-    }
-  }
-
-  viewWorker(id: string | number): void {
-    console.log('View worker ID:', id);
-  }
-
-  editWorker(id: string | number): void {
-    console.log('Edit worker ID:', id);
   }
 }

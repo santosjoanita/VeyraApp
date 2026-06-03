@@ -51,7 +51,7 @@
           <tbody>
             @for (client of displayedClients; track client.id) {
               
-              <tr routerLink="/details/client/{{ client.id }}" class="clickable-row">
+              <tr routerLink="/clients/details/{{ client.id }}" class="clickable-row">
                 
                 <td class="fw-bold">{{ client.name }}</td>
                 <td class="text-muted">{{ client.email || 'N/A' }}</td>

@@ -1,107 +1,109 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { Sidebar } from '../../../core/components/sidebar/sidebar'; 
+import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { AddClientModal } from '../../../core/components/modals/add-client/add-client';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
-
-import { DataHandlerService } from '../../../core/services/data-handler.service'; 
-import {Client} from '../../../core/class/client.model';
-
+import { DataHandlerService } from '../../../core/services/data-handler.service';
+import { ClientsService } from '../../../core/services/clients/clients.service';
+import { Client } from '../../../core/class/client.model';
 
 @Component({
   selector: 'app-clients',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, Sidebar, Header, AddClientModal, ConfirmDelete],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    Sidebar,
+    Header,
+    AddClientModal,
+    ConfirmDelete,
+  ],
   templateUrl: './clients.html',
-  styleUrl: './clients.css'
+  styleUrl: './clients.css',
 })
-export class Clients {
-  
-  constructor(private dataHandler: DataHandlerService) {}
+export class Clients implements OnInit {
+  private dataHandler = inject(DataHandlerService);
+  private clientsService = inject(ClientsService);
+  private router = inject(Router);
 
-  showAddClient = false;
-  showDeleteModal = false;
-  itemToDeleteId: string | null = null;
-  itemToDeleteName: string = '';
+  showAddClient = signal(false);
+  showDeleteModal = signal(false);
+  itemToDeleteId = signal<string | null>(null);
+  itemToDeleteName = signal('');
+  sortOrder = signal<'asc' | 'desc'>('asc');
+  clientsList = signal<Client[]>([]);
 
-  searchQuery: string = '';
-  sortOrder: 'asc' | 'desc' = 'asc';
+  private _searchQuery = signal('');
+  get searchQuery() {
+    return this._searchQuery();
+  }
+  set searchQuery(value: string) {
+    this._searchQuery.set(value);
+  }
 
-  clientsList: Client[] = [
-    { 
-      id: 'c1', 
-      name: 'Acme Corp', 
-      email: 'contact@acmecorp.com', 
-      phone: '123456789', 
-      isActive: true,
-      ActiveProjects: 3,
-      createdAt: '2025-01-10T10:00:00Z'
-    },
-    { 
-      id: 'c2', 
-      name: 'Global Industries', 
-      email: 'info@global.com', 
-      phone: '987654321', 
-      isActive: true,
-      ActiveProjects: 1,
-      createdAt: '2024-11-05T09:30:00Z'
-    },
-    { 
-      id: 'c3', 
-      name: 'TechFlow Solutions', 
-      email: 'hello@techflow.com', 
-      isActive: false,
-      ActiveProjects: 0,
-      createdAt: '2025-02-15T14:45:00Z'
-    }
-  ];
+  displayedClients = computed(() => {
+    let result = this.dataHandler.filterArray(this.clientsList(), this.searchQuery, [
+      'name',
+      'email',
+    ]);
+    return this.dataHandler.sortArray(result, 'name', this.sortOrder());
+  });
 
-  get displayedClients(): Client[] {
-    let result = this.dataHandler.filterArray(this.clientsList, this.searchQuery, ['name', 'email']);
-    return this.dataHandler.sortArray(result, 'name', this.sortOrder);
+  ngOnInit(): void {
+    this.loadClients();
+  }
+
+  loadClients() {
+    this.clientsService.getClients().subscribe({
+      next: (data) => this.clientsList.set(data),
+      error: (err) => console.error('Erro ao carregar clientes', err),
+    });
   }
 
   toggleSort(): void {
-    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
-  }
-
-  handleSaveClient(newClientData: any) {
-    this.clientsList.push({
-      id: 'c_new_' + Math.random().toString(36).substr(2, 9),
-      name: newClientData.name,
-      email: newClientData.email,
-      phone: newClientData.phone,
-      notes: newClientData.notes,
-      isActive: true,
-      ActiveProjects: 0,
-      createdAt: new Date().toISOString() 
-    });
-    this.showAddClient = false;
+    this.sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }
 
   viewClient(id: string): void {
-    console.log('View client ID:', id);
+    this.router.navigate(['/clients/details', id]);
   }
 
   editClient(id: string): void {
-    console.log('Edit client ID:', id);
+    this.router.navigate(['/clients/details', id]);
   }
 
-  openDeleteModal(client: any) {
-    this.itemToDeleteId = client.id;
-    this.itemToDeleteName = client.name;
-    this.showDeleteModal = true;
+  handleSaveClient(newClientData: any) {
+    this.clientsService.createClient(newClientData).subscribe({
+      next: (createdClient) => {
+        this.clientsList.update((list) => [...list, createdClient]);
+        this.showAddClient.set(false);
+      },
+      error: (err) => console.error('Erro ao criar cliente', err),
+    });
+  }
+
+  openDeleteModal(client: Client) {
+    this.itemToDeleteId.set(client.id);
+    this.itemToDeleteName.set(client.name);
+    this.showDeleteModal.set(true);
   }
 
   handleConfirmDelete() {
-    if (this.itemToDeleteId) {
-      this.clientsList = this.clientsList.filter(c => c.id !== this.itemToDeleteId);
+    const id = this.itemToDeleteId();
+    if (id) {
+      this.clientsService.deleteClient(id).subscribe({
+        next: () => {
+          this.clientsList.update((list) => list.filter((c) => c.id !== id));
+          this.showDeleteModal.set(false);
+          this.itemToDeleteId.set(null);
+        },
+        error: (err) => console.error('Erro ao apagar cliente', err),
+      });
     }
-    this.showDeleteModal = false;
-    this.itemToDeleteId = null;
   }
 }

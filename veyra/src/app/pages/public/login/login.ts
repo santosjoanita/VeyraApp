@@ -1,45 +1,53 @@
 import { Component } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../../core/services/user/user-auth.service';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/user/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login {
-  showPassword = false;
-
-  loginData = {
-    usernameOrEmail: '',
+  credentials = {
+    email: '',
     password: '',
   };
 
+  showPassword = false;
+  errorMessage = '';
+
   constructor(
-    private router: Router,
     private authService: AuthService,
+    private router: Router,
   ) {}
 
-  togglePassword(): void {
+  togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
-  onLogin(): void {
-    if (!this.loginData.usernameOrEmail || !this.loginData.password) {
-      alert('Preenche todos os campos!');
+  handleLogin() {
+    this.errorMessage = '';
+
+    if (!this.credentials.email || !this.credentials.password) {
+      this.errorMessage = 'Por favor, preenche todos os campos.';
       return;
     }
 
-    const success = this.authService.login(this.loginData.usernameOrEmail, this.loginData.password);
+    this.authService.login(this.credentials).subscribe({
+      next: (response) => {
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('userRole', response.user.role);
 
-    if (success) {
-      const redirectUrl = this.authService.popRedirectUrl();
-      this.router.navigateByUrl(redirectUrl ?? '/dashboard');
-    } else {
-      alert('Credenciais incorretas. Tenta de novo ou regista uma conta.');
-    }
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('Erro no login', err);
+        this.errorMessage = 'Email ou password incorretos.';
+      },
+    });
   }
 }

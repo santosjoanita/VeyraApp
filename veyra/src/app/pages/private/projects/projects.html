@@ -60,7 +60,7 @@
           </thead>
           <tbody>
             @for (project of displayedProjects; track project.id) {
-              <tr routerLink="/details/project/{{ project.id }}" class="clickable-row">
+              <tr routerLink="/projects/details/{{ project.id }}" class="clickable-row">
                 
                 <td class="fw-bold">{{ project.name }}</td>
                 <td class="text-muted">{{ project.clientName }}</td>

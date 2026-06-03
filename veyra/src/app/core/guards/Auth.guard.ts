@@ -1,22 +1,23 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { AuthService } from '../services/user/user-auth.service';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard implements CanActivate {
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-  ) {}
+export const authGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.authService.isAuthenticated()) {
-      return true;
-    } else {
-      this.router.navigate(['/login']);
-      return false;
-    }
+  const token = localStorage.getItem('accessToken');
+  const userRole = localStorage.getItem('userRole');
+
+  if (!token) {
+    router.navigate(['/login']);
+    return false;
   }
-}
+
+  // Bloqueia quem não tem a permissão certa para a página
+  const expectedRole = route.data?.['expectedRole'];
+  if (expectedRole && expectedRole !== userRole) {
+    router.navigate(['/not-permitted']);
+    return false;
+  }
+
+  return true;
+};
