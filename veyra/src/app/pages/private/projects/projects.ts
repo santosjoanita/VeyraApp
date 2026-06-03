@@ -111,14 +111,14 @@ export class Projects implements OnInit {
   loadProjects() {
     this.projectsService.getProjects().subscribe({
       next: (data) => this._projectsList.set(data),
-      error: (err) => console.error('Erro ao carregar projetos', err),
+      error: (err) => console.error('Error while loading projects', err),
     });
   }
 
   loadClients() {
     this.clientsService.getClients().subscribe({
       next: (data) => this._clientsList.set(data),
-      error: (err) => console.error('Erro ao carregar lista de clientes para o modal', err),
+      error: (err) => console.error('Error while loading clients list for the modal', err),
     });
   }
 
@@ -126,12 +126,12 @@ export class Projects implements OnInit {
     this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }
 
-  viewProject(id: string): void {
-    this.router.navigate(['/projects/details', id]);
+  viewProject(id: any): void {
+    this.router.navigate(['/projects/details', String(id)]);
   }
 
-  editProject(id: string): void {
-    this.router.navigate(['/projects/details', id]);
+  editProject(id: any): void {
+    this.router.navigate(['/projects/details', String(id)]);
   }
 
   handleSaveProject(newProjectData: any) {
@@ -140,7 +140,7 @@ export class Projects implements OnInit {
         this._projectsList.update((list) => [...list, createdProject]);
         this._showAddProject.set(false);
       },
-      error: (err) => console.error('Erro ao criar projeto', err),
+      error: (err) => console.error('Error while creating project', err),
     });
   }
 
@@ -159,7 +159,7 @@ export class Projects implements OnInit {
           this._showDeleteModal.set(false);
           this._projectToDeleteId.set(null);
         },
-        error: (err) => console.error('Erro ao apagar projeto', err),
+        error: (err) => console.error('Error while deleting project', err),
       });
     }
   }

@@ -108,7 +108,7 @@ export class Workers implements OnInit {
   loadWorkers() {
     this.workersService.getWorkers().subscribe({
       next: (data) => this._workersList.set(data),
-      error: (err) => console.error('Erro ao carregar workers', err),
+      error: (err) => console.error('Error while loading workers', err),
     });
   }
 
@@ -116,26 +116,28 @@ export class Workers implements OnInit {
     this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }
 
-  viewWorker(id: string): void {
-    this.router.navigate(['/workers/details', id]);
+  viewWorker(id: any): void {
+    this.router.navigate(['/workers/details', String(id)]);
   }
 
-  editWorker(id: string): void {
-    this.router.navigate(['/workers/details', id]);
+  editWorker(id: any): void {
+    this.router.navigate(['/workers/details', String(id)]);
   }
 
-  changeProfile(id: string, event: Event) {
+  changeProfile(id: any, event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const newRole = selectElement.value;
 
-    this.workersService.updateWorker(id, { role: newRole }).subscribe({
+    const stringId = String(id);
+
+    this.workersService.updateWorker(stringId, { role: newRole }).subscribe({
       next: () => {
         this._workersList.update((list) =>
-          list.map((w) => (w.id === id ? { ...w, role: newRole } : w)),
+          list.map((w) => (String(w.id) === stringId ? { ...w, role: newRole } : w)),
         );
       },
       error: (err) => {
-        console.error('Erro ao atualizar cargo do worker', err);
+        console.error('Error while updating worker role', err);
         this.loadWorkers();
       },
     });
@@ -147,7 +149,7 @@ export class Workers implements OnInit {
         this._workersList.update((list) => [...list, createdWorker]);
         this._showAddWorker.set(false);
       },
-      error: (err) => console.error('Erro ao criar worker', err),
+      error: (err) => console.error('Error while creating worker', err),
     });
   }
 
@@ -166,7 +168,7 @@ export class Workers implements OnInit {
           this._showDeleteModal.set(false);
           this._itemToDeleteId.set(null);
         },
-        error: (err) => console.error('Erro ao apagar worker', err),
+        error: (err) => console.error('Error while deleting worker', err),
       });
     }
   }

@@ -65,7 +65,7 @@
                   </span>
                 </td>
 
-                <td>{{ client.ActiveProjects || 0 }}</td>
+                <td>{{ $any(client).ActiveProjects || 0 }}</td>
                 
                 <td class="text-muted">{{ client.createdAt | date:'dd MMM yyyy' }}</td>
                 

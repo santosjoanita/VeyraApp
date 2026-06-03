@@ -1,0 +1,8 @@
+{
+  "/api": {
+    "target": "https://api-branditgest.brandit.ws",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

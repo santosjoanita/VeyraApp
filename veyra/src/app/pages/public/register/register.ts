@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -12,39 +12,37 @@ import { AuthService } from '../../../core/services/user/auth.service';
   styleUrl: './register.css',
 })
 export class Register {
-  credentials = {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  registerData = {
     name: '',
     email: '',
     password: '',
   };
 
-  showPassword = false;
-  errorMessage = '';
+  showPassword = signal(false);
+  errorMessage = signal('');
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-  ) {}
-
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+  togglePassword() {
+    this.showPassword.update((val) => !val);
   }
 
-  handleRegister() {
-    this.errorMessage = '';
+  onRegister() {
+    this.errorMessage.set('');
 
-    if (!this.credentials.name || !this.credentials.email || !this.credentials.password) {
-      this.errorMessage = 'Por favor, preenche todos os campos.';
+    if (!this.registerData.name || !this.registerData.email || !this.registerData.password) {
+      this.errorMessage.set('Please fill in all fields.');
       return;
     }
 
-    this.authService.register(this.credentials).subscribe({
+    this.authService.register(this.registerData).subscribe({
       next: () => {
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        console.error('Erro no registo', err);
-        this.errorMessage = 'Não foi possível efetuar o registo. Tenta novamente.';
+        console.error('Error during registration', err);
+        this.errorMessage.set('Failed to register. Please try again.');
       },
     });
   }

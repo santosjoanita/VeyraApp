@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -12,32 +12,30 @@ import { AuthService } from '../../../core/services/user/auth.service';
   styleUrl: './login.css',
 })
 export class Login {
-  credentials = {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  loginData = {
     email: '',
     password: '',
   };
 
-  showPassword = false;
-  errorMessage = '';
+  showPassword = signal(false);
+  errorMessage = signal('');
 
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-  ) {}
-
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
+  togglePassword() {
+    this.showPassword.update((val) => !val);
   }
 
-  handleLogin() {
-    this.errorMessage = '';
+  onLogin() {
+    this.errorMessage.set('');
 
-    if (!this.credentials.email || !this.credentials.password) {
-      this.errorMessage = 'Por favor, preenche todos os campos.';
+    if (!this.loginData.email || !this.loginData.password) {
+      this.errorMessage.set('Please fill in all fields.');
       return;
     }
 
-    this.authService.login(this.credentials).subscribe({
+    this.authService.login(this.loginData).subscribe({
       next: (response) => {
         localStorage.setItem('accessToken', response.accessToken);
         localStorage.setItem('userRole', response.user.role);
@@ -45,8 +43,8 @@ export class Login {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        console.error('Erro no login', err);
-        this.errorMessage = 'Email ou password incorretos.';
+        console.error('Error during login', err);
+        this.errorMessage.set('Invalid email or password.');
       },
     });
   }

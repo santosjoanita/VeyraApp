@@ -31,14 +31,46 @@ export class Clients implements OnInit {
   private clientsService = inject(ClientsService);
   private router = inject(Router);
 
-  showAddClient = signal(false);
-  showDeleteModal = signal(false);
-  itemToDeleteId = signal<string | null>(null);
-  itemToDeleteName = signal('');
-  sortOrder = signal<'asc' | 'desc'>('asc');
-  clientsList = signal<Client[]>([]);
-
+  private _showAddClient = signal(false);
+  private _showDeleteModal = signal(false);
+  private _itemToDeleteId = signal<any>(null);
+  private _itemToDeleteName = signal('');
+  private _sortOrder = signal<'asc' | 'desc'>('asc');
+  private _clientsList = signal<Client[]>([]);
   private _searchQuery = signal('');
+
+  get showAddClient() {
+    return this._showAddClient();
+  }
+  set showAddClient(value: boolean) {
+    this._showAddClient.set(value);
+  }
+
+  get showDeleteModal() {
+    return this._showDeleteModal();
+  }
+  set showDeleteModal(value: boolean) {
+    this._showDeleteModal.set(value);
+  }
+
+  get itemToDeleteName() {
+    return this._itemToDeleteName();
+  }
+  set itemToDeleteName(value: string) {
+    this._itemToDeleteName.set(value);
+  }
+
+  get sortOrder() {
+    return this._sortOrder();
+  }
+  set sortOrder(value: 'asc' | 'desc') {
+    this._sortOrder.set(value);
+  }
+
+  get clientsList() {
+    return this._clientsList();
+  }
+
   get searchQuery() {
     return this._searchQuery();
   }
@@ -46,13 +78,17 @@ export class Clients implements OnInit {
     this._searchQuery.set(value);
   }
 
-  displayedClients = computed(() => {
-    let result = this.dataHandler.filterArray(this.clientsList(), this.searchQuery, [
+  private _displayedClients = computed(() => {
+    let result = this.dataHandler.filterArray(this._clientsList(), this.searchQuery, [
       'name',
       'email',
     ]);
-    return this.dataHandler.sortArray(result, 'name', this.sortOrder());
+    return this.dataHandler.sortArray(result, 'name', this.sortOrder);
   });
+
+  get displayedClients() {
+    return this._displayedClients();
+  }
 
   ngOnInit(): void {
     this.loadClients();
@@ -60,49 +96,49 @@ export class Clients implements OnInit {
 
   loadClients() {
     this.clientsService.getClients().subscribe({
-      next: (data) => this.clientsList.set(data),
-      error: (err) => console.error('Erro ao carregar clientes', err),
+      next: (data) => this._clientsList.set(data),
+      error: (err) => console.error('Error loading clients', err),
     });
   }
 
   toggleSort(): void {
-    this.sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+    this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }
 
-  viewClient(id: string): void {
-    this.router.navigate(['/clients/details', id]);
+  viewClient(id: any): void {
+    this.router.navigate(['/clients/details', String(id)]);
   }
 
-  editClient(id: string): void {
-    this.router.navigate(['/clients/details', id]);
+  editClient(id: any): void {
+    this.router.navigate(['/clients/details', String(id)]);
   }
 
   handleSaveClient(newClientData: any) {
     this.clientsService.createClient(newClientData).subscribe({
       next: (createdClient) => {
-        this.clientsList.update((list) => [...list, createdClient]);
-        this.showAddClient.set(false);
+        this._clientsList.update((list) => [...list, createdClient]);
+        this._showAddClient.set(false);
       },
-      error: (err) => console.error('Erro ao criar cliente', err),
+      error: (err) => console.error('Error creating client', err),
     });
   }
 
   openDeleteModal(client: Client) {
-    this.itemToDeleteId.set(client.id);
-    this.itemToDeleteName.set(client.name);
-    this.showDeleteModal.set(true);
+    this._itemToDeleteId.set(client.id || null);
+    this._itemToDeleteName.set(client.name || '');
+    this._showDeleteModal.set(true);
   }
 
   handleConfirmDelete() {
-    const id = this.itemToDeleteId();
+    const id = this._itemToDeleteId();
     if (id) {
       this.clientsService.deleteClient(id).subscribe({
         next: () => {
-          this.clientsList.update((list) => list.filter((c) => c.id !== id));
-          this.showDeleteModal.set(false);
-          this.itemToDeleteId.set(null);
+          this._clientsList.update((list) => list.filter((c) => c.id !== id));
+          this._showDeleteModal.set(false);
+          this._itemToDeleteId.set(null);
         },
-        error: (err) => console.error('Erro ao apagar cliente', err),
+        error: (err) => console.error('Error deleting client', err),
       });
     }
   }
