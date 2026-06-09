@@ -48,7 +48,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (client of displayedClients(); track client.id) {
+            @for (client of displayedClients; track client.id) {
               
               <tr routerLink="/clients/details/{{ client.id }}" class="clickable-row">
                 
@@ -87,6 +87,12 @@
             }
           </tbody>
         </table>
+        <app-paginator
+          [totalItems]="totalClientsCount"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
       </div>
 
     </div>

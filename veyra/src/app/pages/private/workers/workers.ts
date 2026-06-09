@@ -11,6 +11,7 @@ import { ConfirmModal } from '../../../core/components/modals/confirm-modal/conf
 import { DataHandlerService } from '../../../core/services/data-handler.service';
 import { WorkersService } from '../../../core/services/workers/workers.service';
 import { Worker } from '../../../core/class/worker.model';
+import { Paginator } from '../../../core/components/paginator/paginator';
 
 @Component({
   selector: 'app-workers',
@@ -24,6 +25,7 @@ import { Worker } from '../../../core/class/worker.model';
     AddWorkerModal,
     ConfirmDelete,
     ConfirmModal,
+    Paginator,
   ],
   templateUrl: './workers.html',
   styleUrl: './workers.css',
@@ -42,6 +44,8 @@ export class Workers implements OnInit {
   private _workersList = signal<Worker[]>([]);
   private _searchQuery = signal('');
   private _selectedRole = signal('all');
+  private _currentPage = signal(1);
+  private _pageSize = signal(10);
 
   pendingRoleChange = signal<{
     id: string | number;
@@ -78,6 +82,13 @@ export class Workers implements OnInit {
   set itemToDeleteName(value: string) {
     this._itemToDeleteName.set(value);
   }
+  get currentPage() {
+    return this._currentPage();
+  }
+
+  get pageSize() {
+    return this._pageSize();
+  }
 
   get sortOrder() {
     return this._sortOrder();
@@ -95,16 +106,18 @@ export class Workers implements OnInit {
   }
   set searchQuery(value: string) {
     this._searchQuery.set(value);
+    this._currentPage.set(1);
   }
 
   get selectedRole() {
     return this._selectedRole();
+    this._currentPage.set(1);
   }
   set selectedRole(value: string) {
     this._selectedRole.set(value);
   }
 
-  private _displayedWorkers = computed(() => {
+  private _filteredWorkers = computed(() => {
     let result = this.dataHandler.filterArray(this._workersList(), this.searchQuery, [
       'name',
       'email',
@@ -113,6 +126,16 @@ export class Workers implements OnInit {
       result = this.dataHandler.filterArrayByValue(result, 'role', this.selectedRole);
     }
     return this.dataHandler.sortArray(result, 'name', this.sortOrder);
+  });
+
+  get totalWorkersCount() {
+    return this._filteredWorkers().length;
+  }
+
+  private _displayedWorkers = computed(() => {
+    const list = this._filteredWorkers();
+    const startIndex = (this._currentPage() - 1) * this._pageSize();
+    return list.slice(startIndex, startIndex + this._pageSize());
   });
 
   get displayedWorkers() {
@@ -131,6 +154,10 @@ export class Workers implements OnInit {
       next: (data) => this._workersList.set(data),
       error: (err) => console.error('Erro ao carregar workers', err),
     });
+  }
+  onPageChange(event: { pageIndex: number; pageSize: number }) {
+    this._currentPage.set(event.pageIndex);
+    this._pageSize.set(event.pageSize);
   }
 
   toggleSort(): void {

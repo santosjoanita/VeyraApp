@@ -10,6 +10,7 @@ import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/co
 import { DataHandlerService } from '../../../core/services/data-handler.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
 import { Client } from '../../../core/class/client.model';
+import { Paginator } from '../../../core/components/paginator/paginator';
 
 @Component({
   selector: 'app-clients',
@@ -22,6 +23,7 @@ import { Client } from '../../../core/class/client.model';
     Header,
     AddClientModal,
     ConfirmDelete,
+    Paginator,
   ],
   templateUrl: './clients.html',
   styleUrl: './clients.css',
@@ -38,15 +40,26 @@ export class Clients implements OnInit {
   sortOrder = signal<'asc' | 'desc'>('asc');
   clientsList = signal<Client[]>([]);
 
+  private _currentPage = signal(1);
+  private _pageSize = signal(10);
   private _searchQuery = signal('');
+
+  get currentPage() {
+    return this._currentPage();
+  }
+  get pageSize() {
+    return this._pageSize();
+  }
+
   get searchQuery() {
     return this._searchQuery();
   }
   set searchQuery(value: string) {
     this._searchQuery.set(value);
+    this._currentPage.set(1);
   }
 
-  displayedClients = computed(() => {
+  private _filteredClients = computed(() => {
     let result = this.dataHandler.filterArray(this.clientsList(), this.searchQuery, [
       'name',
       'email',
@@ -54,14 +67,33 @@ export class Clients implements OnInit {
     return this.dataHandler.sortArray(result, 'name', this.sortOrder());
   });
 
+  get totalClientsCount() {
+    return this._filteredClients().length;
+  }
+
+  private _displayedClients = computed(() => {
+    const list = this._filteredClients();
+    const startIndex = (this._currentPage() - 1) * this._pageSize();
+    return list.slice(startIndex, startIndex + this._pageSize());
+  });
+
+  get displayedClients() {
+    return this._displayedClients();
+  }
+
   ngOnInit(): void {
     this.loadClients();
+  }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }) {
+    this._currentPage.set(event.pageIndex);
+    this._pageSize.set(event.pageSize);
   }
 
   loadClients() {
     this.clientsService.getClients().subscribe({
       next: (data) => this.clientsList.set(data),
-      error: (err) => console.error('Erro ao carregar clientes', err),
+      error: (err) => console.error('Error while loading clients', err),
     });
   }
 
@@ -83,7 +115,7 @@ export class Clients implements OnInit {
         this.clientsList.update((list) => [...list, createdClient]);
         this.showAddClient.set(false);
       },
-      error: (err) => console.error('Erro ao criar cliente', err),
+      error: (err) => console.error('Error while creating client', err),
     });
   }
 
@@ -102,7 +134,7 @@ export class Clients implements OnInit {
           this.showDeleteModal.set(false);
           this.itemToDeleteId.set(null);
         },
-        error: (err) => console.error('Erro ao apagar cliente', err),
+        error: (err) => console.error('Error while deleting client', err),
       });
     }
   }

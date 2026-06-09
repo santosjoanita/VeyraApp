@@ -96,6 +96,12 @@
             }
           </tbody>
         </table>
+        <app-paginator
+          [totalItems]="totalWorkersCount"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
       </div>
 
     </div>

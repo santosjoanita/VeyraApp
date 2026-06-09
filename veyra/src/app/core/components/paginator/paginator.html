@@ -1,0 +1,28 @@
+<div class="paginator-container">
+  
+  <div class="paginator-size">
+    <span>Items per page:</span>
+    <select [value]="pageSize" (change)="onPageSizeChange($event)" class="paginator-dropdown">
+      @for (option of pageSizeOptions; track option) {
+        <option [value]="option">{{ option }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="paginator-navigation">
+    <span class="paginator-info">
+      {{ startItem }}-{{ endItem }} of {{ totalItems }}
+    </span>
+
+    <div class="paginator-buttons">
+      <button class="paginator-btn" [disabled]="currentPage === 1" (click)="changePage(-1)">
+        <span class="material-symbols-outlined">navigate_before</span>
+      </button>
+      
+      <button class="paginator-btn" [disabled]="currentPage === totalPages" (click)="changePage(1)">
+        <span class="material-symbols-outlined">navigate_next</span>
+      </button>
+    </div>
+  </div>
+
+</div>

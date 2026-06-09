@@ -12,6 +12,7 @@ import { ProjectsService } from '../../../core/services/projects/projects.servic
 import { ClientsService } from '../../../core/services/clients/clients.service';
 import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
 import { WorkersService } from '../../../core/services/workers/workers.service';
+import { Paginator } from '../../../core/components/paginator/paginator';
 
 @Component({
   selector: 'app-projects',
@@ -24,6 +25,7 @@ import { WorkersService } from '../../../core/services/workers/workers.service';
     Header,
     AddProjectModal,
     ConfirmDelete,
+    Paginator,
   ],
   templateUrl: './projects.html',
   styleUrl: './projects.css',
@@ -50,6 +52,8 @@ export class Projects implements OnInit {
 
   private _searchQuery = signal('');
   private _selectedStatus = signal('all');
+  private _currentPage = signal(1);
+  private _pageSize = signal(10);
 
   get showAddProject() {
     return this._showAddProject();
@@ -85,12 +89,20 @@ export class Projects implements OnInit {
   get clientsList() {
     return this._clientsList();
   }
+  get currentPage() {
+    return this._currentPage();
+  }
+
+  get pageSize() {
+    return this._pageSize();
+  }
 
   get searchQuery() {
     return this._searchQuery();
   }
   set searchQuery(value: string) {
     this._searchQuery.set(value);
+    this._currentPage.set(1);
   }
 
   get selectedStatus() {
@@ -98,6 +110,7 @@ export class Projects implements OnInit {
   }
   set selectedStatus(value: string) {
     this._selectedStatus.set(value);
+    this._currentPage.set(1);
   }
 
   private _displayedProjects = computed(() => {
@@ -141,6 +154,10 @@ export class Projects implements OnInit {
     this.loadWorkers();
     this.loadClients();
     this.loadProjects();
+  }
+  onPageChange(event: { pageIndex: number; pageSize: number }) {
+    this._currentPage.set(event.pageIndex);
+    this._pageSize.set(event.pageSize);
   }
 
   loadWorkers() {
