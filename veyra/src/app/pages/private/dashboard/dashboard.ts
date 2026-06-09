@@ -72,44 +72,56 @@ export class Dashboard implements OnInit {
   loadDashboardData() {
     this.isLoading = true;
 
+    // 1. Carrega as métricas puras (apenas para alimentar os contadores e o log de atividades)
     this.dashboardService.getMetrics().subscribe({
       next: (data: any) => {
-        this.isLoading = false;
         if (data) {
           this.metrics = data;
           this.totalProjects = data.projects?.total || 0;
           this.totalWorkers = data.workers?.total || 0;
           this.totalClients = data.clients?.total || 0;
           this.activityList = data.activityList || data.recentActivities || [];
-
-          const rawProjects = data.projectsList || data.recentProjects || [];
-          this.projectsList = rawProjects.map((project: any) => {
-            const matchedClient = this.availableClients.find((c) => c.id === project.clientId);
-            return { ...project, client: matchedClient };
-          });
         }
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error while loading dashboard metrics:', err);
-        this.isLoading = false;
         this.cdr.detectChanges();
       },
     });
 
-    this.clientsService.getClients().subscribe({
-      next: (realClients) => {
-        this.availableClients = realClients;
+    this.projectsService.getProjects().subscribe({
+      next: (realProjects: any[]) => {
+        const limitedProjects = realProjects.slice(0, 5);
 
-        if (this.projectsList && this.projectsList.length > 0) {
-          this.projectsList = this.projectsList.map((project: any) => {
-            const matchedClient = realClients.find((c) => c.id === project.clientId);
-            return { ...project, client: matchedClient };
-          });
-        }
+        this.clientsService.getClients().subscribe({
+          next: (realClients) => {
+            this.availableClients = realClients;
+
+            this.projectsList = limitedProjects.map((project: any) => {
+              const matchedClient = realClients.find((c) => c.id === project.clientId);
+              return {
+                ...project,
+                client: matchedClient,
+              };
+            });
+
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error while loading clients for dashboard:', err);
+            this.projectsList = limitedProjects;
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error while loading projects for dashboard:', err);
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Erro ao carregar clientes:', err),
     });
   }
 
