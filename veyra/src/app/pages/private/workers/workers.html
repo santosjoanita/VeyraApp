@@ -19,7 +19,7 @@
             <select [(ngModel)]="selectedRole" class="filter-dropdown">
               <option value="all">All</option>
               <option value="admin">Admin</option>
-              <option value="worker">Worker</option>
+              <option value="user">Worker</option> 
             </select>
           </div>
 
@@ -66,7 +66,7 @@
                           (click)="$event.stopPropagation()" 
                           (change)="changeProfile(worker.id, $event)">
                     <option value="admin" [selected]="worker.role === 'admin'">Admin</option>
-                    <option value="worker" [selected]="worker.role === 'worker'">Worker</option>
+                    <option value="user" [selected]="worker.role === 'user'">Worker</option> 
                   </select>
                 </td>
                 <td>

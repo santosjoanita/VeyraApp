@@ -106,8 +106,37 @@ export class ProjectDetails implements OnInit {
   }
 
   addCredential() {
-    alert('The add credential functionality is not implemented yet.');
+    const label = prompt('Enter credential label (e.g., CPanel Production):');
+    if (!label) return;
+
+    const type = prompt('Enter type (cpanel, ftp, wordpress, database):', 'cpanel');
+    if (!type) return;
+
+    const username = prompt('Enter Username/Email:');
+    const password = prompt('Enter Password:');
+
+    const credentialPayload = {
+      projectId: this.projectData.id,
+      type: type,
+      label: label,
+      data: {
+        username: username || 'admin',
+        password: password || 'secret123',
+      },
+    };
+
+    this.accessesService.createAccess(credentialPayload).subscribe({
+      next: (newCredential) => {
+        this.credentials.push(newCredential);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error creating project credential:', err);
+        alert('Failed to save credential. Check your service method name.');
+      },
+    });
   }
+
   togglePasswordVisibility(credId: string) {
     this.visiblePasswords[credId] = !this.visiblePasswords[credId];
     this.cdr.detectChanges();
@@ -124,15 +153,26 @@ export class ProjectDetails implements OnInit {
   isClientAssigned(clientId: any): boolean {
     return this.assignedClients.some((c) => c.id === clientId);
   }
+
   confirmAssignClient(client: any) {
     if (!this.isClientAssigned(client.id)) {
       this.assignedClients.push(client);
+      this.syncClientsWithBackend();
     }
     this.closeClientModal();
   }
+
   removeClient(clientId: any) {
     this.assignedClients = this.assignedClients.filter((c) => c.id !== clientId);
-    this.cdr.detectChanges();
+    this.syncClientsWithBackend();
+  }
+
+  private syncClientsWithBackend() {
+    const clientIds = this.assignedClients.map((c) => c.id);
+    this.projectsService.updateProject(this.projectData.id, { clients: clientIds }).subscribe({
+      next: () => this.cdr.detectChanges(),
+      error: () => this.cdr.detectChanges(),
+    });
   }
 
   openWorkerModal() {

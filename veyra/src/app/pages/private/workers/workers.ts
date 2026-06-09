@@ -131,7 +131,9 @@ export class Workers implements OnInit {
     const selectElement = event.target as HTMLSelectElement;
     const newRole = selectElement.value;
 
-    this.workersService.updateWorker(id, { role: newRole }).subscribe({
+    const rolePayload = { role: newRole };
+
+    this.workersService.updateWorker(id, rolePayload).subscribe({
       next: () => {
         this._workersList.update((list) =>
           list.map((w) => (w.id === id ? { ...w, role: newRole } : w)),
