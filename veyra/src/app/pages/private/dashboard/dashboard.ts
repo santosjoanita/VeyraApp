@@ -5,6 +5,7 @@ import { Header } from '../../../core/components/header/header';
 import { DashboardService } from '../../../core/services/dashboard/dashboard.service';
 import { AuthService } from '../../../core/services/user/auth.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
+import { ProjectsService } from '../../../core/services/projects/projects.service';
 
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
@@ -31,6 +32,7 @@ export class Dashboard implements OnInit {
   private authService = inject(AuthService);
   private clientsService = inject(ClientsService);
   private cdr = inject(ChangeDetectorRef);
+  private projectsService = inject(ProjectsService);
 
   metrics: any = null;
   isLoading = true;
@@ -69,6 +71,7 @@ export class Dashboard implements OnInit {
 
   loadDashboardData() {
     this.isLoading = true;
+
     this.dashboardService.getMetrics().subscribe({
       next: (data) => {
         this.isLoading = false;
@@ -82,7 +85,6 @@ export class Dashboard implements OnInit {
 
           this.projectsList = rawData.projectsList || rawData.recentProjects || [];
           this.activityList = rawData.activityList || rawData.recentActivities || [];
-          this.availableClients = rawData.clientsList || [];
         }
         this.cdr.detectChanges();
       },
@@ -92,11 +94,30 @@ export class Dashboard implements OnInit {
         this.cdr.detectChanges();
       },
     });
+
+    this.clientsService.getClients().subscribe({
+      next: (realClients) => {
+        this.availableClients = realClients;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar clientes reais para o modal da dashboard', err);
+      },
+    });
   }
 
   handleSaveProject(event: any) {
-    this.showAddProject = false;
-    this.loadDashboardData();
+    this.projectsService.createProject(event).subscribe({
+      next: () => {
+        this.showAddProject = false;
+        this.loadDashboardData();
+      },
+      error: (err) => {
+        console.error('Erro ao criar projeto na dashboard', err);
+        alert('Não foi possível criar o projeto. Verifica os campos.');
+        this.showAddProject = false;
+      },
+    });
   }
 
   handleSaveWorker(event: any) {

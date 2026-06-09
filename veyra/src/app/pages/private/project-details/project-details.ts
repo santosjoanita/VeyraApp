@@ -8,6 +8,8 @@ import { Header } from '../../../core/components/header/header';
 import { ProjectsService } from '../../../core/services/projects/projects.service';
 import { ProjectAccessesService } from '../../../core/services/projects/project-accesses.service';
 import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
+import { WorkersService } from '../../../core/services/workers/workers.service';
+import { ClientsService } from '../../../core/services/clients/clients.service';
 
 @Component({
   selector: 'app-project-details',
@@ -22,6 +24,8 @@ export class ProjectDetails implements OnInit {
   private accessesService = inject(ProjectAccessesService);
   private workersService = inject(ProjectWorkersService);
   private cdr = inject(ChangeDetectorRef);
+  private generalWorkersService = inject(WorkersService);
+  private clientsService = inject(ClientsService);
 
   projectData: any = {};
   isEditing = false;
@@ -47,9 +51,23 @@ export class ProjectDetails implements OnInit {
 
   loadProjectData(id: string) {
     this.projectsService.getProjectById(id).subscribe({
-      next: (data) => {
+      next: (data: any) => {
         this.projectData = data;
-        this.assignedClients = (data as any).clients || [];
+
+        if (data.client) {
+          this.assignedClients = [data.client];
+        } else if (data.clients && Array.isArray(data.clients)) {
+          this.assignedClients = data.clients;
+        } else if (data.clientId) {
+          this.clientsService.getClients().subscribe((allClients) => {
+            const foundClient = allClients.find((c) => c.id === data.clientId);
+            this.assignedClients = foundClient ? [foundClient] : [];
+            this.cdr.detectChanges();
+          });
+        } else {
+          this.assignedClients = [];
+        }
+
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -69,16 +87,24 @@ export class ProjectDetails implements OnInit {
       },
     });
 
-    this.workersService.getProjectWorkers().subscribe({
+    this.workersService.getProjectWorkers(id).subscribe({
       next: (data) => {
-        this.assignedTeam = data.filter((w: any) => w.projectId === id);
-        this.filteredWorkers = data;
+        this.assignedTeam = data;
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error while loading team', err);
+        this.assignedTeam = [];
         this.cdr.detectChanges();
       },
+    });
+
+    this.generalWorkersService.getWorkers().subscribe({
+      next: (data) => {
+        this.filteredWorkers = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao carregar lista total de workers:', err),
     });
   }
 
@@ -190,24 +216,28 @@ export class ProjectDetails implements OnInit {
     if (this.isWorkerAssigned(worker.id)) {
       this.removeWorker(worker.id);
     } else {
-      this.assignedTeam.push({
-        userId: worker.id,
-        name: worker.name,
-        role: worker.role || 'worker',
-        projectId: this.projectData.id,
+      this.workersService.assignWorker(this.projectData.id, worker.id).subscribe({
+        next: () => {
+          this.assignedTeam.push({
+            userId: worker.id,
+            name: worker.name,
+            role: worker.role || 'user',
+          });
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Erro ao alocar worker:', err),
       });
-      this.syncTeamWithBackend();
     }
+    this.closeWorkerModal();
   }
+
   removeWorker(userId: any) {
-    this.assignedTeam = this.assignedTeam.filter((w) => w.userId !== userId);
-    this.syncTeamWithBackend();
-  }
-  private syncTeamWithBackend() {
-    const workerIds = this.assignedTeam.map((w) => w.userId);
-    this.projectsService.updateProject(this.projectData.id, { workers: workerIds }).subscribe({
-      next: () => this.cdr.detectChanges(),
-      error: () => this.cdr.detectChanges(),
+    this.workersService.removeWorker(this.projectData.id, userId).subscribe({
+      next: () => {
+        this.assignedTeam = this.assignedTeam.filter((w) => w.userId !== userId);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Erro ao remover worker:', err),
     });
   }
 }

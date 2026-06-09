@@ -243,21 +243,22 @@
 }
 
 .actions-cell {
-  text-align: center;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
 }
 
 .action-icon {
   background: none;
   border: none;
-  color: #64748B;
+  color: #94A3B8;
   cursor: pointer;
   padding: 6px;
   border-radius: 6px;
-  transition: all 0.2s;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 4px;
+  transition: all 0.2s;
 }
 
 .action-icon:hover {
@@ -270,6 +271,6 @@
   color: #EF4444;
 }
 
-.action-icon .material-symbols-outlined {
+.action-icon span {
   font-size: 20px;
 }
