@@ -87,22 +87,32 @@ export class ProjectDetails implements OnInit {
       },
     });
 
-    this.workersService.getProjectWorkers(id).subscribe({
-      next: (data) => {
-        this.assignedTeam = data;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Error while loading team', err);
-        this.assignedTeam = [];
-        this.cdr.detectChanges();
-      },
-    });
-
     this.generalWorkersService.getWorkers().subscribe({
-      next: (data) => {
-        this.filteredWorkers = data;
-        this.cdr.detectChanges();
+      next: (allWorkers) => {
+        this.filteredWorkers = allWorkers;
+
+        this.workersService.getProjectWorkers(id).subscribe({
+          next: (teamData: any[]) => {
+            this.assignedTeam = teamData.map((assignment) => {
+              const fullProfile = allWorkers.find(
+                (w) => w.id === assignment.userId || w.id === assignment.id,
+              );
+              return {
+                ...assignment,
+                userId: assignment.userId || assignment.id,
+                name: fullProfile ? fullProfile.name : 'Unknown Worker',
+                role: fullProfile ? fullProfile.role : 'worker',
+                email: fullProfile ? fullProfile.email : '',
+              };
+            });
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error while loading team', err);
+            this.assignedTeam = [];
+            this.cdr.detectChanges();
+          },
+        });
       },
       error: (err) => console.error('Erro ao carregar lista total de workers:', err),
     });

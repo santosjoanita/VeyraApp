@@ -73,18 +73,20 @@ export class Dashboard implements OnInit {
     this.isLoading = true;
 
     this.dashboardService.getMetrics().subscribe({
-      next: (data) => {
+      next: (data: any) => {
         this.isLoading = false;
         if (data) {
           this.metrics = data;
-          const rawData = data as any;
+          this.totalProjects = data.projects?.total || 0;
+          this.totalWorkers = data.workers?.total || 0;
+          this.totalClients = data.clients?.total || 0;
+          this.activityList = data.activityList || data.recentActivities || [];
 
-          this.totalProjects = rawData.projects?.total || 0;
-          this.totalWorkers = rawData.workers?.total || 0;
-          this.totalClients = rawData.clients?.total || 0;
-
-          this.projectsList = rawData.projectsList || rawData.recentProjects || [];
-          this.activityList = rawData.activityList || rawData.recentActivities || [];
+          const rawProjects = data.projectsList || data.recentProjects || [];
+          this.projectsList = rawProjects.map((project: any) => {
+            const matchedClient = this.availableClients.find((c) => c.id === project.clientId);
+            return { ...project, client: matchedClient };
+          });
         }
         this.cdr.detectChanges();
       },
@@ -98,11 +100,16 @@ export class Dashboard implements OnInit {
     this.clientsService.getClients().subscribe({
       next: (realClients) => {
         this.availableClients = realClients;
+
+        if (this.projectsList && this.projectsList.length > 0) {
+          this.projectsList = this.projectsList.map((project: any) => {
+            const matchedClient = realClients.find((c) => c.id === project.clientId);
+            return { ...project, client: matchedClient };
+          });
+        }
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Erro ao carregar clientes reais para o modal da dashboard', err);
-      },
+      error: (err) => console.error('Erro ao carregar clientes:', err),
     });
   }
 
@@ -113,8 +120,8 @@ export class Dashboard implements OnInit {
         this.loadDashboardData();
       },
       error: (err) => {
-        console.error('Erro ao criar projeto na dashboard', err);
-        alert('Não foi possível criar o projeto. Verifica os campos.');
+        console.error('Error while creating project from dashboard', err);
+        alert('It seems there was an error creating the project. Please try again.');
         this.showAddProject = false;
       },
     });

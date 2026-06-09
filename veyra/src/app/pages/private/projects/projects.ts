@@ -10,6 +10,8 @@ import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/co
 import { DataHandlerService } from '../../../core/services/data-handler.service';
 import { ProjectsService } from '../../../core/services/projects/projects.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
+import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
+import { WorkersService } from '../../../core/services/workers/workers.service';
 
 @Component({
   selector: 'app-projects',
@@ -30,6 +32,8 @@ export class Projects implements OnInit {
   private dataHandler = inject(DataHandlerService);
   private projectsService = inject(ProjectsService);
   private clientsService = inject(ClientsService);
+  private projectWorkersService = inject(ProjectWorkersService);
+  private workersService = inject(WorkersService);
   private router = inject(Router);
 
   private _showAddProject = signal(false);
@@ -37,8 +41,13 @@ export class Projects implements OnInit {
   private _projectToDeleteName = signal('');
   private _projectToDeleteId = signal<string | null>(null);
   private _sortOrder = signal<'asc' | 'desc'>('asc');
+
   private _projectsList = signal<any[]>([]);
   private _clientsList = signal<any[]>([]);
+  private _workersList = signal<any[]>([]);
+
+  private _teamsMap = signal<{ [projectId: string]: any[] }>({});
+
   private _searchQuery = signal('');
   private _selectedStatus = signal('all');
 
@@ -92,7 +101,32 @@ export class Projects implements OnInit {
   }
 
   private _displayedProjects = computed(() => {
-    let result = this.dataHandler.filterArray(this._projectsList(), this.searchQuery, ['name']);
+    const rawProjects = this._projectsList();
+    const clients = this._clientsList();
+    const workers = this._workersList();
+    const teams = this._teamsMap();
+
+    const enrichedProjects = rawProjects.map((project) => {
+      const matchedClient = clients.find((c) => c.id === project.clientId);
+
+      const rawTeam = teams[project.id] || [];
+      const assignedTeam = rawTeam.map((member: any) => {
+        const fullProfile = workers.find((w) => w.id === member.userId || w.id === member.id);
+        return {
+          ...member,
+          userId: member.userId || member.id,
+          name: fullProfile ? fullProfile.name : 'User',
+        };
+      });
+
+      return {
+        ...project,
+        clientName: matchedClient ? matchedClient.name : 'Unassigned',
+        assignedTeam: assignedTeam,
+      };
+    });
+
+    let result = this.dataHandler.filterArray(enrichedProjects, this.searchQuery, ['name']);
     if (this.selectedStatus !== 'all') {
       result = this.dataHandler.filterArrayByValue(result, 'status', this.selectedStatus);
     }
@@ -104,21 +138,44 @@ export class Projects implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadProjects();
+    this.loadWorkers();
     this.loadClients();
+    this.loadProjects();
   }
 
-  loadProjects() {
-    this.projectsService.getProjects().subscribe({
-      next: (data) => this._projectsList.set(data),
-      error: (err) => console.error('Erro ao carregar projetos', err),
+  loadWorkers() {
+    this.workersService.getWorkers().subscribe({
+      next: (data) => this._workersList.set(data),
+      error: (err) => console.error('Error while loading workers', err),
     });
   }
 
   loadClients() {
     this.clientsService.getClients().subscribe({
       next: (data) => this._clientsList.set(data),
-      error: (err) => console.error('Erro ao carregar lista de clientes para o modal', err),
+      error: (err) => console.error('Error while loading clients', err),
+    });
+  }
+
+  loadProjects() {
+    this.projectsService.getProjects().subscribe({
+      next: (projects) => {
+        this._projectsList.set(projects);
+
+        projects.forEach((project: any) => {
+          this.projectWorkersService.getProjectWorkers(project.id).subscribe({
+            next: (teamMembers) => {
+              this._teamsMap.update((map) => ({
+                ...map,
+                [project.id]: teamMembers,
+              }));
+            },
+            error: (err) =>
+              console.error(`Error while loading team for project ${project.id}`, err),
+          });
+        });
+      },
+      error: (err) => console.error('Error while loading projects', err),
     });
   }
 
@@ -139,8 +196,9 @@ export class Projects implements OnInit {
       next: (createdProject) => {
         this._projectsList.update((list) => [...list, createdProject]);
         this._showAddProject.set(false);
+        this.loadProjects();
       },
-      error: (err) => console.error('Erro ao criar projeto', err),
+      error: (err) => console.error('Error while creating project', err),
     });
   }
 
@@ -159,7 +217,7 @@ export class Projects implements OnInit {
           this._showDeleteModal.set(false);
           this._projectToDeleteId.set(null);
         },
-        error: (err) => console.error('Erro ao apagar projeto', err),
+        error: (err) => console.error('Error while deleting project', err),
       });
     }
   }
