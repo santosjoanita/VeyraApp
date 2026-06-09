@@ -7,6 +7,7 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
+import { ConfirmModal } from '../../../core/components/modals/confirm-modal/confirm-modal';
 import { DataHandlerService } from '../../../core/services/data-handler.service';
 import { WorkersService } from '../../../core/services/workers/workers.service';
 import { Worker } from '../../../core/class/worker.model';
@@ -22,6 +23,7 @@ import { Worker } from '../../../core/class/worker.model';
     Header,
     AddWorkerModal,
     ConfirmDelete,
+    ConfirmModal,
   ],
   templateUrl: './workers.html',
   styleUrl: './workers.css',
@@ -33,12 +35,21 @@ export class Workers implements OnInit {
 
   private _showAddWorker = signal(false);
   private _showDeleteModal = signal(false);
+  private _showRoleModal = signal(false);
   private _itemToDeleteId = signal<string | number | null>(null);
   private _itemToDeleteName = signal('');
   private _sortOrder = signal<'asc' | 'desc'>('asc');
   private _workersList = signal<Worker[]>([]);
   private _searchQuery = signal('');
   private _selectedRole = signal('all');
+
+  pendingRoleChange = signal<{
+    id: string | number;
+    name: string;
+    oldRole: string;
+    newRole: string;
+    selectElement: HTMLSelectElement;
+  } | null>(null);
 
   get showAddWorker() {
     return this._showAddWorker();
@@ -52,6 +63,13 @@ export class Workers implements OnInit {
   }
   set showDeleteModal(value: boolean) {
     this._showDeleteModal.set(value);
+  }
+
+  get showRoleModal() {
+    return this._showRoleModal();
+  }
+  set showRoleModal(value: boolean) {
+    this._showRoleModal.set(value);
   }
 
   get itemToDeleteName() {
@@ -131,19 +149,55 @@ export class Workers implements OnInit {
     const selectElement = event.target as HTMLSelectElement;
     const newRole = selectElement.value;
 
-    const rolePayload = { role: newRole };
+    const worker = this._workersList().find((w) => w.id === id);
+    if (!worker) return;
 
-    this.workersService.updateWorker(id, rolePayload).subscribe({
+    const oldRole = worker.role;
+
+    if (oldRole === newRole) return;
+
+    this.pendingRoleChange.set({
+      id,
+      name: worker.name || worker.email,
+      oldRole: oldRole,
+      newRole: newRole,
+      selectElement: selectElement,
+    });
+    this.showRoleModal = true;
+  }
+
+  confirmRoleChange() {
+    const pending = this.pendingRoleChange();
+    if (!pending) return;
+
+    const rolePayload = { role: pending.newRole };
+
+    this.workersService.updateWorker(pending.id, rolePayload).subscribe({
       next: () => {
         this._workersList.update((list) =>
-          list.map((w) => (w.id === id ? { ...w, role: newRole } : w)),
+          list.map((w) => (w.id === pending.id ? { ...w, role: pending.newRole } : w)),
         );
+        this.closeRoleModal();
       },
       error: (err) => {
         console.error('Erro ao atualizar cargo do worker', err);
-        this.loadWorkers();
+        pending.selectElement.value = pending.oldRole;
+        this.closeRoleModal();
       },
     });
+  }
+
+  cancelRoleChange() {
+    const pending = this.pendingRoleChange();
+    if (pending) {
+      pending.selectElement.value = pending.oldRole;
+    }
+    this.closeRoleModal();
+  }
+
+  private closeRoleModal() {
+    this.showRoleModal = false;
+    this.pendingRoleChange.set(null);
   }
 
   handleSaveWorker(newWorkerData: any) {

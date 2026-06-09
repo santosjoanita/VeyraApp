@@ -78,10 +78,6 @@
                 </td>
                 <td class="text-muted">{{ worker.lastAccess || 'Never' }}</td>
                 <td class="actions-cell">
-                  <button class="action-icon" title="View Details" (click)="$event.stopPropagation(); viewWorker(worker.id)">
-                    <span class="material-symbols-outlined">description</span>
-                  </button>
-                  
                   <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editWorker(worker.id)">
                     <span class="material-symbols-outlined">edit</span>
                   </button>
@@ -112,4 +108,15 @@
     (confirm)="handleConfirmDelete()"
     (close)="showDeleteModal = false">
   </app-confirm-delete>
+}
+@if (showRoleModal) {
+  <app-confirm-modal
+    [title]="'Confirm Profile Change'"
+    [message]="'Are you sure you want to change the profile of ' + pendingRoleChange()?.name + ' to ' + (pendingRoleChange()?.newRole | titlecase) + '?'"
+    [confirmText]="'Confirm Change'"
+    [cancelText]="'Cancel'"
+    [btnClass]="'btn-save'"
+    (close)="cancelRoleChange()"
+    (confirm)="confirmRoleChange()">
+  </app-confirm-modal>
 }

@@ -1,0 +1,28 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h3>{{ title }}</h3>
+      <button class="modal-close" (click)="onCancel()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body" style="padding: 20px 0;">
+      <p style="font-size: 15px; line-height: 1.5; color: var(--text-main); text-align: center;">
+        {{ message }}
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="onCancel()">
+        {{ cancelText }}
+      </button>
+      
+      <button [className]="btnClass" (click)="onConfirm()">
+        {{ confirmText }}
+      </button>
+    </div>
+
+  </div>
+</div>
