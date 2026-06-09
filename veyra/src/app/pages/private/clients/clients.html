@@ -20,8 +20,10 @@
           </button>
 
           @if (showAddClient()) {
-            <app-add-client-modal (close)="showAddClient.set(false)"></app-add-client-modal>
-          }
+              <app-add-client-modal 
+                (close)="showAddClient.set(false)"
+                (save)="handleSaveClient($event)"> </app-add-client-modal>
+            }
         </div>
       </div>
 
@@ -66,11 +68,7 @@
                 
                 <td class="text-muted">{{ client.createdAt | date:'dd MMM yyyy' }}</td>
                 
-                <td class="actions-cell">
-                  <button class="action-icon" title="View Details" (click)="$event.stopPropagation(); viewClient(client.id)">
-                    <span class="material-symbols-outlined">description</span>
-                  </button>
-                  
+                <td class="actions-cell">                  
                   <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editClient(client.id)">
                     <span class="material-symbols-outlined">edit</span>
                   </button>

@@ -4,6 +4,7 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { DashboardService } from '../../../core/services/dashboard/dashboard.service';
 import { AuthService } from '../../../core/services/user/auth.service';
+import { ClientsService } from '../../../core/services/clients/clients.service';
 
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
@@ -28,6 +29,7 @@ import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/co
 export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
   private authService = inject(AuthService);
+  private clientsService = inject(ClientsService);
   private cdr = inject(ChangeDetectorRef);
 
   metrics: any = null;
@@ -57,16 +59,19 @@ export class Dashboard implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Erro ao ir buscar o nome para a dashboard', err);
+        console.error('Error fetching user for dashboard', err);
         this.cdr.detectChanges();
       },
     });
 
+    this.loadDashboardData();
+  }
+
+  loadDashboardData() {
+    this.isLoading = true;
     this.dashboardService.getMetrics().subscribe({
       next: (data) => {
         this.isLoading = false;
-        console.log('dashboard responses', data);
-
         if (data) {
           this.metrics = data;
           const rawData = data as any;
@@ -75,19 +80,14 @@ export class Dashboard implements OnInit {
           this.totalWorkers = rawData.workers?.total || 0;
           this.totalClients = rawData.clients?.total || 0;
 
-          this.metrics.totalProjects = this.totalProjects;
-          this.metrics.totalWorkers = this.totalWorkers;
-          this.metrics.totalClients = this.totalClients;
-
           this.projectsList = rawData.projectsList || rawData.recentProjects || [];
           this.activityList = rawData.activityList || rawData.recentActivities || [];
           this.availableClients = rawData.clientsList || [];
         }
-
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error while loading dashboard', err);
+        console.error('Error while loading dashboard metrics:', err);
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -96,12 +96,25 @@ export class Dashboard implements OnInit {
 
   handleSaveProject(event: any) {
     this.showAddProject = false;
+    this.loadDashboardData();
   }
+
   handleSaveWorker(event: any) {
     this.showAddWorker = false;
+    this.loadDashboardData();
   }
+
   handleSaveClient(event: any) {
-    this.showAddClient = false;
+    this.clientsService.createClient(event).subscribe({
+      next: () => {
+        this.showAddClient = false;
+        this.loadDashboardData();
+      },
+      error: (err) => {
+        console.error('Error saving client from dashboard:', err);
+        this.showAddClient = false;
+      },
+    });
   }
 
   deleteProject(id: any) {

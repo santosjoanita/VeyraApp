@@ -41,7 +41,9 @@ export class RegisterUser {
     this.isLoading = true;
     this.cdr.detectChanges();
 
-    this.authService.register(this.registerData).subscribe({
+    const { role, ...payload } = this.registerData;
+
+    this.authService.register(payload).subscribe({
       next: (response) => {
         this.isLoading = false;
         this.saved.emit(response);

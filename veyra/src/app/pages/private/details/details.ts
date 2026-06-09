@@ -101,18 +101,35 @@ export class Details implements OnInit {
 
   saveChanges() {
     if (this.data && this.data.id) {
-      this.clientsService.updateClient(this.data.id, this.data).subscribe({
-        next: (updatedClient) => {
-          this.data = updatedClient;
-          this.backupData = { ...updatedClient };
-          this.isEditing = false;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error updating client data:', err);
-          this.cdr.detectChanges();
-        },
-      });
+      const { id, createdAt, updatedAt, ...payload } = this.data;
+
+      if (this.entityType === 'worker') {
+        this.workersService.updateWorker(this.data.id, payload).subscribe({
+          next: (updatedWorker) => {
+            this.data = updatedWorker;
+            this.backupData = { ...updatedWorker };
+            this.isEditing = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error updating worker data:', err);
+            this.cdr.detectChanges();
+          },
+        });
+      } else {
+        this.clientsService.updateClient(this.data.id, payload).subscribe({
+          next: (updatedClient) => {
+            this.data = updatedClient;
+            this.backupData = { ...updatedClient };
+            this.isEditing = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error updating client data:', err);
+            this.cdr.detectChanges();
+          },
+        });
+      }
     }
   }
 }
