@@ -22,11 +22,12 @@
               <option value="user">Worker</option> 
             </select>
           </div>
-
+          @if (isAdmin) {
            <button class="btn-add" (click)="showAddWorker = true">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Worker
           </button>
+        }
 
           @if (showAddWorker) {
             <app-add-worker-modal 
@@ -53,7 +54,9 @@
               <th>Profile</th>
               <th>Status</th>
               <th>Last Access</th>
+              @if (isAdmin) {
               <th class="text-center">Actions</th>
+              }
             </tr>
           </thead>
         <tbody>
@@ -62,12 +65,18 @@
                 <td class="fw-bold">{{ worker.name }}</td>
                 <td class="text-muted">{{ worker.email }}</td>
                 <td>
-                  <select class="role-dropdown" 
-                          (click)="$event.stopPropagation()" 
-                          (change)="changeProfile(worker.id, $event)">
-                    <option value="admin" [selected]="worker.role === 'admin'">Admin</option>
-                    <option value="user" [selected]="worker.role === 'user'">Worker</option> 
-                  </select>
+                  @if (isAdmin) {
+                    <select class="role-dropdown" 
+                            (click)="$event.stopPropagation()" 
+                            (change)="changeProfile(worker.id, $event)">
+                      <option value="admin" [selected]="worker.role === 'admin'">Admin</option>
+                      <option value="user" [selected]="worker.role === 'user'">Worker</option> 
+                    </select>
+                  } @else {
+                    <span class="text-muted" style="font-size: 14px; padding-left: 8px;">
+                      {{ worker.role === 'admin' ? 'Admin' : 'Worker' }}
+                    </span>
+                  }
                 </td>
                 <td>
                   <span class="status-badge" 
@@ -77,15 +86,17 @@
                   </span>
                 </td>
                 <td class="text-muted">{{ worker.lastAccess || 'Never' }}</td>
-                <td class="actions-cell">
-                  <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editWorker(worker.id)">
-                    <span class="material-symbols-outlined">edit</span>
-                  </button>
-                  
-                  <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); openDeleteModal(worker)">
+                @if (isAdmin) {
+                  <td class="actions-cell">
+                    <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editWorker(worker.id)">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    
+                    <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); openDeleteModal(worker)">
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
+              }
               </tr>
             } @empty {
               <tr>

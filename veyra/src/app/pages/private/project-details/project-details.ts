@@ -42,6 +42,10 @@ export class ProjectDetails implements OnInit {
   filteredClients: any[] = [];
   filteredWorkers: any[] = [];
 
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
+  }
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {

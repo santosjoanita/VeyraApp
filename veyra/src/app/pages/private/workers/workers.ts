@@ -116,6 +116,9 @@ export class Workers implements OnInit {
   set selectedRole(value: string) {
     this._selectedRole.set(value);
   }
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
+  }
 
   private _filteredWorkers = computed(() => {
     let result = this.dataHandler.filterArray(this._workersList(), this.searchQuery, [

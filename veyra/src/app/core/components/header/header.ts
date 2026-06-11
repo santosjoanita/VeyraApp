@@ -21,6 +21,10 @@ export class Header implements OnInit {
 
   isModalOpen = false;
 
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
+  }
+
   ngOnInit(): void {
     this.authService.getMe().subscribe({
       next: (userData) => {

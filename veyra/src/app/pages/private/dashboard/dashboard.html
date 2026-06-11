@@ -21,9 +21,11 @@
             <span class="stat-title">Total Projects</span>
             <span class="stat-value">{{ totalProjects }}</span>
           </div>
+          @if (isAdmin) {
           <button class="btn-add-stat" (click)="showAddProject = true">
             <span class="add-icon">+</span> Add Project
           </button>
+        }
         </div>
         
 
@@ -42,9 +44,11 @@
             <span class="stat-title">Total Clients</span>
             <span class="stat-value">{{ totalClients }}</span>
           </div>
-          <button class="btn-add-stat" (click)="showAddClient = true">
-            <span class="add-icon">+</span> Add Client
-          </button>
+          @if (isAdmin) {
+            <button class="btn-add-stat" (click)="showAddClient = true">
+              <span class="add-icon">+</span> Add Client
+            </button>
+          }
         </div>
          <div class="stat-card">
           <div class="stat-icon-wrapper">
@@ -73,7 +77,9 @@
               <tr>
                 <th>Project Name</th>
                 <th>Due Date</th>
-                <th class="text-center">Actions</th>
+                @if (isAdmin) {
+                  <th class="text-center">Actions</th>
+                }
               </tr>
             </thead>
             <tbody>
@@ -81,9 +87,11 @@
                 <tr>
                   <td class="fw-bold">{{ project.name }}</td>
                   <td>{{ project.endDate | date:'dd MMM yyyy' }}</td>
-                  <td class="text-center">
-                    <button class="action-btn delete-btn" title="Delete Project" (click)="deleteProject(project.id)">-</button>
-                  </td>
+                  @if (isAdmin){
+                    <td class="text-center">
+                      <button class="action-btn delete-btn" title="Delete Project" (click)="deleteProject(project.id)">-</button>
+                    </td>
+                  }
                 </tr>
               } @empty {
                 <tr>
@@ -93,7 +101,7 @@
             </tbody>
           </table>
         </div>
-
+        @if (isAdmin) {
         <div class="activity-section card-container">
           <h3>Activity Log</h3>
           <h6>Track all changes</h6>
@@ -128,6 +136,7 @@
             }
           </ul>
         </div>
+      }
 
       </div>
     </div>

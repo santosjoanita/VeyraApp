@@ -47,6 +47,10 @@ export class Clients implements OnInit {
   private _searchQuery = signal('');
   private _projectsList = signal<any[]>([]);
 
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
+  }
+
   get currentPage() {
     return this._currentPage();
   }

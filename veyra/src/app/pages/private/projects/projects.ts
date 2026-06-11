@@ -113,6 +113,9 @@ export class Projects implements OnInit {
     this._selectedStatus.set(value);
     this._currentPage.set(1);
   }
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
+  }
 
   get editingProject() {
     return this._editingProject();

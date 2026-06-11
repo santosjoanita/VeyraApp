@@ -68,11 +68,12 @@ export class Dashboard implements OnInit {
 
     this.loadDashboardData();
   }
-
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
+  }
   loadDashboardData() {
     this.isLoading = true;
 
-    // 1. Carrega as métricas puras (apenas para alimentar os contadores e o log de atividades)
     this.dashboardService.getMetrics().subscribe({
       next: (data: any) => {
         if (data) {

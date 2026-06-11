@@ -24,10 +24,12 @@
             </select>
           </div>
 
-          <button class="btn-add" (click)="showAddProject = true">
-            <span class="material-symbols-outlined add-icon">add</span>
-            Add Project
-          </button>
+         @if (isAdmin) {
+            <button class="btn-add" (click)="showAddProject = true">
+              <span class="material-symbols-outlined add-icon">add</span>
+              Add Project
+            </button>
+          }
 
          @if (showAddProject) {
           <app-add-project-modal 
@@ -56,7 +58,9 @@
               <th>Due Date</th>
               <th>Assigned Team</th>
               <th>Status</th>
-              <th class="text-center">Actions</th>
+              @if (isAdmin) {
+                  <th class="text-center">Actions</th>
+                }
             </tr>
           </thead>
           <tbody>
@@ -87,7 +91,7 @@
                     {{ project.status | titlecase }}
                   </span>
                 </td>
-                
+                @if (isAdmin) {
                 <td class="actions-cell">
                   <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editProject(project)">
                     <span class="material-symbols-outlined">edit</span>
@@ -96,6 +100,7 @@
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
+              }
 
               </tr>
             } @empty {

@@ -32,7 +32,7 @@
           </div>
         </div>
 
-        @if (!isEditing) {
+        @if (!isEditing && isAdmin) {
           <button class="btn-edit-stat" (click)="startEditing()">
             <span class="add-icon">✎</span> Edit Project
           </button>
@@ -48,7 +48,7 @@
                     [disabled]="!isEditing" 
                     placeholder="Sem descrição disponível..."></textarea>
           
-          @if (isEditing) {
+          @if (isEditing && isAdmin) {
             <div class="form-actions">
               <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
               <button class="btn-save" (click)="saveChanges()">Save Changes</button>
@@ -105,9 +105,11 @@
         <div class="stat-card team-card">
           <div class="card-header">
             <h2>Assigned Clients</h2>
-            <button class="btn-icon-small" title="Assign Client" (click)="openClientModal()">
-              <span class="material-symbols-outlined">person_add</span>
-            </button>
+            @if (isAdmin) {
+              <button class="btn-icon-small" title="Assign Client" (click)="openClientModal()">
+                <span class="material-symbols-outlined">person_add</span>
+              </button>
+            }
           </div>
           
           <ul class="person-list">
@@ -133,9 +135,11 @@
         <div class="stat-card team-card">
           <div class="card-header">
             <h2>Assigned Team</h2>
-            <button class="btn-icon-small" title="Assign Team Member" (click)="openWorkerModal()">
-              <span class="material-symbols-outlined">group_add</span>
-            </button>
+            @if (isAdmin) {
+              <button class="btn-icon-small" title="Assign Team Member" (click)="openWorkerModal()">
+                <span class="material-symbols-outlined">group_add</span>
+              </button>
+            }
           </div>
           
           <ul class="person-list">

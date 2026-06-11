@@ -29,7 +29,9 @@ export class Details implements OnInit {
   isEditing = false;
 
   private backupData = {};
-
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
+  }
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     const currentUrl = this.route.snapshot.pathFromRoot.map((r) => r.routeConfig?.path).join('/');
