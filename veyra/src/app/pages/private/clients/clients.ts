@@ -9,6 +9,7 @@ import { AddClientModal } from '../../../core/components/modals/add-client/add-c
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 import { DataHandlerService } from '../../../core/services/data-handler.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
+import { ProjectsService } from '../../../core/services/projects/projects.service';
 import { Client } from '../../../core/class/client.model';
 import { Paginator } from '../../../core/components/paginator/paginator';
 
@@ -32,6 +33,7 @@ export class Clients implements OnInit {
   private dataHandler = inject(DataHandlerService);
   private clientsService = inject(ClientsService);
   private router = inject(Router);
+  private projectsService = inject(ProjectsService);
 
   showAddClient = signal(false);
   showDeleteModal = signal(false);
@@ -43,6 +45,7 @@ export class Clients implements OnInit {
   private _currentPage = signal(1);
   private _pageSize = signal(10);
   private _searchQuery = signal('');
+  private _projectsList = signal<any[]>([]);
 
   get currentPage() {
     return this._currentPage();
@@ -60,10 +63,21 @@ export class Clients implements OnInit {
   }
 
   private _filteredClients = computed(() => {
-    let result = this.dataHandler.filterArray(this.clientsList(), this.searchQuery, [
-      'name',
-      'email',
-    ]);
+    const clients = this.clientsList();
+    const projects = this._projectsList();
+
+    const enrichedClients = clients.map((client) => {
+      const activeCount = projects.filter(
+        (p) => p.clientId === client.id && p.status === 'active',
+      ).length;
+
+      return {
+        ...client,
+        activeProjects: activeCount,
+      };
+    });
+
+    let result = this.dataHandler.filterArray(enrichedClients, this.searchQuery, ['name', 'email']);
     return this.dataHandler.sortArray(result, 'name', this.sortOrder());
   });
 
@@ -83,6 +97,7 @@ export class Clients implements OnInit {
 
   ngOnInit(): void {
     this.loadClients();
+    this.loadProjects();
   }
 
   onPageChange(event: { pageIndex: number; pageSize: number }) {
@@ -97,6 +112,12 @@ export class Clients implements OnInit {
     });
   }
 
+  loadProjects() {
+    this.projectsService.getProjects().subscribe({
+      next: (data) => this._projectsList.set(data),
+      error: (err) => console.error('Erro ao carregar projetos para os clientes', err),
+    });
+  }
   toggleSort(): void {
     this.sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }

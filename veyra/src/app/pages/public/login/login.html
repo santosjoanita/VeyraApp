@@ -14,11 +14,9 @@
       </div>
 
       <div class="input-group">
-  
-        <div class="password-wrapper">
-          <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="loginData.password" name="password">
-
-          <span class="material-symbols-outlined" (click)="togglePassword()">
+        <div class="password-wrapper" style="position:relative;">
+          <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="loginData.password" name="password" placeholder="Password" style="padding-right:40px;">
+          <span class="material-symbols-outlined" (click)="togglePassword()" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer;">
             {{ showPassword ? 'visibility_off' : 'visibility' }}
           </span>
         </div>

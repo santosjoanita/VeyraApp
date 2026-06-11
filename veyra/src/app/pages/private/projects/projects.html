@@ -29,13 +29,14 @@
             Add Project
           </button>
 
-          @if (showAddProject) {
-            <app-add-project-modal 
-              [clients]="clientsList"
-              (close)="showAddProject = false" 
-              (save)="handleSaveProject($event)">
-            </app-add-project-modal>
-          }
+         @if (showAddProject) {
+          <app-add-project-modal 
+            [clients]="clientsList"
+            [projectData]="editingProject" 
+            (close)="closeModal()" 
+            (save)="handleSaveProject($event)">
+          </app-add-project-modal>
+        }
         </div>
       </div>
 
@@ -88,7 +89,7 @@
                 </td>
                 
                 <td class="actions-cell">
-                  <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editProject(project.id)">
+                  <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editProject(project)">
                     <span class="material-symbols-outlined">edit</span>
                   </button>
                   <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); openDeleteModal(project)">
@@ -106,8 +107,8 @@
             }
           </tbody>
         </table>
-        <app-paginator
-          [totalItems]="totalWorkersCount"
+       <app-paginator
+          [totalItems]="totalProjectsCount"
           [pageSize]="pageSize"
           [currentPage]="currentPage"
           (pageChange)="onPageChange($event)">

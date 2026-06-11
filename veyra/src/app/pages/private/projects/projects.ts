@@ -43,6 +43,7 @@ export class Projects implements OnInit {
   private _projectToDeleteName = signal('');
   private _projectToDeleteId = signal<string | null>(null);
   private _sortOrder = signal<'asc' | 'desc'>('asc');
+  private _editingProject = signal<any | null>(null);
 
   private _projectsList = signal<any[]>([]);
   private _clientsList = signal<any[]>([]);
@@ -113,7 +114,11 @@ export class Projects implements OnInit {
     this._currentPage.set(1);
   }
 
-  private _displayedProjects = computed(() => {
+  get editingProject() {
+    return this._editingProject();
+  }
+
+  private _filteredProjects = computed(() => {
     const rawProjects = this._projectsList();
     const clients = this._clientsList();
     const workers = this._workersList();
@@ -146,8 +151,23 @@ export class Projects implements OnInit {
     return this.dataHandler.sortArray(result, 'name', this.sortOrder);
   });
 
+  get totalProjectsCount() {
+    return this._filteredProjects().length;
+  }
+
+  private _displayedProjects = computed(() => {
+    const list = this._filteredProjects();
+    const startIndex = (this._currentPage() - 1) * this._pageSize();
+    return list.slice(startIndex, startIndex + this._pageSize());
+  });
+
   get displayedProjects() {
     return this._displayedProjects();
+  }
+
+  editProject(project: any): void {
+    this._editingProject.set(project);
+    this.showAddProject = true;
   }
 
   ngOnInit(): void {
@@ -155,6 +175,7 @@ export class Projects implements OnInit {
     this.loadClients();
     this.loadProjects();
   }
+
   onPageChange(event: { pageIndex: number; pageSize: number }) {
     this._currentPage.set(event.pageIndex);
     this._pageSize.set(event.pageSize);
@@ -204,25 +225,37 @@ export class Projects implements OnInit {
     this.router.navigate(['/projects/details', id]);
   }
 
-  editProject(id: string): void {
-    this.router.navigate(['/projects/details', id]);
-  }
+  handleSaveProject(data: any) {
+    const projectToEdit = this._editingProject();
 
-  handleSaveProject(newProjectData: any) {
-    this.projectsService.createProject(newProjectData).subscribe({
-      next: (createdProject) => {
-        this._projectsList.update((list) => [...list, createdProject]);
-        this._showAddProject.set(false);
-        this.loadProjects();
-      },
-      error: (err) => console.error('Error while creating project', err),
-    });
+    if (projectToEdit) {
+      this.projectsService.updateProject(projectToEdit.id, data).subscribe({
+        next: () => {
+          this.loadProjects();
+          this.closeModal();
+        },
+        error: (err) => console.error('Error while updating project', err),
+      });
+    } else {
+      this.projectsService.createProject(data).subscribe({
+        next: () => {
+          this.loadProjects();
+          this.closeModal();
+        },
+        error: (err) => console.error('Error while creating project', err),
+      });
+    }
   }
 
   openDeleteModal(project: any) {
     this._projectToDeleteId.set(project.id);
     this._projectToDeleteName.set(project.name);
     this._showDeleteModal.set(true);
+  }
+
+  closeModal() {
+    this.showAddProject = false;
+    this._editingProject.set(null);
   }
 
   handleConfirmDelete() {
