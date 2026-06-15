@@ -24,4 +24,8 @@ export class AuthService {
   getMe(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/me`);
   }
+
+  updateMe(data: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/me`, data);
+  }
 }

@@ -18,11 +18,9 @@
         <div class="stat-card personal-info">
           <div class="stat-title">
             <h2>Personal Information</h2>
-            @if (!isEditing) {
-              <button class="btn-edit-stat" (click)="startEditing()">
-                <span class="add-icon">✎</span> Edit
-              </button>
-            }
+            <button *ngIf="!isEditing" class="btn-edit-stat" (click)="startEditing()">
+              <span class="add-icon">✎</span> Edit
+            </button>
           </div>
 
           <div class="info-fields-grid">
@@ -39,15 +37,21 @@
 
             <div class="form-group">
               <label>Password</label>
-              <div class="password-wrapper">
-                <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="currentUser.password" name="password" class="profile-input" [disabled]="!isEditing">
-                <span class="material-symbols-outlined eye-icon" (click)="togglePassword()">
-                  {{ showPassword ? 'visibility_off' : 'visibility' }}
-                </span>
-              </div>
-              @if (isEditing) {
-                <a class="change-password-link" (click)="changePassword()">Change Password</a>
-              }
+              <ng-container *ngIf="!isEditing; else passwordEdit">
+                <div class="password-display">••••••••</div>
+              </ng-container>
+              <ng-template #passwordEdit>
+                <div class="password-wrapper">
+                  <input [type]="showPassword ? 'text' : 'password'"
+                    [(ngModel)]="currentUser.password"
+                    name="password"
+                    class="profile-input"
+                    placeholder="Enter a new password">
+                  <button type="button" class="material-symbols-outlined password-toggle" (click)="togglePassword()">
+                    {{ showPassword ? 'visibility_off' : 'visibility' }}
+                  </button>
+                </div>
+              </ng-template>
             </div>
 
             <div class="form-group">
@@ -64,12 +68,10 @@
 
           </div>
 
-          @if (isEditing) {
-            <div class="form-actions">
-              <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
-              <button class="btn-save" (click)="saveChanges()">Save Changes</button>
-            </div>
-          }
+          <div *ngIf="isEditing" class="form-actions">
+            <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
+            <button class="btn-save" (click)="saveChanges()">Save Changes</button>
+          </div>
 
         </div>
         

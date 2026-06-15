@@ -7,6 +7,7 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { ClientsService } from '../../../core/services/clients/clients.service';
 import { ProjectsService } from '../../../core/services/projects/projects.service';
+import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
 import { WorkersService } from '../../../core/services/workers/workers.service';
 
 @Component({
@@ -20,6 +21,7 @@ export class Details implements OnInit {
   private route = inject(ActivatedRoute);
   private clientsService = inject(ClientsService);
   private projectsService = inject(ProjectsService);
+  private projectWorkersService = inject(ProjectWorkersService);
   private workersService = inject(WorkersService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -88,6 +90,49 @@ export class Details implements OnInit {
         this.cdr.detectChanges();
       },
     });
+
+    this.projectsService.getProjects(undefined, undefined).subscribe({
+      next: (projectList) => {
+        const associatedProjects: any[] = [];
+        let completed = 0;
+
+        if (!projectList.length) {
+          this.projects = [];
+          this.cdr.detectChanges();
+          return;
+        }
+
+        projectList.forEach((project) => {
+          this.projectWorkersService.getProjectWorkers(project.id).subscribe({
+            next: (assignments) => {
+              const isAssigned = assignments.some(
+                (worker) => worker.userId === id || worker.id === id,
+              );
+              if (isAssigned) {
+                associatedProjects.push(project);
+              }
+              completed += 1;
+              if (completed === projectList.length) {
+                this.projects = associatedProjects;
+                this.cdr.detectChanges();
+              }
+            },
+            error: (err) => {
+              console.error('Error loading project workers for', project.id, err);
+              completed += 1;
+              if (completed === projectList.length) {
+                this.projects = associatedProjects;
+                this.cdr.detectChanges();
+              }
+            },
+          });
+        });
+      },
+      error: (err) => {
+        console.error('Error loading projects for worker details:', err);
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   startEditing() {
@@ -103,10 +148,14 @@ export class Details implements OnInit {
 
   saveChanges() {
     if (this.data && this.data.id) {
-      const { id, createdAt, updatedAt, ...payload } = this.data;
-
       if (this.entityType === 'worker') {
-        this.workersService.updateWorker(this.data.id, payload).subscribe({
+        const workerPayload: any = {
+          name: this.data.name,
+          role: this.data.role,
+          isActive: this.data.isActive,
+        };
+
+        this.workersService.updateWorker(this.data.id, workerPayload).subscribe({
           next: (updatedWorker) => {
             this.data = updatedWorker;
             this.backupData = { ...updatedWorker };
@@ -119,6 +168,8 @@ export class Details implements OnInit {
           },
         });
       } else {
+        const { id, createdAt, updatedAt, ...payload } = this.data;
+
         this.clientsService.updateClient(this.data.id, payload).subscribe({
           next: (updatedClient) => {
             this.data = updatedClient;

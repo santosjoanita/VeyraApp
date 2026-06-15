@@ -116,26 +116,55 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 90%;
 }
 
 .password-wrapper .profile-input {
-  padding-right: 40px; 
+  padding-right: 44px;
+  width: 90%;
 }
 
-.change-password-link {
-  font-size: 12px;
-  color: var(--brand-primary, #004395);
-  margin-top: 8px;
+.password-wrapper .password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
-  font-weight: 600;
-  align-self: flex-start;
-  text-decoration: none;
+  color: #64748B;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  padding: 0;
 }
 
-.change-password-link:hover {
-  text-decoration: underline;
-  color: var(--brand-secondary, #001A42);
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
+
+.password-wrapper .password-toggle:hover {
+  color: var(--brand-primary, #004395);
+}
+
+.password-display {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 90%;
+  min-height: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: 8px;
+  background-color: var(--bg-page, #F8FAFC);
+  color: #64748B;
+  font-size: 14px;
+}
+
 
 .role-display {
   padding: 10px 12px;
@@ -239,14 +268,21 @@ input:checked + .slider:before {
   justify-content: flex-end;
   gap: 12px;
   margin-top: 32px;
-  width: 100%;
+}
+
+.form-actions button.btn-cancel {
+  width: 110px !important;
+}
+
+.form-actions button.btn-save {
+  width: 130px !important;
 }
 
 .btn-cancel {
   background-color: transparent;
   color: #64748B;
   border: 1px solid var(--border-light, #E2E8F0);
-  padding: 10px 20px;
+  padding: 10px 16px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
@@ -264,7 +300,8 @@ input:checked + .slider:before {
   background-color: var(--brand-primary, #004395);
   color: #FFFFFF;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 16px;
+  width: 130px;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;

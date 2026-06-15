@@ -21,11 +21,9 @@
           </div>
         </div>
 
-        @if (!isEditing && isAdmin) {
-          <button class="btn-edit-stat" (click)="startEditing()">
-            <span class="add-icon">✎</span> Edit Profile
-          </button>
-        }
+        <button *ngIf="!isEditing && isAdmin" class="btn-edit-stat" (click)="startEditing()">
+          <span class="add-icon">✎</span> Edit Profile
+        </button>
       </div>
 
       <div class="details-grid" [class.worker-layout]="entityType === 'worker'">
@@ -55,20 +53,16 @@
             </div>
           </div>
 
-          @if (isEditing && isAdmin) {
-            <div class="form-actions">
-              <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
-              <button class="btn-save" (click)="saveChanges()">Save Changes</button>
-            </div>
-          }
+          <div *ngIf="isEditing && isAdmin" class="form-actions">
+            <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
+            <button class="btn-save" (click)="saveChanges()">Save Changes</button>
+          </div>
         </div>
 
-        @if (entityType === 'client') {
-          <div class="stat-card notes-card">
-            <h2>Notes</h2>
-            <textarea [(ngModel)]="data.notes" class="notes-textarea" [disabled]="!isEditing" placeholder="No notes available for this client."></textarea>
-          </div>
-        }
+        <div *ngIf="entityType === 'client'" class="stat-card notes-card">
+          <h2>Notes</h2>
+          <textarea [(ngModel)]="data.notes" class="notes-textarea" [disabled]="!isEditing" placeholder="No notes available for this client."></textarea>
+        </div>
 
         <div class="stat-card projects-card">
           <h2>Projects</h2>
@@ -82,8 +76,8 @@
               </tr>
             </thead>
             <tbody>
-              @for (project of projects; track project.id) {
-                <tr>
+              <ng-container *ngIf="projects?.length; else noProjects">
+                <tr *ngFor="let project of projects">
                   <td class="fw-bold">{{ project.name }}</td>
                   <td>{{ project.endDate | date:'dd MMM yyyy' }}</td>
                   <td>
@@ -95,11 +89,12 @@
                     </span>
                   </td>
                 </tr>
-              } @empty {
+              </ng-container>
+              <ng-template #noProjects>
                 <tr>
                   <td colspan="3" class="text-muted text-center" style="padding: 20px;">No projects associated.</td>
                 </tr>
-              }
+              </ng-template>
             </tbody>
           </table>
         </div>
