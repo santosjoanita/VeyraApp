@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
@@ -17,106 +17,120 @@ import { WorkersService } from '../../../core/services/workers/workers.service';
 })
 export class Details implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private clientsService = inject(ClientsService);
   private projectsService = inject(ProjectsService);
   private workersService = inject(WorkersService);
+  private cdr = inject(ChangeDetectorRef);
 
-  private _data = signal<any>({});
-  private _projects = signal<any[]>([]);
-  private _isEditing = signal(false);
-  private _entityType = signal<'client' | 'worker'>('client');
+  data: any = {};
+  projects: any[] = [];
+  entityType = 'client';
+  isEditing = false;
 
-  private backupData: any = {};
-
-  get data() {
-    return this._data();
+  private backupData = {};
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
   }
-  set data(value: any) {
-    this._data.set(value);
-  }
-
-  get projects() {
-    return this._projects();
-  }
-  get isEditing() {
-    return this._isEditing();
-  }
-  get entityType() {
-    return this._entityType();
-  }
-
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
+    const currentUrl = this.route.snapshot.pathFromRoot.map((r) => r.routeConfig?.path).join('/');
 
-    if (this.router.url.includes('worker')) {
-      this._entityType.set('worker');
+    if (currentUrl.includes('workers')) {
+      this.entityType = 'worker';
     } else {
-      this._entityType.set('client');
+      this.entityType = 'client';
     }
 
     if (id) {
-      this.loadData(id);
+      if (this.entityType === 'worker') {
+        this.loadWorkerData(id);
+      } else {
+        this.loadClientData(id);
+      }
     }
   }
 
-  loadData(id: string) {
-    if (this.entityType === 'client') {
-      this.clientsService.getClientById(id).subscribe({
-        next: (res) => {
-          this._data.set(res);
-          this.backupData = { ...res };
-        },
-        error: (err) => console.error('Error while loading client details', err),
-      });
+  loadClientData(id: string) {
+    this.clientsService.getClientById(id).subscribe({
+      next: (clientData) => {
+        this.data = clientData;
+        this.backupData = { ...clientData };
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading client data:', err);
+        this.cdr.detectChanges();
+      },
+    });
 
-      this.projectsService.getProjects(id).subscribe({
-        next: (res) => this._projects.set(res),
-        error: (err) => console.error('Error while loading client projects', err),
-      });
-    } else {
-      this.workersService.getWorkers().subscribe({
-        next: (workers: any[]) => {
-          const worker = workers.find((w) => String(w.id) === id);
-          if (worker) {
-            this._data.set(worker);
-            this.backupData = { ...worker };
-          }
-        },
-        error: (err) => console.error('Error while loading worker details', err),
-      });
-      this._projects.set([]);
-    }
+    this.projectsService.getProjects(id).subscribe({
+      next: (projectsList) => {
+        this.projects = projectsList;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading client projects:', err);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  loadWorkerData(id: string) {
+    this.workersService.getWorkerById(id).subscribe({
+      next: (workerData) => {
+        this.data = workerData;
+        this.backupData = { ...workerData };
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading worker data:', err);
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   startEditing() {
-    this._isEditing.set(true);
+    this.isEditing = true;
+    this.cdr.detectChanges();
   }
 
   cancelEditing() {
-    this._isEditing.set(false);
-    this._data.set({ ...this.backupData });
+    this.isEditing = false;
+    this.data = { ...this.backupData };
+    this.cdr.detectChanges();
   }
 
   saveChanges() {
-    const currentData = this.data;
-    if (this.entityType === 'client') {
-      this.clientsService.updateClient(currentData.id, currentData).subscribe({
-        next: (updatedClient) => {
-          this._data.set(updatedClient);
-          this.backupData = { ...updatedClient };
-          this._isEditing.set(false);
-        },
-        error: (err) => console.error('Error while updating client', err),
-      });
-    } else {
-      this.workersService.updateWorker(currentData.id, currentData).subscribe({
-        next: () => {
-          this.backupData = { ...currentData };
-          this._isEditing.set(false);
-        },
-        error: (err) => console.error('Error while updating worker', err),
-      });
+    if (this.data && this.data.id) {
+      const { id, createdAt, updatedAt, ...payload } = this.data;
+
+      if (this.entityType === 'worker') {
+        this.workersService.updateWorker(this.data.id, payload).subscribe({
+          next: (updatedWorker) => {
+            this.data = updatedWorker;
+            this.backupData = { ...updatedWorker };
+            this.isEditing = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error updating worker data:', err);
+            this.cdr.detectChanges();
+          },
+        });
+      } else {
+        this.clientsService.updateClient(this.data.id, payload).subscribe({
+          next: (updatedClient) => {
+            this.data = updatedClient;
+            this.backupData = { ...updatedClient };
+            this.isEditing = false;
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Error updating client data:', err);
+            this.cdr.detectChanges();
+          },
+        });
+      }
     }
   }
 }

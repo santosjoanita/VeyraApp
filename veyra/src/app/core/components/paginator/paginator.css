@@ -1,0 +1,60 @@
+.paginator-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.paginator-size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.paginator-dropdown {
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.paginator-navigation {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.paginator-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.paginator-btn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginator-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.paginator-btn span {
+  font-size: 24px;
+}

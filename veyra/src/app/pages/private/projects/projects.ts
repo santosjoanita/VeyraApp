@@ -10,6 +10,9 @@ import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/co
 import { DataHandlerService } from '../../../core/services/data-handler.service';
 import { ProjectsService } from '../../../core/services/projects/projects.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
+import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
+import { WorkersService } from '../../../core/services/workers/workers.service';
+import { Paginator } from '../../../core/components/paginator/paginator';
 
 @Component({
   selector: 'app-projects',
@@ -22,6 +25,7 @@ import { ClientsService } from '../../../core/services/clients/clients.service';
     Header,
     AddProjectModal,
     ConfirmDelete,
+    Paginator,
   ],
   templateUrl: './projects.html',
   styleUrl: './projects.css',
@@ -30,6 +34,8 @@ export class Projects implements OnInit {
   private dataHandler = inject(DataHandlerService);
   private projectsService = inject(ProjectsService);
   private clientsService = inject(ClientsService);
+  private projectWorkersService = inject(ProjectWorkersService);
+  private workersService = inject(WorkersService);
   private router = inject(Router);
 
   private _showAddProject = signal(false);
@@ -37,10 +43,18 @@ export class Projects implements OnInit {
   private _projectToDeleteName = signal('');
   private _projectToDeleteId = signal<string | null>(null);
   private _sortOrder = signal<'asc' | 'desc'>('asc');
+  private _editingProject = signal<any | null>(null);
+
   private _projectsList = signal<any[]>([]);
   private _clientsList = signal<any[]>([]);
+  private _workersList = signal<any[]>([]);
+
+  private _teamsMap = signal<{ [projectId: string]: any[] }>({});
+
   private _searchQuery = signal('');
   private _selectedStatus = signal('all');
+  private _currentPage = signal(1);
+  private _pageSize = signal(10);
 
   get showAddProject() {
     return this._showAddProject();
@@ -76,12 +90,20 @@ export class Projects implements OnInit {
   get clientsList() {
     return this._clientsList();
   }
+  get currentPage() {
+    return this._currentPage();
+  }
+
+  get pageSize() {
+    return this._pageSize();
+  }
 
   get searchQuery() {
     return this._searchQuery();
   }
   set searchQuery(value: string) {
     this._searchQuery.set(value);
+    this._currentPage.set(1);
   }
 
   get selectedStatus() {
@@ -89,36 +111,112 @@ export class Projects implements OnInit {
   }
   set selectedStatus(value: string) {
     this._selectedStatus.set(value);
+    this._currentPage.set(1);
+  }
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
   }
 
-  private _displayedProjects = computed(() => {
-    let result = this.dataHandler.filterArray(this._projectsList(), this.searchQuery, ['name']);
+  get editingProject() {
+    return this._editingProject();
+  }
+
+  private _filteredProjects = computed(() => {
+    const rawProjects = this._projectsList();
+    const clients = this._clientsList();
+    const workers = this._workersList();
+    const teams = this._teamsMap();
+
+    const enrichedProjects = rawProjects.map((project) => {
+      const matchedClient = clients.find((c) => c.id === project.clientId);
+
+      const rawTeam = teams[project.id] || [];
+      const assignedTeam = rawTeam.map((member: any) => {
+        const fullProfile = workers.find((w) => w.id === member.userId || w.id === member.id);
+        return {
+          ...member,
+          userId: member.userId || member.id,
+          name: fullProfile ? fullProfile.name : 'User',
+        };
+      });
+
+      return {
+        ...project,
+        clientName: matchedClient ? matchedClient.name : 'Unassigned',
+        assignedTeam: assignedTeam,
+      };
+    });
+
+    let result = this.dataHandler.filterArray(enrichedProjects, this.searchQuery, ['name']);
     if (this.selectedStatus !== 'all') {
       result = this.dataHandler.filterArrayByValue(result, 'status', this.selectedStatus);
     }
     return this.dataHandler.sortArray(result, 'name', this.sortOrder);
   });
 
+  get totalProjectsCount() {
+    return this._filteredProjects().length;
+  }
+
+  private _displayedProjects = computed(() => {
+    const list = this._filteredProjects();
+    const startIndex = (this._currentPage() - 1) * this._pageSize();
+    return list.slice(startIndex, startIndex + this._pageSize());
+  });
+
   get displayedProjects() {
     return this._displayedProjects();
   }
 
-  ngOnInit(): void {
-    this.loadProjects();
-    this.loadClients();
+  editProject(project: any): void {
+    this._editingProject.set(project);
+    this.showAddProject = true;
   }
 
-  loadProjects() {
-    this.projectsService.getProjects().subscribe({
-      next: (data) => this._projectsList.set(data),
-      error: (err) => console.error('Error while loading projects', err),
+  ngOnInit(): void {
+    this.loadWorkers();
+    this.loadClients();
+    this.loadProjects();
+  }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }) {
+    this._currentPage.set(event.pageIndex);
+    this._pageSize.set(event.pageSize);
+  }
+
+  loadWorkers() {
+    this.workersService.getWorkers().subscribe({
+      next: (data) => this._workersList.set(data),
+      error: (err) => console.error('Error while loading workers', err),
     });
   }
 
   loadClients() {
     this.clientsService.getClients().subscribe({
       next: (data) => this._clientsList.set(data),
-      error: (err) => console.error('Error while loading clients list for the modal', err),
+      error: (err) => console.error('Error while loading clients', err),
+    });
+  }
+
+  loadProjects() {
+    this.projectsService.getProjects().subscribe({
+      next: (projects) => {
+        this._projectsList.set(projects);
+
+        projects.forEach((project: any) => {
+          this.projectWorkersService.getProjectWorkers(project.id).subscribe({
+            next: (teamMembers) => {
+              this._teamsMap.update((map) => ({
+                ...map,
+                [project.id]: teamMembers,
+              }));
+            },
+            error: (err) =>
+              console.error(`Error while loading team for project ${project.id}`, err),
+          });
+        });
+      },
+      error: (err) => console.error('Error while loading projects', err),
     });
   }
 
@@ -130,24 +228,37 @@ export class Projects implements OnInit {
     this.router.navigate(['/projects/details', String(id)]);
   }
 
-  editProject(id: any): void {
-    this.router.navigate(['/projects/details', String(id)]);
-  }
+  handleSaveProject(data: any) {
+    const projectToEdit = this._editingProject();
 
-  handleSaveProject(newProjectData: any) {
-    this.projectsService.createProject(newProjectData).subscribe({
-      next: (createdProject) => {
-        this._projectsList.update((list) => [...list, createdProject]);
-        this._showAddProject.set(false);
-      },
-      error: (err) => console.error('Error while creating project', err),
-    });
+    if (projectToEdit) {
+      this.projectsService.updateProject(projectToEdit.id, data).subscribe({
+        next: () => {
+          this.loadProjects();
+          this.closeModal();
+        },
+        error: (err) => console.error('Error while updating project', err),
+      });
+    } else {
+      this.projectsService.createProject(data).subscribe({
+        next: () => {
+          this.loadProjects();
+          this.closeModal();
+        },
+        error: (err) => console.error('Error while creating project', err),
+      });
+    }
   }
 
   openDeleteModal(project: any) {
     this._projectToDeleteId.set(project.id);
     this._projectToDeleteName.set(project.name);
     this._showDeleteModal.set(true);
+  }
+
+  closeModal() {
+    this.showAddProject = false;
+    this._editingProject.set(null);
   }
 
   handleConfirmDelete() {

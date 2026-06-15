@@ -24,18 +24,21 @@
             </select>
           </div>
 
-          <button class="btn-add" (click)="showAddProject = true">
-            <span class="material-symbols-outlined add-icon">add</span>
-            Add Project
-          </button>
-
-          @if (showAddProject) {
-            <app-add-project-modal 
-              [clients]="clientsList"
-              (close)="showAddProject = false" 
-              (save)="handleSaveProject($event)">
-            </app-add-project-modal>
+         @if (isAdmin) {
+            <button class="btn-add" (click)="showAddProject = true">
+              <span class="material-symbols-outlined add-icon">add</span>
+              Add Project
+            </button>
           }
+
+         @if (showAddProject) {
+          <app-add-project-modal 
+            [clients]="clientsList"
+            [projectData]="editingProject" 
+            (close)="closeModal()" 
+            (save)="handleSaveProject($event)">
+          </app-add-project-modal>
+        }
         </div>
       </div>
 
@@ -55,7 +58,9 @@
               <th>Due Date</th>
               <th>Assigned Team</th>
               <th>Status</th>
-              <th class="text-center">Actions</th>
+              @if (isAdmin) {
+                  <th class="text-center">Actions</th>
+                }
             </tr>
           </thead>
           <tbody>
@@ -86,18 +91,16 @@
                     {{ project.status | titlecase }}
                   </span>
                 </td>
-                
+                @if (isAdmin) {
                 <td class="actions-cell">
-                  <button class="action-icon" title="View Details" (click)="$event.stopPropagation(); viewProject(project.id)">
-                    <span class="material-symbols-outlined">description</span>
-                  </button>
-                  <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editProject(project.id)">
+                  <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editProject(project)">
                     <span class="material-symbols-outlined">edit</span>
                   </button>
                   <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); openDeleteModal(project)">
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
+              }
 
               </tr>
             } @empty {
@@ -109,6 +112,12 @@
             }
           </tbody>
         </table>
+       <app-paginator
+          [totalItems]="totalProjectsCount"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
       </div>
 
     </div>

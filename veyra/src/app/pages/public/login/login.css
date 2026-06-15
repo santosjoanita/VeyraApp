@@ -109,21 +109,7 @@
   box-sizing: border-box;
 }
 
-.eye-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%; 
-  transform: translateY(-50%);
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 20px;
-  user-select: none;
-  transition: color 0.2s;
-}
 
-.eye-icon:hover {
-  color: var(--brand-primary, #ffffff);
-}
 
 .change-password-link {
   display: inline-block;

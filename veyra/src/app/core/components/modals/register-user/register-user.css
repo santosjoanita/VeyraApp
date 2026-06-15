@@ -1,0 +1,28 @@
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end; 
+  align-items: center;
+  gap: 12px; 
+}
+
+.btn-cancel {
+  width: auto !important;
+  padding: 10px 20px !important;
+}
+
+.modal-submit-btn {
+  width: auto !important;
+  padding: 10px 24px !important;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

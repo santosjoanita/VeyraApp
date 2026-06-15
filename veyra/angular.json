@@ -56,8 +56,13 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
+<<<<<<< HEAD
             "proxyConfig": "proxy.conf.json"
           },
+=======
+    "proxyConfig": "proxy.conf.json"
+      },
+>>>>>>> joana
           "configurations": {
             "production": {
               "buildTarget": "veyra:build:production"

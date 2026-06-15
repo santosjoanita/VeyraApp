@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../../core/components/sidebar/sidebar';
@@ -14,85 +14,84 @@ import { AuthService } from '../../../core/services/user/auth.service';
 })
 export class Profile implements OnInit {
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
-  private _currentUser = signal<any>({
+  currentUser = {
     firstName: '',
     lastName: '',
     email: '',
-    password: '',
     role: '',
-  });
+    password: '',
+  };
 
-  private _settings = signal<any>({
+  settings = {
     activityLog: true,
     twoFactorAuth: false,
-    theme: 'dark',
-  });
+    theme: 'light',
+  };
 
-  private _isEditing = signal(false);
-  private _showPassword = signal(false);
-  private backupUser: any = {};
+  isEditing = false;
+  showPassword = false;
 
-  get currentUser() {
-    return this._currentUser();
-  }
-  set currentUser(value: any) {
-    this._currentUser.set(value);
-  }
-
-  get settings() {
-    return this._settings();
-  }
-  set settings(value: any) {
-    this._settings.set(value);
-  }
-
-  get isEditing() {
-    return this._isEditing();
-  }
-  get showPassword() {
-    return this._showPassword();
-  }
+  private backupUser = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    role: '',
+    password: '',
+  };
 
   ngOnInit(): void {
     this.authService.getMe().subscribe({
-      next: (data: any) => {
+      next: (data) => {
         if (data) {
-          const names = (data.name || '').split(' ');
-          this._currentUser.set({
-            firstName: names[0] || '',
-            lastName: names.slice(1).join(' ') || '',
-            email: data.email || '',
+          const actualUser = data.user || data;
+          const nameParts = (actualUser.name || '').split(' ');
+
+          this.currentUser = {
+            firstName: nameParts[0] || '',
+            lastName: nameParts.slice(1).join(' ') || '',
+            email: actualUser.email || '',
+            role: actualUser.role || 'worker',
             password: '••••••••',
-            role: data.role || 'worker',
-          });
-          this.backupUser = { ...this._currentUser() };
+          };
+
+          this.backupUser = { ...this.currentUser };
+
+          this.cdr.detectChanges();
         }
       },
-      error: (err) => console.error('Error while loading user profile', err),
+      error: (err) => {
+        console.error('Error while loading profile', err);
+        this.cdr.detectChanges();
+      },
     });
   }
 
-  startEditing() {
-    this._isEditing.set(true);
+  startEditing(): void {
+    this.isEditing = true;
+    this.cdr.detectChanges();
   }
 
-  cancelEditing() {
-    this._isEditing.set(false);
-    this._currentUser.set({ ...this.backupUser });
+  cancelEditing(): void {
+    this.isEditing = false;
+    this.currentUser = { ...this.backupUser };
+    this.cdr.detectChanges();
   }
 
-  saveChanges() {
-    console.log('Profile information successfully updated', this.currentUser);
+  saveChanges(): void {
+    console.log('Data to send to API:', this.currentUser);
+    this.isEditing = false;
     this.backupUser = { ...this.currentUser };
-    this._isEditing.set(false);
+    this.cdr.detectChanges();
   }
 
-  togglePassword() {
-    this._showPassword.update((val) => !val);
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
+    this.cdr.detectChanges();
   }
 
-  changePassword() {
-    console.log('Password change requested', this.currentUser);
+  changePassword(): void {
+    alert('Active this to implement password change functionality!');
   }
 }

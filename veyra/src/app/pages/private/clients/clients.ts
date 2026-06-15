@@ -9,7 +9,9 @@ import { AddClientModal } from '../../../core/components/modals/add-client/add-c
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 import { DataHandlerService } from '../../../core/services/data-handler.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
+import { ProjectsService } from '../../../core/services/projects/projects.service';
 import { Client } from '../../../core/class/client.model';
+import { Paginator } from '../../../core/components/paginator/paginator';
 
 @Component({
   selector: 'app-clients',
@@ -22,6 +24,7 @@ import { Client } from '../../../core/class/client.model';
     Header,
     AddClientModal,
     ConfirmDelete,
+    Paginator,
   ],
   templateUrl: './clients.html',
   styleUrl: './clients.css',
@@ -30,45 +33,29 @@ export class Clients implements OnInit {
   private dataHandler = inject(DataHandlerService);
   private clientsService = inject(ClientsService);
   private router = inject(Router);
+  private projectsService = inject(ProjectsService);
 
-  private _showAddClient = signal(false);
-  private _showDeleteModal = signal(false);
-  private _itemToDeleteId = signal<any>(null);
-  private _itemToDeleteName = signal('');
-  private _sortOrder = signal<'asc' | 'desc'>('asc');
-  private _clientsList = signal<Client[]>([]);
+  showAddClient = signal(false);
+  showDeleteModal = signal(false);
+  itemToDeleteId = signal<string | null>(null);
+  itemToDeleteName = signal('');
+  sortOrder = signal<'asc' | 'desc'>('asc');
+  clientsList = signal<Client[]>([]);
+
+  private _currentPage = signal(1);
+  private _pageSize = signal(10);
   private _searchQuery = signal('');
+  private _projectsList = signal<any[]>([]);
 
-  get showAddClient() {
-    return this._showAddClient();
-  }
-  set showAddClient(value: boolean) {
-    this._showAddClient.set(value);
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
   }
 
-  get showDeleteModal() {
-    return this._showDeleteModal();
+  get currentPage() {
+    return this._currentPage();
   }
-  set showDeleteModal(value: boolean) {
-    this._showDeleteModal.set(value);
-  }
-
-  get itemToDeleteName() {
-    return this._itemToDeleteName();
-  }
-  set itemToDeleteName(value: string) {
-    this._itemToDeleteName.set(value);
-  }
-
-  get sortOrder() {
-    return this._sortOrder();
-  }
-  set sortOrder(value: 'asc' | 'desc') {
-    this._sortOrder.set(value);
-  }
-
-  get clientsList() {
-    return this._clientsList();
+  get pageSize() {
+    return this._pageSize();
   }
 
   get searchQuery() {
@@ -76,14 +63,36 @@ export class Clients implements OnInit {
   }
   set searchQuery(value: string) {
     this._searchQuery.set(value);
+    this._currentPage.set(1);
+  }
+
+  private _filteredClients = computed(() => {
+    const clients = this.clientsList();
+    const projects = this._projectsList();
+
+    const enrichedClients = clients.map((client) => {
+      const activeCount = projects.filter(
+        (p) => p.clientId === client.id && p.status === 'active',
+      ).length;
+
+      return {
+        ...client,
+        activeProjects: activeCount,
+      };
+    });
+
+    let result = this.dataHandler.filterArray(enrichedClients, this.searchQuery, ['name', 'email']);
+    return this.dataHandler.sortArray(result, 'name', this.sortOrder());
+  });
+
+  get totalClientsCount() {
+    return this._filteredClients().length;
   }
 
   private _displayedClients = computed(() => {
-    let result = this.dataHandler.filterArray(this._clientsList(), this.searchQuery, [
-      'name',
-      'email',
-    ]);
-    return this.dataHandler.sortArray(result, 'name', this.sortOrder);
+    const list = this._filteredClients();
+    const startIndex = (this._currentPage() - 1) * this._pageSize();
+    return list.slice(startIndex, startIndex + this._pageSize());
   });
 
   get displayedClients() {
@@ -92,15 +101,27 @@ export class Clients implements OnInit {
 
   ngOnInit(): void {
     this.loadClients();
+    this.loadProjects();
+  }
+
+  onPageChange(event: { pageIndex: number; pageSize: number }) {
+    this._currentPage.set(event.pageIndex);
+    this._pageSize.set(event.pageSize);
   }
 
   loadClients() {
     this.clientsService.getClients().subscribe({
-      next: (data) => this._clientsList.set(data),
-      error: (err) => console.error('Error loading clients', err),
+      next: (data) => this.clientsList.set(data),
+      error: (err) => console.error('Error while loading clients', err),
     });
   }
 
+  loadProjects() {
+    this.projectsService.getProjects().subscribe({
+      next: (data) => this._projectsList.set(data),
+      error: (err) => console.error('Erro ao carregar projetos para os clientes', err),
+    });
+  }
   toggleSort(): void {
     this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }
@@ -119,7 +140,7 @@ export class Clients implements OnInit {
         this._clientsList.update((list) => [...list, createdClient]);
         this._showAddClient.set(false);
       },
-      error: (err) => console.error('Error creating client', err),
+      error: (err) => console.error('Error while creating client', err),
     });
   }
 
@@ -138,7 +159,7 @@ export class Clients implements OnInit {
           this._showDeleteModal.set(false);
           this._itemToDeleteId.set(null);
         },
-        error: (err) => console.error('Error deleting client', err),
+        error: (err) => console.error('Error while deleting client', err),
       });
     }
   }

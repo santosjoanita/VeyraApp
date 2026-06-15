@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/user/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -15,36 +15,55 @@ export class Login {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  errorMessage = signal('');
+  showPassword = false;
+
   loginData = {
-    email: '',
+    usernameOrEmail: '',
     password: '',
   };
 
-  showPassword = signal(false);
-  errorMessage = signal('');
-
-  togglePassword() {
-    this.showPassword.update((val) => !val);
+  togglePassword(): void {
+    this.showPassword = !this.showPassword;
   }
 
-  onLogin() {
+  onLogin(): void {
     this.errorMessage.set('');
 
-    if (!this.loginData.email || !this.loginData.password) {
-      this.errorMessage.set('Please fill in all fields.');
+    if (!this.loginData.usernameOrEmail || !this.loginData.password) {
+      this.errorMessage.set('Por favor, preencha todos os campos.');
       return;
     }
 
-    this.authService.login(this.loginData).subscribe({
-      next: (response) => {
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('userRole', response.user.role);
+    const payload = {
+      email: this.loginData.usernameOrEmail,
+      password: this.loginData.password,
+    };
 
-        this.router.navigate(['/dashboard']);
+    this.authService.login(payload).subscribe({
+      next: (response) => {
+        console.log('api reaction', response);
+
+        const token = response?.accessToken || response?.token;
+
+        const role = response?.user?.role || response?.role || 'worker';
+
+        if (token) {
+          localStorage.setItem('accessToken', token);
+          localStorage.setItem('userRole', role);
+          localStorage.setItem('userName', response.user?.name || response.name || 'Username');
+
+          console.log('token kept in localStorage:', token);
+          console.log('userRole kept in localStorage:', role);
+          this.router.navigate(['/dashboard']);
+        } else {
+          console.warn('the api did not return a valid token in the expected format:', response);
+          this.errorMessage.set('Error with the login response. Please try again later.');
+        }
       },
       error: (err) => {
-        console.error('Error during login', err);
-        this.errorMessage.set('Invalid email or password.');
+        console.error('Error with login:', err);
+        this.errorMessage.set('E-mail or password incorrect. Please try again.');
       },
     });
   }

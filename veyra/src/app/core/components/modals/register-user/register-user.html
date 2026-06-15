@@ -1,0 +1,49 @@
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h3>Register New User</h3>
+      <button class="modal-close" (click)="closeModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form>
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" [(ngModel)]="registerData.name" name="name" class="form-input" placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" [(ngModel)]="registerData.email" name="email" class="form-input" placeholder="example@brandit.ws">
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" [(ngModel)]="registerData.password" name="password" class="form-input" placeholder="••••••••">
+        </div>
+
+        <div class="form-group">
+          <label>User Role</label>
+          <select [(ngModel)]="registerData.role" name="role" class="form-input">
+            <option value="worker">Worker</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" type="button" (click)="closeModal()">
+        Cancel
+      </button>
+      
+      <button class="btn-add-stat modal-submit-btn" type="submit" [disabled]="isLoading" (click)="handleRegister()">
+        <span class="add-icon"></span> {{ isLoading ? 'Registering...' : 'Register User' }}
+      </button>
+    </div>
+
+  </div>
+</div>

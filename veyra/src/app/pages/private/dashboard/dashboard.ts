@@ -1,17 +1,17 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { DashboardService } from '../../../core/services/dashboard/dashboard.service';
-import { ProjectsService } from '../../../core/services/projects/projects.service';
-import { WorkersService } from '../../../core/services/workers/workers.service';
+import { AuthService } from '../../../core/services/user/auth.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
+import { ProjectsService } from '../../../core/services/projects/projects.service';
+import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
+
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
 import { AddClientModal } from '../../../core/components/modals/add-client/add-client';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
-import { DashboardMetrics } from '../../../core/class/dashboard.model';
-import { AuthService } from '../../../core/services/user/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,175 +30,179 @@ import { AuthService } from '../../../core/services/user/auth.service';
 })
 export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
-  private projectsService = inject(ProjectsService);
-  private workersService = inject(WorkersService);
-  private clientsService = inject(ClientsService);
-
-  private _showAddProject = signal(false);
-  private _showAddWorker = signal(false);
-  private _showAddClient = signal(false);
-  private _showDeleteModal = signal(false);
-  private _projectToDeleteId = signal<string | null>(null);
-  private _itemToDeleteName = signal('');
-
-  private _projectsList = signal<any[]>([]);
-  private _activityList = signal<any[]>([]);
-  private _availableClients = signal<any[]>([]);
-
-  private _totalProjects = signal(0);
-  private _totalWorkers = signal(0);
-  private _totalClients = signal(0);
-
-  get showAddProject() {
-    return this._showAddProject();
-  }
-  set showAddProject(value: boolean) {
-    this._showAddProject.set(value);
-  }
-
-  get showAddWorker() {
-    return this._showAddWorker();
-  }
-  set showAddWorker(value: boolean) {
-    this._showAddWorker.set(value);
-  }
-
-  get showAddClient() {
-    return this._showAddClient();
-  }
-  set showAddClient(value: boolean) {
-    this._showAddClient.set(value);
-  }
-
-  get showDeleteModal() {
-    return this._showDeleteModal();
-  }
-  set showDeleteModal(value: boolean) {
-    this._showDeleteModal.set(value);
-  }
-
-  get itemToDeleteName() {
-    return this._itemToDeleteName();
-  }
-  set itemToDeleteName(value: string) {
-    this._itemToDeleteName.set(value);
-  }
-
-  get projectsList() {
-    return this._projectsList();
-  }
-  get activityList() {
-    return this._activityList();
-  }
-  get availableClients() {
-    return this._availableClients();
-  }
-
-  get totalProjects() {
-    return this._totalProjects();
-  }
-  get totalWorkers() {
-    return this._totalWorkers();
-  }
-  get totalClients() {
-    return this._totalClients();
-  }
-
   private authService = inject(AuthService);
-  currentUser = { name: '' };
+  private clientsService = inject(ClientsService);
+  private cdr = inject(ChangeDetectorRef);
+  private projectsService = inject(ProjectsService);
+  private projectWorkersService = inject(ProjectWorkersService);
+
+  metrics: any = null;
+  isLoading = true;
+
+  showAddProject = false;
+  showAddWorker = false;
+  showAddClient = false;
+  showDeleteModal = false;
+  itemToDeleteName = '';
+
+  totalProjects = 0;
+  totalWorkers = 0;
+  totalClients = 0;
+  projectsList: any[] = [];
+  activityList: any[] = [];
+  availableClients: any[] = [];
+  currentUser: any = { name: localStorage.getItem('userName') || 'User' };
+
   ngOnInit(): void {
-    this.loadDashboardData();
     this.authService.getMe().subscribe({
       next: (userData) => {
         if (userData) {
-          this.currentUser = userData;
+          const actualUser = userData.user || userData;
+          this.currentUser = actualUser;
+          this.cdr.detectChanges();
         }
       },
       error: (err) => {
-        console.error('Erro ao ir buscar o nome para a dashboard', err);
-        this.currentUser = { name: 'User' };
+        console.error('Error fetching user for dashboard', err);
+        this.cdr.detectChanges();
       },
     });
+
+    this.loadDashboardData();
+  }
+  get isAdmin(): boolean {
+    return localStorage.getItem('userRole') === 'admin';
   }
 
   loadDashboardData() {
-    this.dashboardService.getMetrics().subscribe({
-      next: (data: DashboardMetrics) => {
-        if (data) {
-          this._totalProjects.set(data.projects?.total || 0);
-          this._totalWorkers.set(data.workers?.total || 0);
-          this._totalClients.set(data.clients?.total || 0);
+    this.isLoading = true;
 
-          this._activityList.set([]);
+    this.dashboardService.getMetrics().subscribe({
+      next: (data: any) => {
+        if (data) {
+          this.metrics = data;
+          this.totalProjects = data.projects?.total || 0;
+          this.totalWorkers = data.workers?.total || 0;
+          this.totalClients = data.clients?.total || 0;
+          this.activityList = data.activityList || data.recentActivities || [];
         }
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error while loading dashboard metrics', err),
+      error: (err) => {
+        console.error('Error while loading dashboard metrics', err);
+        this.cdr.detectChanges();
+      },
     });
 
     this.projectsService.getProjects().subscribe({
-      next: (data) => this._projectsList.set(data),
-      error: (err) => console.error('Error while loading projects list', err),
-    });
+      next: (realProjects: any[]) => {
+        this.clientsService.getClients().subscribe({
+          next: (realClients) => {
+            this.availableClients = realClients;
 
-    this.clientsService.getClients().subscribe({
-      next: (data) => this._availableClients.set(data),
-      error: (err) => console.error('Error while loading available clients', err),
+            const mappedProjects = realProjects.map((project: any) => {
+              const matchedClient = realClients.find((c) => c.id === project.clientId);
+              return { ...project, client: matchedClient };
+            });
+
+            if (this.isAdmin) {
+              this.projectsList = mappedProjects.slice(0, 5);
+              this.isLoading = false;
+              this.cdr.detectChanges();
+            } else {
+              const currentUserId = this.currentUser?.id || localStorage.getItem('userId');
+              const workerProjects: any[] = [];
+              let completedRequests = 0;
+
+              if (mappedProjects.length === 0) {
+                this.projectsList = [];
+                this.isLoading = false;
+                this.cdr.detectChanges();
+                return;
+              }
+
+              mappedProjects.forEach((project) => {
+                this.projectWorkersService.getProjectWorkers(project.id).subscribe({
+                  next: (workers: any[]) => {
+                    const isAssigned = workers.some(
+                      (w) => w.userId === currentUserId || w.id === currentUserId,
+                    );
+                    if (isAssigned) {
+                      workerProjects.push(project);
+                    }
+                    completedRequests++;
+                    if (completedRequests === mappedProjects.length) {
+                      this.projectsList = workerProjects.slice(0, 5);
+                      this.isLoading = false;
+                      this.cdr.detectChanges();
+                    }
+                  },
+                  error: (err) => {
+                    console.error('Error while loading project workers', err);
+                    completedRequests++;
+                    if (completedRequests === mappedProjects.length) {
+                      this.projectsList = workerProjects.slice(0, 5);
+                      this.isLoading = false;
+                      this.cdr.detectChanges();
+                    }
+                  },
+                });
+              });
+            }
+          },
+          error: (err) => {
+            console.error('Error while loading clients for dashboard', err);
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error while loading projects for dashboard', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
     });
   }
 
-  deleteProject(id: string) {
-    const project = this._projectsList().find((p) => p.id === id);
-    if (project) {
-      this._projectToDeleteId.set(id);
-      this._itemToDeleteName.set(project.name);
-      this._showDeleteModal.set(true);
-    }
+  handleSaveProject(event: any) {
+    this.projectsService.createProject(event).subscribe({
+      next: () => {
+        this.showAddProject = false;
+        this.loadDashboardData();
+      },
+      error: (err) => {
+        console.error('Error while creating project from dashboard', err);
+        alert('It seems there was an error creating the project. Please try again.');
+        this.showAddProject = false;
+      },
+    });
+  }
+
+  handleSaveWorker(event: any) {
+    this.showAddWorker = false;
+    this.loadDashboardData();
+  }
+
+  handleSaveClient(event: any) {
+    this.clientsService.createClient(event).subscribe({
+      next: () => {
+        this.showAddClient = false;
+        this.loadDashboardData();
+      },
+      error: (err) => {
+        console.error('Error saving client from dashboard:', err);
+        this.showAddClient = false;
+      },
+    });
+  }
+
+  deleteProject(id: any) {
+    this.showDeleteModal = true;
+    this.itemToDeleteName = 'Este Projeto';
   }
 
   handleConfirmDelete() {
-    const id = this._projectToDeleteId();
-    if (id) {
-      this.projectsService.deleteProject(id).subscribe({
-        next: () => {
-          this._projectsList.update((list) => list.filter((p) => p.id !== id));
-          this._showDeleteModal.set(false);
-          this._projectToDeleteId.set(null);
-          this._totalProjects.update((count) => (count > 0 ? count - 1 : 0));
-        },
-        error: (err) => console.error('Error while deleting project', err),
-      });
-    }
-  }
-
-  handleSaveProject(newProjectData: any) {
-    this.projectsService.createProject(newProjectData).subscribe({
-      next: (createdProject) => {
-        this._projectsList.update((list) => [...list, createdProject]);
-        this._totalProjects.update((count) => count + 1);
-        this._showAddProject.set(false);
-      },
-      error: (err) => console.error('Error while creating project', err),
-    });
-  }
-
-  handleSaveWorker(newWorkerData: any) {
-    this.workersService.createWorker(newWorkerData).subscribe({
-      next: () => {
-        this._totalWorkers.update((count) => count + 1);
-        this._showAddWorker.set(false);
-      },
-      error: (err) => console.error('Error while creating worker', err),
-    });
-  }
-
-  handleSaveClient(newClientData: any) {
-    this.clientsService.createClient(newClientData).subscribe({
-      next: (createdClient) => {
-        this._availableClients.update((list) => [...list, createdClient]);
-        this._totalClients.update((count) => count + 1);
-        this._showAddClient.set(false);
-      },
-      error: (err) => console.error('Error while creating client', err),
-    });
+    this.showDeleteModal = false;
   }
 }

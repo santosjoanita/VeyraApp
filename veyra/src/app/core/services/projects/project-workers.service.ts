@@ -7,19 +7,19 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root',
 })
 export class ProjectWorkersService {
-  private apiUrl = `${environment.apiUrl}/project-workers`;
+  private baseUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  getProjectWorkers(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getProjectWorkers(projectId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/projects/${projectId}/workers`);
   }
 
-  assignWorker(data: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, data);
+  assignWorker(projectId: string, userId: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/projects/${projectId}/workers`, { userId });
   }
 
-  removeWorker(id: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  removeWorker(projectId: string, userId: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/projects/${projectId}/workers/${userId}`);
   }
 }

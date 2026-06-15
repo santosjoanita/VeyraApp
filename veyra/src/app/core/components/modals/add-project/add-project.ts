@@ -7,10 +7,11 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './add-project.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class AddProjectModal {
-  @Input() clients: any[] = []; 
+  @Input() clients: any[] = [];
+  @Input() projectData: any = null;
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<any>();
 
@@ -20,9 +21,20 @@ export class AddProjectModal {
     description: '',
     status: 'active',
     startDate: '',
-    endDate: ''
+    endDate: '',
   };
-
+  ngOnInit() {
+    if (this.projectData) {
+      this.formData = {
+        clientId: this.projectData.clientId || '',
+        name: this.projectData.name || '',
+        description: this.projectData.description || '',
+        status: this.projectData.status || 'active',
+        startDate: this.projectData.startDate || '',
+        endDate: this.projectData.endDate || '',
+      };
+    }
+  }
   submitForm() {
     this.save.emit(this.formData);
   }

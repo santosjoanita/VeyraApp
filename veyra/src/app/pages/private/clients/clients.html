@@ -12,20 +12,20 @@
           <span class="material-symbols-outlined search-icon">search</span>
           <input type="text" placeholder="Search clients..." class="search-input" [(ngModel)]="searchQuery">
         </div>
-
+        @if (isAdmin) {
         <div class="toolbar-actions">
-           <button class="btn-add" (click)="showAddClient = true">
+           <button class="btn-add" (click)="showAddClient.set(true)">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Client
           </button>
 
-          @if (showAddClient) {
-            <app-add-client-modal 
-              (close)="showAddClient = false" 
-              (save)="handleSaveClient($event)">
-            </app-add-client-modal>
-          }
+          @if (showAddClient()) {
+              <app-add-client-modal 
+                (close)="showAddClient.set(false)"
+                (save)="handleSaveClient($event)"> </app-add-client-modal>
+            }
         </div>
+         }
       </div>
 
       <div class="table-container card-container">
@@ -36,7 +36,7 @@
                 <div class="th-sortable" (click)="toggleSort()" style="cursor: pointer;">
                   <span>Name</span>
                   <span class="material-symbols-outlined sort-icon" style="font-size: 16px; vertical-align: middle;">
-                    {{ sortOrder === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
+                    {{ sortOrder() === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
                   </span>
                 </div>
               </th>
@@ -45,7 +45,9 @@
               <th>Status</th>
               <th>Active Projects</th>
               <th>Created At</th>
+              @if (isAdmin) {
               <th class="text-center">Actions</th>
+              }
             </tr>
           </thead>
           <tbody>
@@ -65,15 +67,11 @@
                   </span>
                 </td>
 
-                <td>{{ $any(client).ActiveProjects || 0 }}</td>
+                <td>{{ $any(client).ActiveProjects || $any(client).activeProjects || 0 }}</td>
                 
                 <td class="text-muted">{{ client.createdAt | date:'dd MMM yyyy' }}</td>
-                
-                <td class="actions-cell">
-                  <button class="action-icon" title="View Details" (click)="$event.stopPropagation(); viewClient(client.id)">
-                    <span class="material-symbols-outlined">description</span>
-                  </button>
-                  
+                @if (isAdmin) {
+                <td class="actions-cell">                  
                   <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editClient(client.id)">
                     <span class="material-symbols-outlined">edit</span>
                   </button>
@@ -82,6 +80,7 @@
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
+              }
               </tr>
             } @empty {
               <tr>
@@ -92,16 +91,22 @@
             }
           </tbody>
         </table>
+        <app-paginator
+          [totalItems]="totalClientsCount"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          (pageChange)="onPageChange($event)">
+        </app-paginator>
       </div>
 
     </div>
   </div>
 </div>
 
-@if (showDeleteModal) {
+@if (showDeleteModal()) {
   <app-confirm-delete 
-    [itemName]="itemToDeleteName"
+    [itemName]="itemToDeleteName()"
     (confirm)="handleConfirmDelete()"
-    (close)="showDeleteModal = false">
+    (close)="showDeleteModal.set(false)">
   </app-confirm-delete>
 }

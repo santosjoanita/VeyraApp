@@ -57,6 +57,9 @@
   position: relative;
   width: 300px;
 }
+.btn-add .add-icon {
+  font-size: 15px;
+}
 
 .search-icon {
   position: absolute;
@@ -80,9 +83,9 @@
 }
 
 .toolbar-actions {
-  display: flex;
-  gap: 16px;
-  align-items: center;
+ display: flex;
+  gap: 8px;
+  justify-content: center;
 }
 
 .filter-wrapper {
@@ -152,14 +155,14 @@
   font-size: 12px;
   color: #64748B;
   font-weight: 600;
-  padding: 16px;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border-light, #E2E8F0);
-  text-transform: uppercase;
   background-color: #F8FAFC;
+  text-transform: uppercase;
 }
 
 .projects-table td {
-  padding: 16px;
+ padding: 16px 20px;
   border-bottom: 1px solid #F1F5F9;
   font-size: 14px;
   color: #0F172A;
@@ -243,21 +246,22 @@
 }
 
 .actions-cell {
-  text-align: center;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
 }
 
 .action-icon {
   background: none;
   border: none;
-  color: #64748B;
+  color: #94A3B8;
   cursor: pointer;
   padding: 6px;
   border-radius: 6px;
-  transition: all 0.2s;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 4px;
+  transition: all 0.2s;
 }
 
 .action-icon:hover {
@@ -270,6 +274,6 @@
   color: #EF4444;
 }
 
-.action-icon .material-symbols-outlined {
+.action-icon span {
   font-size: 20px;
 }

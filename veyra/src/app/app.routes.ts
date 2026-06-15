@@ -9,10 +9,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/public/login/login').then((m) => m.Login),
   },
   {
-    path: 'register',
-    loadComponent: () => import('./pages/public/register/register').then((m) => m.Register),
-  },
-  {
     path: 'not-permitted',
     loadComponent: () =>
       import('./pages/private/not-permitted/not-permitted').then((m) => m.NotPermitted),

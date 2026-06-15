@@ -21,7 +21,7 @@
           </div>
         </div>
 
-        @if (!isEditing) {
+        @if (!isEditing && isAdmin) {
           <button class="btn-edit-stat" (click)="startEditing()">
             <span class="add-icon">✎</span> Edit Profile
           </button>
@@ -55,7 +55,7 @@
             </div>
           </div>
 
-          @if (isEditing) {
+          @if (isEditing && isAdmin) {
             <div class="form-actions">
               <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
               <button class="btn-save" (click)="saveChanges()">Save Changes</button>
