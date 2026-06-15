@@ -79,6 +79,13 @@ export class ProjectDetails implements OnInit {
         this.cdr.detectChanges();
       },
     });
+    this.clientsService.getClients().subscribe({
+      next: (allClients) => {
+        this.filteredClients = allClients;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error while loading clients list', err),
+    });
 
     this.accessesService.getAccesses(id).subscribe({
       next: (data) => {
@@ -118,7 +125,7 @@ export class ProjectDetails implements OnInit {
           },
         });
       },
-      error: (err) => console.error('Erro ao carregar lista total de workers:', err),
+      error: (err) => console.error('Error while loading workers list', err),
     });
   }
 
@@ -239,7 +246,7 @@ export class ProjectDetails implements OnInit {
           });
           this.cdr.detectChanges();
         },
-        error: (err) => console.error('Erro ao alocar worker:', err),
+        error: (err) => console.error('Error while assigning worker:', err),
       });
     }
     this.closeWorkerModal();
@@ -251,7 +258,7 @@ export class ProjectDetails implements OnInit {
         this.assignedTeam = this.assignedTeam.filter((w) => w.userId !== userId);
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Erro ao remover worker:', err),
+      error: (err) => console.error('Error while removing worker:', err),
     });
   }
 }

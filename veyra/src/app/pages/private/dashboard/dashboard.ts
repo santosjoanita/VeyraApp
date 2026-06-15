@@ -6,6 +6,7 @@ import { DashboardService } from '../../../core/services/dashboard/dashboard.ser
 import { AuthService } from '../../../core/services/user/auth.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
 import { ProjectsService } from '../../../core/services/projects/projects.service';
+import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
 
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
@@ -33,6 +34,7 @@ export class Dashboard implements OnInit {
   private clientsService = inject(ClientsService);
   private cdr = inject(ChangeDetectorRef);
   private projectsService = inject(ProjectsService);
+  private projectWorkersService = inject(ProjectWorkersService);
 
   metrics: any = null;
   isLoading = true;
@@ -49,7 +51,7 @@ export class Dashboard implements OnInit {
   projectsList: any[] = [];
   activityList: any[] = [];
   availableClients: any[] = [];
-  currentUser = { name: localStorage.getItem('userName') || 'User' };
+  currentUser: any = { name: localStorage.getItem('userName') || 'User' };
 
   ngOnInit(): void {
     this.authService.getMe().subscribe({
@@ -71,6 +73,7 @@ export class Dashboard implements OnInit {
   get isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'admin';
   }
+
   loadDashboardData() {
     this.isLoading = true;
 
@@ -86,40 +89,76 @@ export class Dashboard implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error while loading dashboard metrics:', err);
+        console.error('Error while loading dashboard metrics', err);
         this.cdr.detectChanges();
       },
     });
 
     this.projectsService.getProjects().subscribe({
       next: (realProjects: any[]) => {
-        const limitedProjects = realProjects.slice(0, 5);
-
         this.clientsService.getClients().subscribe({
           next: (realClients) => {
             this.availableClients = realClients;
 
-            this.projectsList = limitedProjects.map((project: any) => {
+            const mappedProjects = realProjects.map((project: any) => {
               const matchedClient = realClients.find((c) => c.id === project.clientId);
-              return {
-                ...project,
-                client: matchedClient,
-              };
+              return { ...project, client: matchedClient };
             });
 
-            this.isLoading = false;
-            this.cdr.detectChanges();
+            if (this.isAdmin) {
+              this.projectsList = mappedProjects.slice(0, 5);
+              this.isLoading = false;
+              this.cdr.detectChanges();
+            } else {
+              const currentUserId = this.currentUser?.id || localStorage.getItem('userId');
+              const workerProjects: any[] = [];
+              let completedRequests = 0;
+
+              if (mappedProjects.length === 0) {
+                this.projectsList = [];
+                this.isLoading = false;
+                this.cdr.detectChanges();
+                return;
+              }
+
+              mappedProjects.forEach((project) => {
+                this.projectWorkersService.getProjectWorkers(project.id).subscribe({
+                  next: (workers: any[]) => {
+                    const isAssigned = workers.some(
+                      (w) => w.userId === currentUserId || w.id === currentUserId,
+                    );
+                    if (isAssigned) {
+                      workerProjects.push(project);
+                    }
+                    completedRequests++;
+                    if (completedRequests === mappedProjects.length) {
+                      this.projectsList = workerProjects.slice(0, 5);
+                      this.isLoading = false;
+                      this.cdr.detectChanges();
+                    }
+                  },
+                  error: (err) => {
+                    console.error('Error while loading project workers', err);
+                    completedRequests++;
+                    if (completedRequests === mappedProjects.length) {
+                      this.projectsList = workerProjects.slice(0, 5);
+                      this.isLoading = false;
+                      this.cdr.detectChanges();
+                    }
+                  },
+                });
+              });
+            }
           },
           error: (err) => {
-            console.error('Error while loading clients for dashboard:', err);
-            this.projectsList = limitedProjects;
+            console.error('Error while loading clients for dashboard', err);
             this.isLoading = false;
             this.cdr.detectChanges();
           },
         });
       },
       error: (err) => {
-        console.error('Error while loading projects for dashboard:', err);
+        console.error('Error while loading projects for dashboard', err);
         this.isLoading = false;
         this.cdr.detectChanges();
       },
