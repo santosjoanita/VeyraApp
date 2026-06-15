@@ -69,6 +69,12 @@
   box-shadow: 0px 4px 12px rgba(0, 67, 149, 0.15);
 }
 
+.btn-small {
+  width: auto;
+  padding: 8px 14px;
+  min-width: 110px;
+}
+
 .btn-cancel {
   background-color: transparent;
   color: #64748B;
@@ -85,6 +91,10 @@
 .btn-cancel:hover {
   background-color: #F1F5F9;
   color: #0F172A;
+}
+
+.btn-save:hover {
+  background-color: #003377;
 }
 
 /* --- Temas para os modais --- */

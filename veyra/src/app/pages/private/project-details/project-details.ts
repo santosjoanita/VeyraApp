@@ -58,20 +58,7 @@ export class ProjectDetails implements OnInit {
       next: (data: any) => {
         this.projectData = data;
 
-        if (data.client) {
-          this.assignedClients = [data.client];
-        } else if (data.clients && Array.isArray(data.clients)) {
-          this.assignedClients = data.clients;
-        } else if (data.clientId) {
-          this.clientsService.getClients().subscribe((allClients) => {
-            const foundClient = allClients.find((c) => c.id === data.clientId);
-            this.assignedClients = foundClient ? [foundClient] : [];
-            this.cdr.detectChanges();
-          });
-        } else {
-          this.assignedClients = [];
-        }
-
+        this.initializeAssignedClients(data);
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -152,6 +139,24 @@ export class ProjectDetails implements OnInit {
       });
   }
 
+  private initializeAssignedClients(data: any) {
+    if (data.client) {
+      this.assignedClients = [data.client];
+      return;
+    }
+
+    if (data.clientId) {
+      this.clientsService.getClients().subscribe((allClients) => {
+        const foundClient = allClients.find((c) => c.id === data.clientId);
+        this.assignedClients = foundClient ? [foundClient] : [];
+        this.cdr.detectChanges();
+      });
+      return;
+    }
+
+    this.assignedClients = [];
+  }
+
   addCredential() {
     const label = prompt('Enter credential label (e.g., CPanel Production):');
     if (!label) return;
@@ -203,7 +208,7 @@ export class ProjectDetails implements OnInit {
 
   confirmAssignClient(client: any) {
     if (!this.isClientAssigned(client.id)) {
-      this.assignedClients.push(client);
+      this.assignedClients = [client];
       this.syncClientsWithBackend();
     }
     this.closeClientModal();
@@ -215,11 +220,17 @@ export class ProjectDetails implements OnInit {
   }
 
   private syncClientsWithBackend() {
-    const clientIds = this.assignedClients.map((c) => c.id);
-    this.projectsService.updateProject(this.projectData.id, { clients: clientIds }).subscribe({
-      next: () => this.cdr.detectChanges(),
-      error: () => this.cdr.detectChanges(),
-    });
+    const clientId = this.assignedClients.length > 0 ? this.assignedClients[0].id : undefined;
+    this.projectData.clientId = clientId;
+
+    this.projectsService
+      .updateProject(this.projectData.id, {
+        clientId: clientId,
+      })
+      .subscribe({
+        next: () => this.cdr.detectChanges(),
+        error: () => this.cdr.detectChanges(),
+      });
   }
 
   openWorkerModal() {

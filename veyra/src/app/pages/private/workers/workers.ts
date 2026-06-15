@@ -154,7 +154,29 @@ export class Workers implements OnInit {
 
   loadWorkers() {
     this.workersService.getWorkers().subscribe({
-      next: (data) => this._workersList.set(data),
+      next: (data) => {
+        const normalizedWorkers = data.map((worker) => {
+          const isActiveValue = (worker as any).isActive;
+          const lastAccessValue =
+            worker.lastAccess ??
+            (worker as any).last_access ??
+            (worker as any).lastLogin ??
+            (worker as any).last_login;
+
+          return {
+            ...worker,
+            status:
+              worker.status ??
+              (typeof isActiveValue === 'boolean'
+                ? isActiveValue
+                  ? 'active'
+                  : 'inactive'
+                : undefined),
+            lastAccess: lastAccessValue,
+          };
+        });
+        this._workersList.set(normalizedWorkers);
+      },
       error: (err) => console.error('Erro ao carregar workers', err),
     });
   }
@@ -165,6 +187,10 @@ export class Workers implements OnInit {
 
   toggleSort(): void {
     this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+  }
+
+  trackByWorkerId(index: number, worker: Worker) {
+    return worker.id;
   }
 
   viewWorker(id: string | number): void {
