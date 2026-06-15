@@ -38,6 +38,10 @@ export class Profile implements OnInit {
   showPassword = false;
   errorMessage = '';
 
+  get isAdmin(): boolean {
+    return this.currentUser.role === 'admin' || localStorage.getItem('userRole') === 'admin';
+  }
+
   private backupUser: any = {
     id: null,
     firstName: '',

@@ -37,10 +37,19 @@ export class ProjectDetails implements OnInit {
 
   showClientModal = false;
   showWorkerModal = false;
+  showCredentialModal = false;
+
   clientSearchQuery = '';
   workerSearchQuery = '';
   filteredClients: any[] = [];
   filteredWorkers: any[] = [];
+
+  newCredentialData = {
+    label: '',
+    type: 'cpanel',
+    username: '',
+    password: '',
+  };
 
   get isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'admin';
@@ -57,7 +66,6 @@ export class ProjectDetails implements OnInit {
     this.projectsService.getProjectById(id).subscribe({
       next: (data: any) => {
         this.projectData = data;
-
         this.initializeAssignedClients(data);
         this.cdr.detectChanges();
       },
@@ -66,6 +74,7 @@ export class ProjectDetails implements OnInit {
         this.cdr.detectChanges();
       },
     });
+
     this.clientsService.getClients().subscribe({
       next: (allClients) => {
         this.filteredClients = allClients;
@@ -120,10 +129,12 @@ export class ProjectDetails implements OnInit {
     this.isEditing = true;
     this.cdr.detectChanges();
   }
+
   cancelEditing() {
     this.isEditing = false;
     this.cdr.detectChanges();
   }
+
   saveChanges() {
     this.projectsService
       .updateProject(this.projectData.id, { description: this.projectData.description })
@@ -157,34 +168,51 @@ export class ProjectDetails implements OnInit {
     this.assignedClients = [];
   }
 
+  openCredentialModal() {
+    this.newCredentialData = {
+      label: '',
+      type: 'cpanel',
+      username: '',
+      password: '',
+    };
+    this.showCredentialModal = true;
+    this.cdr.detectChanges();
+  }
+
+  closeCredentialModal() {
+    this.showCredentialModal = false;
+    this.cdr.detectChanges();
+  }
+
   addCredential() {
-    const label = prompt('Enter credential label (e.g., CPanel Production):');
-    if (!label) return;
-
-    const type = prompt('Enter type (cpanel, ftp, wordpress, database):', 'cpanel');
-    if (!type) return;
-
-    const username = prompt('Enter Username/Email:');
-    const password = prompt('Enter Password:');
+    if (
+      !this.newCredentialData.label ||
+      !this.newCredentialData.username ||
+      !this.newCredentialData.password
+    ) {
+      alert('Please fill in all the fields.');
+      return;
+    }
 
     const credentialPayload = {
       projectId: this.projectData.id,
-      type: type,
-      label: label,
+      type: this.newCredentialData.type,
+      label: this.newCredentialData.label,
       data: {
-        username: username || 'admin',
-        password: password || 'secret123',
+        username: this.newCredentialData.username,
+        password: this.newCredentialData.password,
       },
     };
 
     this.accessesService.createAccess(credentialPayload).subscribe({
       next: (newCredential) => {
         this.credentials.push(newCredential);
+        this.closeCredentialModal();
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error creating project credential:', err);
-        alert('Failed to save credential. Check your service method name.');
+        alert('Failed to save credential.');
       },
     });
   }
@@ -198,10 +226,12 @@ export class ProjectDetails implements OnInit {
     this.showClientModal = true;
     this.cdr.detectChanges();
   }
+
   closeClientModal() {
     this.showClientModal = false;
     this.cdr.detectChanges();
   }
+
   isClientAssigned(clientId: any): boolean {
     return this.assignedClients.some((c) => c.id === clientId);
   }
@@ -237,13 +267,16 @@ export class ProjectDetails implements OnInit {
     this.showWorkerModal = true;
     this.cdr.detectChanges();
   }
+
   closeWorkerModal() {
     this.showWorkerModal = false;
     this.cdr.detectChanges();
   }
+
   isWorkerAssigned(workerId: any): boolean {
     return this.assignedTeam.some((w) => w.userId === workerId || w.id === workerId);
   }
+
   confirmAssignWorker(worker: any) {
     if (this.isWorkerAssigned(worker.id)) {
       this.removeWorker(worker.id);

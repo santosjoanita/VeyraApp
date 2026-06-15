@@ -79,7 +79,7 @@
   color: var(--brand-secondary, #001A42);
   outline: none;
   box-sizing: border-box;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .toolbar-actions {
@@ -114,7 +114,7 @@
   outline: none;
   appearance: none;
   min-width: 140px;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-add {
@@ -130,7 +130,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-add:hover {

@@ -14,7 +14,7 @@
   --error-red: #EF4444;
   --border-light: #E2E8F0;
   
-  --font-main: 'Geist', sans-serif;
+  --font-main: 'Inter', sans-serif;
 }
 
 
@@ -85,7 +85,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-cancel:hover {
@@ -186,7 +186,7 @@
   color: var(--brand-secondary, #001A42);
   outline: none;
   box-sizing: border-box;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .form-input:focus {

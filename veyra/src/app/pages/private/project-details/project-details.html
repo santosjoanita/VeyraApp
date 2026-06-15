@@ -32,7 +32,7 @@
           </div>
         </div>
 
-        <button *ngIf="!isEditing && isAdmin" class="btn-edit-stat" (click)="startEditing()">
+        <button class="btn-edit-stat" *ngIf="!isEditing && isAdmin" (click)="startEditing()">
           <span class="add-icon">✎</span> Edit Project
         </button>
       </div>
@@ -46,7 +46,7 @@
                     [disabled]="!isEditing" 
                     placeholder="Sem descrição disponível..."></textarea>
           
-          <div *ngIf="isEditing && isAdmin" class="form-actions">
+          <div class="form-actions" *ngIf="isEditing && isAdmin">
             <button class="btn-cancel" (click)="cancelEditing()">Cancel</button>
             <button class="btn-save" (click)="saveChanges()">Save Changes</button>
           </div>
@@ -55,21 +55,21 @@
         <div class="stat-card credentials-card">
           <div class="card-header">
             <h2>Credentials & Accesses</h2>
-            <button class="btn-icon-small" title="Add Credential" (click)="addCredential()">
+            <button class="btn-icon-small" title="Add Credential" (click)="openCredentialModal()">
               <span class="material-symbols-outlined">add</span>
             </button>
           </div>
           
           <div class="credentials-list">
             <ng-container *ngIf="credentials?.length; else noCredentials">
-              <div *ngFor="let cred of credentials" class="credential-item">
+              <div class="credential-item" *ngFor="let cred of credentials">
                 <div class="cred-header">
                   <span class="cred-type">{{ cred.type | uppercase }}</span>
                   <span class="cred-label">{{ cred.label }}</span>
                 </div>
                 
                 <div class="cred-body">
-                  <div *ngFor="let property of cred.data | keyvalue" class="cred-field">
+                  <div class="cred-field" *ngFor="let property of cred.data | keyvalue">
                     <span class="field-label">{{ property.key }}:</span>
                     
                     <ng-container *ngIf="property.key === 'password'; else propertyValue">
@@ -101,16 +101,16 @@
         <div class="stat-card team-card">
           <div class="card-header">
             <h2>Assigned Clients</h2>
-            <button *ngIf="isAdmin" class="btn-icon-small" title="Assign Client" (click)="openClientModal()">
+            <button class="btn-icon-small" title="Assign Client" *ngIf="isAdmin" (click)="openClientModal()">
               <span class="material-symbols-outlined">person_add</span>
             </button>
           </div>
           
           <ul class="person-list">
             <ng-container *ngIf="assignedClients?.length; else noAssignedClients">
-              <li *ngFor="let client of assignedClients" class="person-item">
+              <li class="person-item" *ngFor="let client of assignedClients">
                 <div class="person-avatar client-avatar">
-                  {{ client.name.charAt(0) }}
+                  {{ client.name?.charAt(0) || 'C' }}
                 </div>
                 <div class="person-info">
                   <span class="person-name">{{ client.name }}</span>
@@ -130,16 +130,16 @@
         <div class="stat-card team-card">
           <div class="card-header">
             <h2>Assigned Team</h2>
-            <button *ngIf="isAdmin" class="btn-icon-small" title="Assign Team Member" (click)="openWorkerModal()">
+            <button class="btn-icon-small" title="Assign Team Member" *ngIf="isAdmin" (click)="openWorkerModal()">
               <span class="material-symbols-outlined">group_add</span>
             </button>
           </div>
           
           <ul class="person-list">
             <ng-container *ngIf="assignedTeam?.length; else noAssignedTeam">
-              <li *ngFor="let worker of assignedTeam" class="person-item">
+              <li class="person-item" *ngFor="let worker of assignedTeam">
                 <div class="person-avatar worker-avatar">
-                  {{ worker.name.charAt(0) }}
+                  {{ worker.name?.charAt(0) || 'W' }}
                 </div>
                 <div class="person-info">
                   <span class="person-name">{{ worker.name }}</span>
@@ -159,7 +159,7 @@
     </div>
   </div>
 
-  <div *ngIf="showClientModal" class="modal-overlay" (click)="closeClientModal()">
+  <div class="modal-overlay" *ngIf="showClientModal" (click)="closeClientModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Assign Client</h3>
@@ -175,7 +175,7 @@
 
       <div class="modal-list">
         <ng-container *ngIf="filteredClients?.length; else noClientsFound">
-          <div *ngFor="let client of filteredClients" class="modal-list-item">
+          <div class="modal-list-item" *ngFor="let client of filteredClients">
             <div class="person-info">
               <span class="person-name">{{ client.name }}</span>
               <span class="person-sub">{{ client.email }}</span>
@@ -194,7 +194,7 @@
     </div>
   </div>
 
-<div *ngIf="showWorkerModal" class="modal-overlay" (click)="closeWorkerModal()">
+  <div class="modal-overlay" *ngIf="showWorkerModal" (click)="closeWorkerModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>Assign Team Member</h3>
@@ -210,7 +210,7 @@
 
       <div class="modal-list">
         <ng-container *ngIf="filteredWorkers?.length; else noWorkersFound">
-          <div *ngFor="let worker of filteredWorkers" class="modal-list-item">
+          <div class="modal-list-item" *ngFor="let worker of filteredWorkers">
             <div class="person-info">
               <span class="person-name">{{ worker.name }} <span class="role-badge" style="font-size:10px">{{ worker.role }}</span></span>
               <span class="person-sub">{{ worker.email }}</span>
@@ -228,4 +228,66 @@
       </div>
     </div>
   </div>
+
+  <div class="modal-overlay" *ngIf="showCredentialModal" (click)="closeCredentialModal()">
+    <div class="modal-content credential-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Add Credential & Access</h3>
+        <button class="modal-close" (click)="closeCredentialModal()">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="modal-body credential-modal-body">
+        <div class="credential-form-group">
+          <label class="credential-label">Label / Reference</label>
+          <input
+            type="text"
+            [(ngModel)]="newCredentialData.label"
+            placeholder="e.g., Production Server, Staging CPanel"
+            class="credential-input"
+          />
+        </div>
+
+        <div class="credential-form-group">
+          <label class="credential-label">Access Type</label>
+          <select
+            [(ngModel)]="newCredentialData.type"
+            class="credential-select"
+          >
+            <option value="cpanel">CPanel</option>
+            <option value="ftp">FTP / SFTP</option>
+            <option value="wordpress">WordPress</option>
+            <option value="database">Database (MySQL/Postgre)</option>
+          </select>
+        </div>
+
+        <div class="credential-form-group">
+          <label class="credential-label">Username / Email</label>
+          <input
+            type="text"
+            [(ngModel)]="newCredentialData.username"
+            placeholder="Enter access identity"
+            class="credential-input"
+          />
+        </div>
+
+        <div class="credential-form-group">
+          <label class="credential-label">Password</label>
+          <input
+            type="password"
+            [(ngModel)]="newCredentialData.password"
+            placeholder="Enter secure password"
+            class="credential-input"
+          />
+        </div>
+
+        <div class="form-actions credential-modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeCredentialModal()">Cancel</button>
+          <button type="button" class="btn-save" (click)="addCredential()">Save Credential</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

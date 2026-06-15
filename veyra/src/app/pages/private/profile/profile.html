@@ -78,11 +78,13 @@
         <div class="stat-card">
           <h1>Settings</h1>
           
-          <span class="stat-label">Enable Activity Log</span>
-          <label class="switch">
-            <input type="checkbox" [(ngModel)]="settings.activityLog" name="activityLog">
-            <span class="slider round"></span>
-          </label>
+          <div *ngIf="isAdmin">
+            <span class="stat-label">Enable Activity Log</span>
+            <label class="switch">
+              <input type="checkbox" [(ngModel)]="settings.activityLog" name="activityLog">
+              <span class="slider round"></span>
+            </label>
+          </div>
           
           <span class="stat-label">Enable 2FA for my account.</span>
           <label class="switch">

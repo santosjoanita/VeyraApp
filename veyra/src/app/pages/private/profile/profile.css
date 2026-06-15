@@ -54,7 +54,7 @@
   background-color: var(--bg-page, #F8FAFC);
   color: var(--brand-primary, #004395);
   border: 1px solid var(--border-light, #E2E8F0);
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-edit-stat .add-icon {
@@ -100,7 +100,7 @@
   padding: 10px 12px;
   font-size: 14px;
   color: var(--brand-secondary, #001A42);
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
   outline: none;
   transition: all 0.2s;
   width: 90%;
@@ -288,7 +288,7 @@ input:checked + .slider:before {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-cancel:hover {
@@ -307,7 +307,7 @@ input:checked + .slider:before {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-save:hover {

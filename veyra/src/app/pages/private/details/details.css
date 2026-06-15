@@ -107,7 +107,7 @@
   outline: none;
   transition: all 0.2s;
   box-sizing: border-box;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .profile-input:focus:not(:disabled) {
@@ -135,7 +135,7 @@
   margin: 0;
   box-sizing: border-box;
   resize: none;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .notes-textarea:focus:not(:disabled) {
@@ -169,7 +169,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-edit-stat:hover {
