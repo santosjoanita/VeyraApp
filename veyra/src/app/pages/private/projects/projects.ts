@@ -224,8 +224,8 @@ export class Projects implements OnInit {
     this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }
 
-  viewProject(id: any): void {
-    this.router.navigate(['/projects/details', String(id)]);
+  viewProject(id: string): void {
+    this.router.navigate(['/projects/details', id]);
   }
 
   handleSaveProject(data: any) {
