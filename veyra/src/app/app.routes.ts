@@ -40,6 +40,12 @@ export const routes: Routes = [
     data: { expectedRole: 'admin' },
   },
   {
+    path: 'vacations',
+    loadChildren: () =>
+      import('./pages/private/vacations/vacations.routes').then((m) => m.VACATIONS_ROUTES),
+    canActivate: [authGuard],
+  },
+  {
     path: 'profile',
     loadChildren: () =>
       import('./pages/private/profile/profile.routes').then((m) => m.PROFILE_ROUTES),

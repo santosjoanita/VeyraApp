@@ -1,0 +1,58 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h3>Add Time Off</h3>
+      <button class="modal-close" (click)="close.emit()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="modal-body">
+        
+        <div class="form-group" *ngIf="isAdmin">
+          <label>Worker *</label>
+          <div class="select-wrapper">
+            <select [(ngModel)]="vacationData.userId" name="userId" class="form-input">
+              <option value="" disabled selected>Select a team member</option>
+              <option *ngFor="let worker of workers" [value]="worker.id">
+                {{ worker.name }}
+              </option>
+            </select>
+            <span class="material-symbols-outlined arrow-icon">expand_more</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date *</label>
+            <input type="date" [(ngModel)]="vacationData.startDate" name="startDate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label>End Date *</label>
+            <input type="date" [(ngModel)]="vacationData.endDate" name="endDate" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea 
+            [(ngModel)]="vacationData.note" 
+            name="note" 
+            class="form-input textarea-input" 
+            placeholder="e.g. Summer Vacations, Family Trip..."
+            rows="4">
+          </textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel btn-small" (click)="close.emit()">Cancel</button>
+        <button type="submit" class="btn-save btn-small">Save Time Off</button>
+      </div>
+      
+    </form>
+  </div>
+</div>
