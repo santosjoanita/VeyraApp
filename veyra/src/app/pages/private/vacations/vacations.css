@@ -5,15 +5,16 @@
   background-color: var(--bg-page);
 }
 
+app-sidebar {
+  flex-shrink: 0;
+  display: block;
+}
+
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0; 
-}
-app-sidebar {
-  flex-shrink: 0;
-  display: block;
+  min-width: 0;
 }
 
 .page-body {
@@ -22,6 +23,7 @@ app-sidebar {
   box-sizing: border-box;
 }
 
+/* --- TOPO DA PÁGINA --- */
 .vacations-header {
   display: flex;
   justify-content: space-between;
@@ -32,7 +34,7 @@ app-sidebar {
 .current-month-title {
   font-size: 32px;
   font-weight: 700;
-  color: var(--brand-secondary); 
+  color: var(--brand-secondary);
   text-transform: capitalize;
   font-family: var(--font-main);
 }
@@ -69,7 +71,7 @@ app-sidebar {
 
 .view-segmented-control {
   display: flex;
-  background: var(--border-light); 
+  background: var(--border-light);
   padding: 4px;
   border-radius: 8px;
 }
@@ -152,15 +154,14 @@ app-sidebar {
   background: var(--text-white);
   border-right: 1px solid var(--border-light);
   border-bottom: 1px solid var(--border-light);
-  padding: 8px;
+  padding: 8px 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
   position: relative;
 }
 
 .weekend-cell, .weekend-header {
-  background-color: var(--bg-page); 
+  background-color: var(--bg-page);
 }
 
 .cell-day-number {
@@ -173,10 +174,11 @@ app-sidebar {
   align-items: center;
   justify-content: center;
   font-family: var(--font-main);
+  margin-left: 8px;
 }
 
 .today-highlight {
-  background-color: var(--brand-accent); 
+  background-color: var(--brand-accent);
   color: var(--text-white) !important;
   border-radius: 50%;
 }
@@ -190,18 +192,23 @@ app-sidebar {
   flex-direction: column;
   gap: 4px;
   margin-top: 4px;
+  width: 100%;
 }
 
 .vacation-bar-item {
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 6px 12px;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  box-sizing: border-box;
   transition: all 0.25s ease;
   font-family: var(--font-main);
+  
+  margin-left: -1px;
+  width: calc(100% + 2px);
+  border-radius: 0;
 }
 
 .bg-green { background: #DCFCE7; color: #166534; }
@@ -250,23 +257,56 @@ app-sidebar {
   font-size: 18px;
 }
 
-.btn-filter-funnel {
+.filter-dropdown-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+}
+
+.select-filter-role {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0; 
+  cursor: pointer;
+  z-index: 3;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.funnel-icon {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
   background: var(--bg-page);
   border: 1px solid var(--border-light);
   padding: 8px;
   border-radius: 8px;
-  cursor: pointer;
   color: var(--brand-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  z-index: 1;
+  pointer-events: none; 
 }
 
-.btn-filter-funnel:hover {
+.select-filter-role option {
+  background: var(--text-white);
+  color: var(--brand-secondary);
+}
+
+.filter-dropdown-wrapper:hover .funnel-icon {
   background: var(--border-light);
 }
 
+/* --- LISTA DE TRABALHADORES --- */
 .workers-action-list {
   list-style: none;
   padding: 0;
@@ -312,4 +352,31 @@ app-sidebar {
   font-weight: 600;
   color: var(--text-black);
   font-family: var(--font-main);
+}
+
+/* --- VISTAS DIARIA E SEMANAL --- */
+.placeholder-view {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text-white);
+}
+
+.placeholder-content {
+  text-align: center;
+  color: #64748B;
+  font-family: var(--font-main);
+}
+
+.placeholder-content span {
+  font-size: 48px;
+  margin-bottom: 12px;
+  color: #94A3B8;
+}
+
+.placeholder-content p {
+  font-size: 15px;
+  font-weight: 500;
+  margin: 0;
 }

@@ -209,7 +209,7 @@
       </div>
 
       <div class="modal-list">
-        <ng-container *ngIf="filteredWorkers?.length; else noWorkersFound">
+       <ng-container *ngIf="filteredWorkers.length; else noWorkersFound">
           <div class="modal-list-item" *ngFor="let worker of filteredWorkers">
             <div class="person-info">
               <span class="person-name">{{ worker.name }} <span class="role-badge" style="font-size:10px">{{ worker.role }}</span></span>

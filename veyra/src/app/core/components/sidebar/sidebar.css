@@ -93,6 +93,14 @@ width: 40px;
   width: 24px;
   flex-shrink: 0;
 }
+.nav-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-item.disabled:hover {
+  background-color: transparent;
+}
 
 .nav-text {
   margin-left: 16px;

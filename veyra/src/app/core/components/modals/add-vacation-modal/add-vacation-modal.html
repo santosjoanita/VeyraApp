@@ -8,22 +8,14 @@
       </button>
     </div>
 
+    <div class="info-banner" *ngIf="isAdmin">
+      <span class="material-symbols-outlined info-icon">info</span>
+      <p>Note: This time off will be registered under your account.</p>
+    </div>
+
     <form (ngSubmit)="onSubmit()">
       <div class="modal-body">
         
-        <div class="form-group" *ngIf="isAdmin">
-          <label>Worker *</label>
-          <div class="select-wrapper">
-            <select [(ngModel)]="vacationData.userId" name="userId" class="form-input">
-              <option value="" disabled selected>Select a team member</option>
-              <option *ngFor="let worker of workers" [value]="worker.id">
-                {{ worker.name }}
-              </option>
-            </select>
-            <span class="material-symbols-outlined arrow-icon">expand_more</span>
-          </div>
-        </div>
-
         <div class="form-row">
           <div class="form-group">
             <label>Start Date *</label>

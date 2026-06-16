@@ -59,7 +59,7 @@
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngIf="displayedProjects?.length; else noProjects">
+            <ng-container *ngIf="displayedProjects.length; else noProjects">
               <tr *ngFor="let project of displayedProjects" routerLink="/projects/details/{{ project.id }}" class="clickable-row">
                 
                 <td class="fw-bold">{{ project.name }}</td>

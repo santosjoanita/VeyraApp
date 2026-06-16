@@ -45,15 +45,31 @@ export class Vacations implements OnInit {
 
   filteredWorkers = computed(() => {
     const query = this.searchQuery().toLowerCase();
-    const role = this.selectedRoleFilter();
+    const role = this.selectedRoleFilter().toLowerCase();
 
     return this.workersList().filter((worker) => {
       const matchesSearch = worker.name.toLowerCase().includes(query);
-      const matchesRole = role === 'all' ? true : worker.role === role;
+      const workerRole = (worker.role || '').toLowerCase();
+      const matchesRole = role === 'all' ? true : workerRole === role;
       return matchesSearch && matchesRole;
     });
   });
 
+  handleSaveVacation(payload: any) {
+    const apiPayload = {
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      note: payload.note || '',
+    };
+
+    this.vacationsService.createVacation(apiPayload).subscribe({
+      next: () => {
+        this.loadInitialData();
+        this.showAddModal = false;
+      },
+      error: (err) => console.error('Error saving vacation schedule:', err),
+    });
+  }
   calendarDays = computed(() => {
     const date = this.currentDate();
     const year = date.getFullYear();
@@ -136,15 +152,5 @@ export class Vacations implements OnInit {
 
   setToday() {
     this.currentDate.set(new Date(2026, 5, 1));
-  }
-
-  handleSaveVacation(payload: any) {
-    this.vacationsService.createVacation(payload).subscribe({
-      next: () => {
-        this.loadInitialData();
-        this.showAddModal = false;
-      },
-      error: (err) => console.error('Error saving vacation schedule:', err),
-    });
   }
 }

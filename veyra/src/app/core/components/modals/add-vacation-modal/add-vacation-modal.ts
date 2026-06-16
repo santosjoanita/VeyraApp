@@ -29,11 +29,6 @@ export class AddVacationModal {
       return;
     }
 
-    if (this.isAdmin && !this.vacationData.userId) {
-      alert('Please, select a worker.');
-      return;
-    }
-
     this.save.emit(this.vacationData);
   }
 }
