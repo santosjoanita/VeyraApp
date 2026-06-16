@@ -128,6 +128,10 @@
   margin-top: 24px;
 }
 
+.dashboard-bottom-row.full-width {
+  grid-template-columns: 1fr;
+}
+
 .card-container {
   background-color: #FFFFFF;
   border-radius: 16px;

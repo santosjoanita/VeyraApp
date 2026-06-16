@@ -1,18 +1,23 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/user/auth.service';
 import { RegisterUser } from '../modals/register-user/register-user';
+import { DataHandlerService } from '../../../core/services/data-handler.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, RegisterUser],
+  imports: [CommonModule, FormsModule, RouterModule, RegisterUser],
   templateUrl: './header.html',
   styleUrls: ['./header.css'],
 })
 export class Header implements OnInit {
   private authService = inject(AuthService);
+  private dataHandler = inject(DataHandlerService);
+
+  private _searchQuery = signal('');
 
   currentUser = {
     name: localStorage.getItem('userName') || 'Admin',
@@ -23,6 +28,13 @@ export class Header implements OnInit {
 
   get isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'admin';
+  }
+
+  get searchQuery() {
+    return this._searchQuery();
+  }
+  set searchQuery(value: string) {
+    this._searchQuery.set(value);
   }
 
   ngOnInit(): void {

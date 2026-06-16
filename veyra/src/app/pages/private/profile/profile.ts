@@ -6,6 +6,7 @@ import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 import { AuthService } from '../../../core/services/user/auth.service';
 import { WorkersService } from '../../../core/services/workers/workers.service';
+import { PreferencesService } from '../../../core/services/preferences.service';
 
 @Component({
   selector: 'app-profile',
@@ -18,6 +19,7 @@ export class Profile implements OnInit {
   private authService = inject(AuthService);
   private workersService = inject(WorkersService);
   private cdr = inject(ChangeDetectorRef);
+  private preferencesService = inject(PreferencesService);
 
   currentUser: any = {
     id: null,
@@ -50,6 +52,14 @@ export class Profile implements OnInit {
     role: '',
     password: '',
   };
+  get showActivityLog() {
+    return this.preferencesService.showActivityLog;
+  }
+
+  onToggleActivity(event: Event) {
+    const checkbox = event.target as HTMLInputElement;
+    this.preferencesService.setActivityLog(checkbox.checked);
+  }
 
   ngOnInit(): void {
     this.authService.getMe().subscribe({

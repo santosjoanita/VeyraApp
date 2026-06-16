@@ -192,12 +192,20 @@
   margin-top: 20px;
 }
 
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
 .switch {
   position: relative;
-  align-self: flex-end;
   display: flex;
   width: 55px;
   height: 27px;
+  align-self: center;
 }
 
 .switch input {

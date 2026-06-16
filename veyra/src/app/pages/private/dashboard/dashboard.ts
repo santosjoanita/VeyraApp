@@ -7,6 +7,7 @@ import { AuthService } from '../../../core/services/user/auth.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
 import { ProjectsService } from '../../../core/services/projects/projects.service';
 import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
+import { PreferencesService } from '../../../core/services/preferences.service';
 
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
 import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
@@ -35,6 +36,7 @@ export class Dashboard implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private projectsService = inject(ProjectsService);
   private projectWorkersService = inject(ProjectWorkersService);
+  private preferencesService = inject(PreferencesService);
 
   metrics: any = null;
   isLoading = true;
@@ -72,6 +74,9 @@ export class Dashboard implements OnInit {
   }
   get isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'admin';
+  }
+  get showActivityLog() {
+    return this.preferencesService.showActivityLog;
   }
 
   loadDashboardData() {

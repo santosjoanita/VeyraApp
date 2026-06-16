@@ -78,19 +78,21 @@
         <div class="stat-card">
           <h1>Settings</h1>
           
-          <div *ngIf="isAdmin">
-            <span class="stat-label">Enable Activity Log</span>
+          <div *ngIf="isAdmin" class="setting-row">
+            <span class="stat-label">Show Activity Log on Dashboard</span>
             <label class="switch">
-              <input type="checkbox" [(ngModel)]="settings.activityLog" name="activityLog">
+              <input type="checkbox" [checked]="showActivityLog" (change)="onToggleActivity($event)">
               <span class="slider round"></span>
             </label>
           </div>
           
-          <span class="stat-label">Enable 2FA for my account.</span>
-          <label class="switch">
-            <input type="checkbox" [(ngModel)]="settings.twoFactorAuth" name="twoFactorAuth">
-            <span class="slider round"></span>
-          </label>
+          <div class="setting-row">
+            <span class="stat-label">Enable 2FA for my account.</span>
+            <label class="switch">
+              <input type="checkbox" [(ngModel)]="settings.twoFactorAuth" name="twoFactorAuth">
+              <span class="slider round"></span>
+            </label>
+          </div>
           
           <span class="stat-label">Choose your Theme</span>
           <select class="dropdown" [(ngModel)]="settings.theme" name="theme">
