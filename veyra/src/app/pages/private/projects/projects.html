@@ -24,21 +24,18 @@
             </select>
           </div>
 
-         @if (isAdmin) {
-            <button class="btn-add" (click)="showAddProject = true">
-              <span class="material-symbols-outlined add-icon">add</span>
-              Add Project
-            </button>
-          }
+          <button *ngIf="isAdmin" class="btn-add" (click)="showAddProject = true">
+            <span class="material-symbols-outlined add-icon">add</span>
+            Add Project
+          </button>
 
-         @if (showAddProject) {
-          <app-add-project-modal 
+          <app-add-project-modal
+            *ngIf="showAddProject"
             [clients]="clientsList"
-            [projectData]="editingProject" 
-            (close)="closeModal()" 
+            [projectData]="editingProject"
+            (close)="closeModal()"
             (save)="handleSaveProject($event)">
           </app-add-project-modal>
-        }
         </div>
       </div>
 
@@ -58,14 +55,12 @@
               <th>Due Date</th>
               <th>Assigned Team</th>
               <th>Status</th>
-              @if (isAdmin) {
-                  <th class="text-center">Actions</th>
-                }
+              <th *ngIf="isAdmin" class="text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            @for (project of displayedProjects; track project.id) {
-              <tr routerLink="/projects/details/{{ project.id }}" class="clickable-row">
+            <ng-container *ngIf="displayedProjects.length; else noProjects">
+              <tr *ngFor="let project of displayedProjects" routerLink="/projects/details/{{ project.id }}" class="clickable-row">
                 
                 <td class="fw-bold">{{ project.name }}</td>
                 <td class="text-muted">{{ project.clientName }}</td>
@@ -73,13 +68,14 @@
                 
                 <td>
                   <div class="team-avatars">
-                    @for (member of project.assignedTeam; track member.userId) {
-                      <div class="avatar" title="{{ member.name }}">
+                    <ng-container *ngIf="project.assignedTeam?.length; else unassignedTeam">
+                      <div *ngFor="let member of project.assignedTeam" class="avatar" title="{{ member.name }}">
                         {{ member.name.charAt(0) }}
                       </div>
-                    } @empty {
+                    </ng-container>
+                    <ng-template #unassignedTeam>
                       <span class="text-muted">Unassigned</span>
-                    }
+                    </ng-template>
                   </div>
                 </td>
                 
@@ -91,8 +87,7 @@
                     {{ project.status | titlecase }}
                   </span>
                 </td>
-                @if (isAdmin) {
-                <td class="actions-cell">
+                <td *ngIf="isAdmin" class="actions-cell">
                   <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editProject(project)">
                     <span class="material-symbols-outlined">edit</span>
                   </button>
@@ -100,16 +95,15 @@
                     <span class="material-symbols-outlined">delete</span>
                   </button>
                 </td>
-              }
-
               </tr>
-            } @empty {
+            </ng-container>
+            <ng-template #noProjects>
               <tr>
                 <td colspan="6" class="text-center text-muted" style="padding: 40px 0;">
                   No projects found.
                 </td>
               </tr>
-            }
+            </ng-template>
           </tbody>
         </table>
        <app-paginator
@@ -124,10 +118,9 @@
   </div>
 </div>
 
-@if (showDeleteModal) {
-  <app-confirm-delete 
-    [itemName]="projectToDeleteName"
-    (confirm)="handleConfirmDelete()"
-    (close)="showDeleteModal = false">
-  </app-confirm-delete>
-}
+<app-confirm-delete
+  *ngIf="showDeleteModal"
+  [itemName]="projectToDeleteName"
+  (confirm)="handleConfirmDelete()"
+  (close)="showDeleteModal = false">
+</app-confirm-delete>

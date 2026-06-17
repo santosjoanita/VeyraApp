@@ -4,7 +4,7 @@
   width: 100vw;
   margin: 0;
   padding: 0;
-  font-family: 'Geist', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .login-background {
@@ -104,7 +104,7 @@
   border-radius: 8px;
   border: 1px solid var(--border-light, #E2E8F0);
   background-color: var(--bg-page, #F8FAFC);
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
   font-size: 14px;
   box-sizing: border-box;
 }
@@ -144,4 +144,21 @@
 
 .btn-login:hover {
   background-color: #1D4ED8;
+}
+
+.register-text {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 14px;
+  color: #001A42; 
+}
+
+.register-text a {
+  color: #004395; 
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.register-text a:hover {
+  text-decoration: underline;
 }

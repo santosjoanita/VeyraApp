@@ -59,7 +59,7 @@
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .search-input:focus {
@@ -116,7 +116,7 @@
   color: var(--brand-secondary, #001A42);
   outline: none;
   cursor: pointer;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-add {
@@ -132,7 +132,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-add:hover {
@@ -200,7 +200,7 @@
   font-size: 13px;
   color: var(--brand-secondary, #001A42);
   outline: none;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
   cursor: pointer;
 }
 

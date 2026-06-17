@@ -24,9 +24,18 @@
       <span class="nav-text">Projects</span>
     </a>
 
-    <a routerLink="/workers" class="nav-item" routerLinkActive="active">
+    <a [routerLink]="isAdmin ? '/workers' : '/not-permitted'" 
+       class="nav-item" 
+       [routerLinkActive]="isAdmin ? 'active' : ''">
       <span class="material-symbols-outlined">work</span>
       <span class="nav-text">Workers</span>
+    </a>
+
+    <a routerLink="/vacations" 
+       class="nav-item" 
+       routerLinkActive="active">
+      <span class="material-symbols-outlined">calendar_month</span>
+      <span class="nav-text">Vacations</span>
     </a>
   </nav>
 </aside>

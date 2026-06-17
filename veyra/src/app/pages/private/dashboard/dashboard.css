@@ -106,7 +106,7 @@
   background-color: var(--bg-page, #F8FAFC);
   color: var(--brand-primary, #004395);
   border: 1px solid var(--border-light, #E2E8F0);
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-add-stat .add-icon {
@@ -126,6 +126,10 @@
   grid-template-columns: 2fr 1fr; 
   gap: 24px;
   margin-top: 24px;
+}
+
+.dashboard-bottom-row.full-width {
+  grid-template-columns: 1fr;
 }
 
 .card-container {

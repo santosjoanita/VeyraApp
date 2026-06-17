@@ -128,7 +128,28 @@ export class Projects implements OnInit {
     const teams = this._teamsMap();
 
     const enrichedProjects = rawProjects.map((project) => {
-      const matchedClient = clients.find((c) => c.id === project.clientId);
+      let clientNames = 'Unassigned';
+
+      if (Array.isArray(project.clients)) {
+        const names = project.clients
+          .map((client: any) => {
+            if (client && typeof client === 'object' && client.id != null) {
+              return client.name;
+            }
+            const matched = clients.find((c) => c.id === client);
+            return matched ? matched.name : null;
+          })
+          .filter(Boolean);
+
+        if (names.length) {
+          clientNames = names.join(', ');
+        }
+      }
+
+      if (clientNames === 'Unassigned' && project.clientId) {
+        const matchedClient = clients.find((c) => c.id === project.clientId);
+        clientNames = matchedClient ? matchedClient.name : 'Unassigned';
+      }
 
       const rawTeam = teams[project.id] || [];
       const assignedTeam = rawTeam.map((member: any) => {
@@ -142,8 +163,8 @@ export class Projects implements OnInit {
 
       return {
         ...project,
-        clientName: matchedClient ? matchedClient.name : 'Unassigned',
-        assignedTeam: assignedTeam,
+        clientName: clientNames,
+        assignedTeam,
       };
     });
 

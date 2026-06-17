@@ -107,7 +107,7 @@
   outline: none;
   transition: all 0.2s;
   box-sizing: border-box;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .profile-input:focus:not(:disabled) {
@@ -135,7 +135,7 @@
   margin: 0;
   box-sizing: border-box;
   resize: none;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .notes-textarea:focus:not(:disabled) {
@@ -157,37 +157,25 @@
 }
 
 .btn-edit-stat {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background-color: #FFFFFF;
-  color: var(--brand-primary, #004395);
-  border: 1px solid var(--border-light, #E2E8F0);
-  border-radius: 8px;
+  gap: 8px;
   padding: 10px 16px;
   font-size: 14px;
   font-weight: 600;
+  color: var(--brand-primary, #004395);
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  transition: all 0.2s ease;
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-edit-stat:hover {
   background-color: var(--brand-primary, #004395);
   color: #FFFFFF;
-}
-
-.btn-cancel {
-  background-color: transparent;
-  color: #64748B;
-  border: 1px solid var(--border-light, #E2E8F0);
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  border-color: var(--brand-primary, #004395);
 }
 
 .btn-cancel:hover {
@@ -195,21 +183,9 @@
   color: #0F172A;
 }
 
-.btn-save {
-  background-color: var(--brand-primary, #004395);
-  color: #FFFFFF;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
-}
-
 .btn-save:hover {
   background-color: #003377;
+  color: #FFFFFF;
 }
 
 .details-table {

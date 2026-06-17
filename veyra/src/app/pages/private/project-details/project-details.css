@@ -113,7 +113,7 @@
   margin: 0;
   box-sizing: border-box;
   resize: none;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .notes-textarea:focus:not(:disabled) {
@@ -420,20 +420,81 @@
   font-size: 20px;
 }
 
-.modal-search .search-input {
+.search-input,
+.credential-input,
+.credential-select {
   width: 100%;
-  padding: 10px 12px 10px 40px;
+  padding: 10px 12px;
   border: 1px solid #E2E8F0;
   border-radius: 8px;
   font-size: 14px;
   color: var(--brand-secondary, #001A42);
   outline: none;
   box-sizing: border-box;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
+  background-color: #FFFFFF;
 }
 
-.modal-search .search-input:focus {
+.search-input,
+.credential-input {
+  min-height: 42px;
+}
+
+.credential-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+
+.modal-search .search-input {
+  padding: 10px 12px 10px 40px;
+}
+
+.modal-search .search-input:focus,
+.credential-input:focus,
+.credential-select:focus {
   border-color: var(--brand-primary, #004395);
+}
+
+.modal-list {
+  padding: 0 24px 24px 24px;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.credential-modal {
+  max-width: 480px;
+}
+
+.credential-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+  padding: 0 24px 24px 24px;
+  overflow-y: auto;
+}
+
+.credential-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.credential-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.credential-modal-actions {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid #F1F5F9;
+  padding-top: 16px;
 }
 
 .modal-list {
@@ -464,7 +525,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: var(--font-main, 'Geist', sans-serif);
+  font-family: var(--font-main, 'Inter', sans-serif);
 }
 
 .btn-assign:hover:not(:disabled) {

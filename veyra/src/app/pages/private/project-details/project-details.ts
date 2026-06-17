@@ -37,10 +37,19 @@ export class ProjectDetails implements OnInit {
 
   showClientModal = false;
   showWorkerModal = false;
+  showCredentialModal = false;
+
   clientSearchQuery = '';
   workerSearchQuery = '';
   filteredClients: any[] = [];
   filteredWorkers: any[] = [];
+
+  newCredentialData = {
+    label: '',
+    type: 'cpanel',
+    username: '',
+    password: '',
+  };
 
   get isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'admin';
@@ -57,21 +66,7 @@ export class ProjectDetails implements OnInit {
     this.projectsService.getProjectById(id).subscribe({
       next: (data: any) => {
         this.projectData = data;
-
-        if (data.client) {
-          this.assignedClients = [data.client];
-        } else if (data.clients && Array.isArray(data.clients)) {
-          this.assignedClients = data.clients;
-        } else if (data.clientId) {
-          this.clientsService.getClients().subscribe((allClients) => {
-            const foundClient = allClients.find((c) => c.id === data.clientId);
-            this.assignedClients = foundClient ? [foundClient] : [];
-            this.cdr.detectChanges();
-          });
-        } else {
-          this.assignedClients = [];
-        }
-
+        this.initializeAssignedClients(data);
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -79,6 +74,7 @@ export class ProjectDetails implements OnInit {
         this.cdr.detectChanges();
       },
     });
+
     this.clientsService.getClients().subscribe({
       next: (allClients) => {
         this.filteredClients = allClients;
@@ -133,10 +129,12 @@ export class ProjectDetails implements OnInit {
     this.isEditing = true;
     this.cdr.detectChanges();
   }
+
   cancelEditing() {
     this.isEditing = false;
     this.cdr.detectChanges();
   }
+
   saveChanges() {
     this.projectsService
       .updateProject(this.projectData.id, { description: this.projectData.description })
@@ -152,34 +150,69 @@ export class ProjectDetails implements OnInit {
       });
   }
 
+  private initializeAssignedClients(data: any) {
+    if (data.client) {
+      this.assignedClients = [data.client];
+      return;
+    }
+
+    if (data.clientId) {
+      this.clientsService.getClients().subscribe((allClients) => {
+        const foundClient = allClients.find((c) => c.id === data.clientId);
+        this.assignedClients = foundClient ? [foundClient] : [];
+        this.cdr.detectChanges();
+      });
+      return;
+    }
+
+    this.assignedClients = [];
+  }
+
+  openCredentialModal() {
+    this.newCredentialData = {
+      label: '',
+      type: 'cpanel',
+      username: '',
+      password: '',
+    };
+    this.showCredentialModal = true;
+    this.cdr.detectChanges();
+  }
+
+  closeCredentialModal() {
+    this.showCredentialModal = false;
+    this.cdr.detectChanges();
+  }
+
   addCredential() {
-    const label = prompt('Enter credential label (e.g., CPanel Production):');
-    if (!label) return;
-
-    const type = prompt('Enter type (cpanel, ftp, wordpress, database):', 'cpanel');
-    if (!type) return;
-
-    const username = prompt('Enter Username/Email:');
-    const password = prompt('Enter Password:');
+    if (
+      !this.newCredentialData.label ||
+      !this.newCredentialData.username ||
+      !this.newCredentialData.password
+    ) {
+      alert('Please fill in all the fields.');
+      return;
+    }
 
     const credentialPayload = {
       projectId: this.projectData.id,
-      type: type,
-      label: label,
+      type: this.newCredentialData.type,
+      label: this.newCredentialData.label,
       data: {
-        username: username || 'admin',
-        password: password || 'secret123',
+        username: this.newCredentialData.username,
+        password: this.newCredentialData.password,
       },
     };
 
     this.accessesService.createAccess(credentialPayload).subscribe({
       next: (newCredential) => {
         this.credentials.push(newCredential);
+        this.closeCredentialModal();
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error creating project credential:', err);
-        alert('Failed to save credential. Check your service method name.');
+        alert('Failed to save credential.');
       },
     });
   }
@@ -193,17 +226,19 @@ export class ProjectDetails implements OnInit {
     this.showClientModal = true;
     this.cdr.detectChanges();
   }
+
   closeClientModal() {
     this.showClientModal = false;
     this.cdr.detectChanges();
   }
+
   isClientAssigned(clientId: any): boolean {
     return this.assignedClients.some((c) => c.id === clientId);
   }
 
   confirmAssignClient(client: any) {
     if (!this.isClientAssigned(client.id)) {
-      this.assignedClients.push(client);
+      this.assignedClients = [client];
       this.syncClientsWithBackend();
     }
     this.closeClientModal();
@@ -215,24 +250,33 @@ export class ProjectDetails implements OnInit {
   }
 
   private syncClientsWithBackend() {
-    const clientIds = this.assignedClients.map((c) => c.id);
-    this.projectsService.updateProject(this.projectData.id, { clients: clientIds }).subscribe({
-      next: () => this.cdr.detectChanges(),
-      error: () => this.cdr.detectChanges(),
-    });
+    const clientId = this.assignedClients.length > 0 ? this.assignedClients[0].id : undefined;
+    this.projectData.clientId = clientId;
+
+    this.projectsService
+      .updateProject(this.projectData.id, {
+        clientId: clientId,
+      })
+      .subscribe({
+        next: () => this.cdr.detectChanges(),
+        error: () => this.cdr.detectChanges(),
+      });
   }
 
   openWorkerModal() {
     this.showWorkerModal = true;
     this.cdr.detectChanges();
   }
+
   closeWorkerModal() {
     this.showWorkerModal = false;
     this.cdr.detectChanges();
   }
+
   isWorkerAssigned(workerId: any): boolean {
     return this.assignedTeam.some((w) => w.userId === workerId || w.id === workerId);
   }
+
   confirmAssignWorker(worker: any) {
     if (this.isWorkerAssigned(worker.id)) {
       this.removeWorker(worker.id);

@@ -68,7 +68,7 @@
       </div>
       
 
-      <div class="dashboard-bottom-row">
+      <div class="dashboard-bottom-row" [class.full-width]="!showActivityLog">
         
         <div class="projects-section card-container">
           <h3>{{ isAdmin ? 'Overall Projects' : 'My Projects' }}</h3>
@@ -101,42 +101,34 @@
             </tbody>
           </table>
         </div>
-        @if (isAdmin) {
-        <div class="activity-section card-container">
-          <h3>Activity Log</h3>
-          <h6>Track all changes</h6>
-          
-          <div class="search-wrapper-activity">
-            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" placeholder="Search activities...">
-          </div>
 
-          <ul class="activity-list">
-            @for (activity of activityList; track activity.id) {
-              <li>
-                <div class="activity-content">
-                  <p>
-                    @if (activity.user) {
-                      <strong>{{ activity.user }}</strong> 
-                    }
-                    {{ activity.action }}
-                  </p>
-                  <span class="activity-time">{{ activity.time }}</span>
-                </div>
-              </li>
-            } @empty {
-              <li>
-                <div class="activity-content">
-                  <p class="text-muted">No recent activity found.</p>
-                </div>
-              </li>
-            }
-          </ul>
-        </div>
-      }
+        @if (isAdmin && showActivityLog) {
+          <div class="activity-section card-container">
+            <h3>Activity Log</h3>
+            <h6>Track all changes</h6>
+            
+            <div class="search-wrapper-activity">
+              <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" placeholder="Search activities...">
+            </div>
+
+            <ul class="activity-list">
+              @for (activity of activityList; track activity.id) {
+                <li>
+                  <div class="activity-content">
+                    <p><strong>{{ activity.userName || 'User' }}</strong> {{ activity.action || 'performed an action' }}</p>
+                    <span class="activity-time">{{ activity.createdAt | date:'HH:mm' }}</span>
+                  </div>
+                </li>
+              } @empty {
+                <p class="text-muted text-center" style="padding: 10px 0;">No recent activities.</p>
+              }
+            </ul>
+          </div>
+        }
 
       </div>
     </div>

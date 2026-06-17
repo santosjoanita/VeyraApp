@@ -1,0 +1,110 @@
+<div class="page-container">
+  <app-sidebar></app-sidebar>
+
+  <div class="main-content">
+    <app-header></app-header>
+
+    <div class="page-body">
+      
+      <div class="vacations-header">
+        <h1 class="current-month-title">{{ currentDate() | date:'MMMM yyyy' }}</h1>
+        
+        <div class="calendar-controls">
+          <div class="nav-buttons">
+            <button class="btn-arrow" (click)="changeMonth(-1)">&lt;</button>
+            <button class="btn-today" (click)="setToday()">TODAY</button>
+            <button class="btn-arrow" (click)="changeMonth(1)">&gt;</button>
+          </div>
+
+          <div class="view-segmented-control">
+            <button [class.active]="currentView === 'daily'" (click)="currentView = 'daily'">Daily</button>
+            <button [class.active]="currentView === 'weekly'" (click)="currentView = 'weekly'">Weekly</button>
+            <button [class.active]="currentView === 'monthly'" (click)="currentView = 'monthly'">Monthly</button>
+          </div>
+
+          <button class="btn-add-timeoff" (click)="showAddModal = true">
+            <span>+</span> Add Time Off
+          </button>
+        </div>
+      </div>
+
+      <div class="vacations-workspace" [class.no-sidebar]="!isAdmin">
+        
+        <div class="calendar-card" *ngIf="currentView === 'monthly'">
+          <div class="calendar-grid-header">
+            <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div class="weekend-header">SAT</div><div class="weekend-header">SUN</div>
+          </div>
+          <div class="calendar-grid-body">
+            <div *ngFor="let slot of calendarDays()" class="calendar-cell" [class.opacity-muted]="!slot.isCurrentMonth" [class.weekend-cell]="slot.isWeekend">
+              <div class="cell-day-number" [class.today-highlight]="slot.isToday">{{ slot.date | date:'d' }}</div>
+              <div class="cell-events-container">
+                <div *ngFor="let vac of slot.vacations" class="vacation-bar-item" [ngClass]="vac.colorClass" [class.fade-out]="selectedWorkerId() !== null && selectedWorkerId() !== vac.userId">
+                  <span class="vacation-worker-name">{{ vac.workerName }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="calendar-card placeholder-view" *ngIf="currentView === 'weekly'">
+          <div class="placeholder-content">
+            <span class="material-symbols-outlined">view_week</span>
+            <p>Weekly view for {{ currentDate() | date:'MMMM yyyy' }} is under construction.</p>
+          </div>
+        </div>
+
+        <div class="calendar-card placeholder-view" *ngIf="currentView === 'daily'">
+          <div class="placeholder-content">
+            <span class="material-symbols-outlined">calendar_view_day</span>
+            <p>Daily timeline view is under construction.</p>
+          </div>
+        </div>
+
+        <div class="workers-sidebar-panel" *ngIf="isAdmin">
+          <div class="search-box-wrapper">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input type="text" 
+                   placeholder="Search for a user..." 
+                   [ngModel]="searchQuery()" 
+                   (ngModelChange)="searchQuery.set($event)" 
+                   class="sidebar-search-input">
+            
+            <div class="filter-dropdown-wrapper">
+              <select [ngModel]="selectedRoleFilter()" (ngModelChange)="selectedRoleFilter.set($event)" class="select-filter-role">
+                <option value="all">All Roles</option>
+                <option value="admin">Admins</option>
+                <option value="worker">Workers</option>
+              </select>
+              <span class="material-symbols-outlined funnel-icon">filter_list</span>
+            </div>
+          </div>
+
+          <ul class="workers-action-list">
+            <li *ngFor="let worker of filteredWorkers()" 
+                class="worker-action-item"
+                [class.selected-highlight]="selectedWorkerId() === worker.id"
+                (click)="toggleWorkerSelect(worker.id)">
+              
+              <div class="avatar-circle" [ngClass]="getUserColorClass(worker.id)">
+                {{ worker.name.charAt(0) }}
+              </div>
+              <div class="worker-meta-info">
+                <span class="meta-name">{{ worker.name }}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<app-add-vacation-modal 
+  *ngIf="showAddModal" 
+  [workers]="workersList()"
+  [isAdmin]="isAdmin"
+  (close)="showAddModal = false"
+  (save)="handleSaveVacation($event)">
+</app-add-vacation-modal>

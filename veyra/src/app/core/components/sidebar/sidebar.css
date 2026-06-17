@@ -1,7 +1,8 @@
 :host {
   display: block;
   height: 100vh;
-  font-family: 'Geist', sans-serif;
+  font-family: 'Inter', sans-serif;
+  flex-shrink: 0;
 }
 
 .sidebar-container {
@@ -91,6 +92,14 @@ width: 40px;
   justify-content: center;
   width: 24px;
   flex-shrink: 0;
+}
+.nav-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.nav-item.disabled:hover {
+  background-color: transparent;
 }
 
 .nav-text {
