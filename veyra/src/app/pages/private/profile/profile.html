@@ -10,7 +10,7 @@
       <div class="stats-grid">
         
         <div class="stat-card">
-          <h1>{{ currentUser.firstName }} {{ currentUser.lastName }}</h1>
+          <h2>{{ currentUser.firstName }} {{ currentUser.lastName }}</h2>
           <span class="stat-label"><strong>Email:</strong> {{ currentUser.email }}</span>
           <span class="stat-label-profile"><strong>Profile:</strong> {{ currentUser.role | titlecase }}</span>
         </div>
@@ -76,7 +76,7 @@
         </div>
         
         <div class="stat-card">
-          <h1>Settings</h1>
+          <h2>Settings</h2>
           
           <div *ngIf="isAdmin" class="setting-row">
             <span class="stat-label">Show Activity Log on Dashboard</span>

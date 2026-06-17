@@ -311,26 +311,27 @@
   font-weight: 500;
 }
 
-.btn-edit-stat, .btn-cancel, .btn-save {
-  background-color: transparent;
-  color: var(--brand-primary, #004395);
-  border: 1px solid var(--border-light, #E2E8F0);
-  border-radius: 8px;
+.btn-edit-stat{
   padding: 10px 16px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 6px;
+  background-color: #FFFFFF;
+  color: var(--brand-primary, #004395);
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: 8px;
 }
 
-.btn-edit-stat { background-color: #FFFFFF; }
-.btn-edit-stat:hover { background-color: var(--brand-primary, #004395); color: #FFFFFF; }
-.btn-save { background-color: var(--brand-primary, #004395); color: #FFFFFF; }
-.btn-save:hover { background-color: #003377; }
-.btn-cancel:hover { background-color: #F1F5F9; color: #0F172A; }
+.btn-edit-stat:hover {
+  background-color: var(--brand-primary, #004395);
+  color: #FFFFFF;
+  border-color: var(--brand-primary, #004395);
+}
+
 
 .form-actions {
   display: flex;

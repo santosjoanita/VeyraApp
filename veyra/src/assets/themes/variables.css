@@ -18,8 +18,10 @@
 }
 
 
-.btn-delete{
-  width: 100%;
+.btn-delete,
+.btn-add-stat,
+.btn-save,
+.btn-cancel {  
   padding: 10px;
   border-radius: 10px;
   font-size: 14px;
@@ -30,49 +32,21 @@
   justify-content: center;
   gap: 6px;
   transition: all 0.2s ease;
+  font-family: var(--font-main);
+}
 
+.btn-delete {
   background-color: var(--error-red);
   color: var(--text-white);
   border: 1px solid var(--border-light);
-  font-family: var(--font-main);
 }
 
-/* --- BOTÃO ADD (só cores e etc) --- */
-.btn-add-stat, .btn-save, .btn-cancel{  
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-
+/* --- BOTÃO ADD / SAVE / CANCEL --- */
+.btn-add-stat,
+.btn-save {
   background-color: var(--bg-page);
   color: var(--brand-primary);
   border: 1px solid var(--border-light);
-  font-family: var(--font-main);
-}
-
-.btn-add-stat .add-icon {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.btn-add-stat:hover {
-  background-color: var(--brand-primary);
-  border-color: var(--brand-primary);
-  color: var(--text-white);
-  box-shadow: 0px 4px 12px rgba(0, 67, 149, 0.15);
-}
-
-.btn-small {
-  width: auto;
-  padding: 8px 14px;
-  min-width: 110px;
 }
 
 .btn-cancel {
@@ -81,20 +55,42 @@
   border: 1px solid var(--border-light, #E2E8F0);
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: var(--font-main, 'Inter', sans-serif);
+  width: auto;
+}
+
+.modal-content .btn-add-stat,
+.modal-content .btn-save,
+.modal-content .btn-cancel {
+  width: 100%;
+}
+
+.btn-add-stat .add-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.btn-add-stat:hover,
+.btn-save:hover {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: var(--text-white);
+  box-shadow: 0px 4px 12px rgba(0, 67, 149, 0.15);
 }
 
 .btn-cancel:hover {
-  background-color: #F1F5F9;
-  color: #0F172A;
+  background-color: #EFF6FF;
+  color: var(--brand-primary);
 }
 
-.btn-save:hover {
-  background-color: #003377;
+.btn-delete:hover {
+  background-color: #DC2626;
+  color: var(--text-white);
+}
+
+.btn-small {
+  width: auto;
+  padding: 8px 14px;
+  min-width: 110px;
 }
 
 /* --- Temas para os modais --- */
