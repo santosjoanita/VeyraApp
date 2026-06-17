@@ -1,10 +1,9 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/user/auth.service';
 import { RegisterUser } from '../modals/register-user/register-user';
-import { DataHandlerService } from '../../../core/services/data-handler.service';
 
 @Component({
   selector: 'app-header',
@@ -15,7 +14,7 @@ import { DataHandlerService } from '../../../core/services/data-handler.service'
 })
 export class Header implements OnInit {
   private authService = inject(AuthService);
-  private dataHandler = inject(DataHandlerService);
+  private router = inject(Router);
 
   private _searchQuery = signal('');
 
@@ -51,8 +50,7 @@ export class Header implements OnInit {
   }
 
   logout(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userName');
+    localStorage.clear();
+    window.location.href = '/login';
   }
 }
