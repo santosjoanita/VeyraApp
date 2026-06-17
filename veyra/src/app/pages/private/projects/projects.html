@@ -66,18 +66,29 @@
                 <td class="text-muted">{{ project.clientName }}</td>
                 <td>{{ project.endDate | date:'dd MMM yyyy' }}</td>
                 
-                <td>
-                  <div class="team-avatars">
-                    <ng-container *ngIf="project.assignedTeam?.length; else unassignedTeam">
-                      <div *ngFor="let member of project.assignedTeam" class="avatar" title="{{ member.name }}">
-                        {{ member.name.charAt(0) }}
-                      </div>
-                    </ng-container>
-                    <ng-template #unassignedTeam>
-                      <span class="text-muted">Unassigned</span>
-                    </ng-template>
-                  </div>
-                </td>
+          <td>
+              <div class="team-avatars">
+                
+                <ng-container *ngIf="isAdmin">
+                  <ng-container *ngIf="project.assignedTeam.length; else unassignedTeam">
+                    <div *ngFor="let member of project.assignedTeam" class="avatar" title="{{ member.name }}">
+                      {{ member.name.charAt(0) }}
+                    </div>
+                  </ng-container>
+                  
+                  <ng-template #unassignedTeam>
+                    <span class="text-muted">Unassigned</span>
+                  </ng-template>
+                </ng-container>
+
+                <ng-container *ngIf="!isAdmin">
+                  <span class="badge-admin-only">
+                    Admin view only
+                  </span>
+                </ng-container>
+
+              </div>
+            </td>
                 
                 <td>
                   <span class="project-status" 

@@ -161,6 +161,15 @@
   text-transform: uppercase;
 }
 
+.badge-admin-only{
+  color: #9a3412; 
+  background: #ffedd5; 
+  padding: 4px 8px; 
+  border-radius: 4px; 
+  font-size: 12px; 
+  font-weight: 500; 
+  display: inline-block;
+}
 .projects-table td {
  padding: 16px 20px;
   border-bottom: 1px solid #F1F5F9;

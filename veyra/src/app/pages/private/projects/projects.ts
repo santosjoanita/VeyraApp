@@ -115,6 +115,7 @@ export class Projects implements OnInit {
   }
   get isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'admin';
+    this.loadWorkers();
   }
 
   get editingProject() {
