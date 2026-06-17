@@ -178,16 +178,6 @@
   border-color: var(--brand-primary, #004395);
 }
 
-.btn-cancel:hover {
-  background-color: #F1F5F9;
-  color: #0F172A;
-}
-
-.btn-save:hover {
-  background-color: #003377;
-  color: #FFFFFF;
-}
-
 .details-table {
   width: 100%;
   border-collapse: collapse;

@@ -15,7 +15,7 @@ import { WorkersService } from '../../../core/services/workers/workers.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, Sidebar, Header],
   templateUrl: './details.html',
-  styleUrl: './details.css',
+  styleUrls: ['./details.css', '../../../../assets/themes/variables.css'],
 })
 export class Details implements OnInit {
   private route = inject(ActivatedRoute);

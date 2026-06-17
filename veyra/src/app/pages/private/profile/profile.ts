@@ -12,7 +12,7 @@ import { PreferencesService } from '../../../core/services/preferences.service';
   standalone: true,
   imports: [CommonModule, FormsModule, Sidebar, Header],
   templateUrl: './profile.html',
-  styleUrl: './profile.css',
+  styleUrls: ['./profile.css', '../../../../assets/themes/variables.css'],
 })
 export class Profile implements OnInit {
   private authService = inject(AuthService);
@@ -51,6 +51,7 @@ export class Profile implements OnInit {
     role: '',
     password: '',
   };
+
   get showActivityLog() {
     return this.preferencesService.showActivityLog;
   }
@@ -77,7 +78,6 @@ export class Profile implements OnInit {
           };
 
           this.backupUser = { ...this.currentUser };
-
           this.cdr.detectChanges();
         }
       },
@@ -91,21 +91,32 @@ export class Profile implements OnInit {
   startEditing(): void {
     this.isEditing = true;
     this.showPassword = false;
+    this.currentUser.password = '';
+    this.errorMessage = '';
     this.cdr.detectChanges();
   }
 
   cancelEditing(): void {
     this.isEditing = false;
     this.currentUser = { ...this.backupUser };
+    this.errorMessage = '';
+    this.cdr.detectChanges();
+  }
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
     this.cdr.detectChanges();
   }
 
   saveChanges(): void {
     const payload: any = {};
+    this.errorMessage = '';
+
     const currentName = [this.currentUser.firstName, this.currentUser.lastName]
       .filter(Boolean)
       .join(' ')
       .trim();
+
     const backupName = [this.backupUser.firstName, this.backupUser.lastName]
       .filter(Boolean)
       .join(' ')
@@ -115,23 +126,12 @@ export class Profile implements OnInit {
       payload.name = currentName;
     }
 
-    const unsupportedFields: string[] = [];
-    if (this.currentUser.email !== this.backupUser.email) {
-      unsupportedFields.push('email');
-    }
-    if (this.currentUser.password) {
-      unsupportedFields.push('password');
+    if (this.currentUser.password && this.currentUser.password.trim() !== '') {
+      payload.password = this.currentUser.password;
     }
 
-    if (!payload.name) {
-      if (unsupportedFields.length) {
-        this.errorMessage =
-          'Email and password cannot be updated here. Only name changes are supported.';
-        return;
-      }
-
+    if (!payload.name && !payload.password && this.currentUser.email === this.backupUser.email) {
       this.isEditing = false;
-      this.currentUser.password = '';
       this.cdr.detectChanges();
       return;
     }
@@ -141,11 +141,10 @@ export class Profile implements OnInit {
       return;
     }
 
-    if (unsupportedFields.length) {
+    if (this.currentUser.email !== this.backupUser.email) {
       this.errorMessage =
-        'Email and password changes are not saved here; only name changes are applied.';
-    } else {
-      this.errorMessage = '';
+        'Email changes are not supported here; only name and password can be updated.';
+      return;
     }
 
     this.workersService.updateWorker(this.currentUser.id, payload).subscribe({
@@ -174,14 +173,10 @@ export class Profile implements OnInit {
       },
       error: (err) => {
         console.error('Error saving profile:', err);
-        this.errorMessage = 'Unable to save profile. Please try again.';
+        this.errorMessage = 'Unable to save profile changes. Please try again.';
         this.cdr.detectChanges();
       },
     });
-  }
-
-  togglePassword(): void {
-    this.showPassword = !this.showPassword;
   }
 
   changePassword(): void {

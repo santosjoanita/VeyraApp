@@ -16,7 +16,7 @@ import { ClientsService } from '../../../core/services/clients/clients.service';
   standalone: true,
   imports: [CommonModule, FormsModule, Sidebar, Header],
   templateUrl: './project-details.html',
-  styleUrl: './project-details.css',
+  styleUrls: ['./project-details.css', '../../../../assets/themes/variables.css'],
 })
 export class ProjectDetails implements OnInit {
   private route = inject(ActivatedRoute);

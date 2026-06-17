@@ -45,6 +45,8 @@ export class Dashboard implements OnInit {
   showAddWorker = false;
   showAddClient = false;
   showDeleteModal = false;
+
+  projectToDeleteId: any = null;
   itemToDeleteName = '';
 
   totalProjects = 0;
@@ -72,9 +74,11 @@ export class Dashboard implements OnInit {
 
     this.loadDashboardData();
   }
+
   get isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'admin';
   }
+
   get showActivityLog() {
     return this.preferencesService.showActivityLog;
   }
@@ -202,12 +206,22 @@ export class Dashboard implements OnInit {
     });
   }
 
-  deleteProject(id: any) {
+  deleteProject(id: any, name: string = 'this project') {
+    this.projectToDeleteId = id;
+    this.itemToDeleteName = name;
     this.showDeleteModal = true;
-    this.itemToDeleteName = 'Este Projeto';
   }
 
   handleConfirmDelete() {
+    if (this.projectToDeleteId) {
+      this.projectsList = this.projectsList.filter((item) => item.id !== this.projectToDeleteId);
+
+      this.projectsService
+        .deleteProject(this.projectToDeleteId)
+        .subscribe(() => this.loadDashboardData());
+    }
     this.showDeleteModal = false;
+    this.projectToDeleteId = null;
+    this.cdr.detectChanges();
   }
 }

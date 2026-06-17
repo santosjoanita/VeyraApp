@@ -256,8 +256,9 @@
 
 .actions-cell {
   display: flex;
-  gap: 8px;
-  justify-content: center;
+  justify-content: flex-start; 
+  gap: 8px;                    
+  text-align: left;
 }
 
 .action-icon {
