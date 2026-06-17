@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { VacationsService } from '../../../core/services/vacations/vacations.service';
 import { WorkersService } from '../../../core/services/workers/workers.service';
 import { AddVacationModal } from '../../../core/components/modals/add-vacation-modal/add-vacation-modal';
-
 import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
 
@@ -23,6 +22,8 @@ export class Vacations implements OnInit {
   vacationsList = signal<any[]>([]);
   workersList = signal<any[]>([]);
 
+  workersCache = signal<{ [key: string]: string }>({});
+
   searchQuery = signal<string>('');
   selectedWorkerId = signal<string | null>(null);
   selectedRoleFilter = signal<string>('all');
@@ -39,8 +40,32 @@ export class Vacations implements OnInit {
   }
 
   loadInitialData() {
-    this.vacationsService.getVacations().subscribe((data) => this.vacationsList.set(data));
-    this.workersService.getWorkers().subscribe((data) => this.workersList.set(data));
+    const currentUserId = localStorage.getItem('userId') || '';
+
+    this.vacationsService.getVacations().subscribe({
+      next: (data) => {
+        if (this.isAdmin) {
+          this.vacationsList.set(data);
+
+          this.workersService.getWorkers().subscribe((workers) => {
+            this.workersList.set(workers);
+            const newCache: { [key: string]: string } = {};
+            workers.forEach((w) => {
+              newCache[w.id] = w.name;
+            });
+            this.workersCache.set(newCache);
+          });
+        } else {
+          const myOwnVacations = data.filter((v) => String(v.userId) === String(currentUserId));
+          this.vacationsList.set(myOwnVacations);
+
+          if (currentUserId) {
+            this.workersCache.set({ [currentUserId]: 'My Vacation' });
+          }
+        }
+      },
+      error: (err) => console.error('Error while loading vacations:', err),
+    });
   }
 
   filteredWorkers = computed(() => {
@@ -55,64 +80,41 @@ export class Vacations implements OnInit {
     });
   });
 
-  handleSaveVacation(payload: any) {
-    const apiPayload = {
-      startDate: payload.startDate,
-      endDate: payload.endDate,
-      note: payload.note || '',
-    };
-
-    this.vacationsService.createVacation(apiPayload).subscribe({
-      next: () => {
-        this.loadInitialData();
-        this.showAddModal = false;
-      },
-      error: (err) => console.error('Error saving vacation schedule:', err),
-    });
-  }
   calendarDays = computed(() => {
     const date = this.currentDate();
     const year = date.getFullYear();
     const month = date.getMonth();
 
     const firstDayOfMonth = new Date(year, month, 1);
-    const lastDayOfMonth = new Date(year, month, 0);
-
-    let startOffset = firstDayOfMonth.getDay() - 1;
-    if (startOffset === -1) startOffset = 6;
+    const startOffset = firstDayOfMonth.getDay() === 0 ? 6 : firstDayOfMonth.getDay() - 1;
 
     const daysArray = [];
     const totalSlots = 42;
 
     for (let i = startOffset; i > 0; i--) {
-      const prevDate = new Date(year, month, 1 - i);
-      daysArray.push({ date: prevDate, isCurrentMonth: false, vacations: [] });
+      daysArray.push({ date: new Date(year, month, 1 - i), isCurrentMonth: false, vacations: [] });
     }
 
     const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
     for (let i = 1; i <= totalDaysInMonth; i++) {
-      const currDate = new Date(year, month, i);
-      daysArray.push({ date: currDate, isCurrentMonth: true, vacations: [] });
+      daysArray.push({ date: new Date(year, month, i), isCurrentMonth: true, vacations: [] });
     }
 
     const remainingSlots = totalSlots - daysArray.length;
     for (let i = 1; i <= remainingSlots; i++) {
-      const nextDate = new Date(year, month + 1, i);
-      daysArray.push({ date: nextDate, isCurrentMonth: false, vacations: [] });
+      daysArray.push({ date: new Date(year, month + 1, i), isCurrentMonth: false, vacations: [] });
     }
 
     return daysArray.map((slot) => {
       const dateStr = slot.date.toISOString().split('T')[0];
 
       const dayVacations = this.vacationsList()
-        .filter((v) => {
-          return dateStr >= v.startDate && dateStr <= v.endDate;
-        })
+        .filter((v) => dateStr >= v.startDate && dateStr <= v.endDate)
         .map((v) => {
-          const worker = this.workersList().find((w) => w.id === v.userId);
+          const cachedName = this.workersCache()[v.userId];
           return {
             ...v,
-            workerName: worker ? worker.name : 'Unknown',
+            workerName: cachedName || 'Vacation',
             colorClass: this.getUserColorClass(v.userId),
           };
         });
@@ -132,9 +134,16 @@ export class Vacations implements OnInit {
   });
 
   getUserColorClass(userId: string): string {
-    if (userId === 'mariana-id') return 'bg-green';
-    if (userId === 'beatriz-id') return 'bg-orange';
-    return 'bg-purple';
+    const colors = ['bg-green', 'bg-orange', 'bg-purple', 'bg-blue', 'bg-pink', 'bg-teal'];
+
+    if (!userId) return colors[0];
+
+    let idValue = 0;
+    for (let i = 0; i < userId.length; i++) {
+      idValue += userId.charCodeAt(i);
+    }
+
+    return colors[idValue % colors.length];
   }
 
   toggleWorkerSelect(workerId: string) {
@@ -148,9 +157,27 @@ export class Vacations implements OnInit {
   changeMonth(direction: number) {
     const current = this.currentDate();
     this.currentDate.set(new Date(current.getFullYear(), current.getMonth() + direction, 1));
+    setTimeout(() => this.loadInitialData(), 50);
   }
 
   setToday() {
     this.currentDate.set(new Date(2026, 5, 1));
+    setTimeout(() => this.loadInitialData(), 50);
+  }
+
+  handleSaveVacation(payload: any) {
+    const apiPayload = {
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      note: payload.note || '',
+    };
+
+    this.vacationsService.createVacation(apiPayload).subscribe({
+      next: () => {
+        this.loadInitialData();
+        this.showAddModal = false;
+      },
+      error: (err) => console.error('Error saving vacation schedule:', err),
+    });
   }
 }

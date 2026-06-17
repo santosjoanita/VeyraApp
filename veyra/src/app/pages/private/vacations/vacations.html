@@ -21,15 +21,14 @@
             <button [class.active]="currentView === 'weekly'" (click)="currentView = 'weekly'">Weekly</button>
             <button [class.active]="currentView === 'monthly'" (click)="currentView = 'monthly'">Monthly</button>
           </div>
-        @if(isAdmin){
+
           <button class="btn-add-timeoff" (click)="showAddModal = true">
             <span>+</span> Add Time Off
           </button>
-          }
         </div>
       </div>
 
-      <div class="vacations-workspace">
+      <div class="vacations-workspace" [class.no-sidebar]="!isAdmin">
         
         <div class="calendar-card" *ngIf="currentView === 'monthly'">
           <div class="calendar-grid-header">
@@ -61,7 +60,7 @@
           </div>
         </div>
 
-        <div class="workers-sidebar-panel">
+        <div class="workers-sidebar-panel" *ngIf="isAdmin">
           <div class="search-box-wrapper">
             <span class="material-symbols-outlined search-icon">search</span>
             <input type="text" 

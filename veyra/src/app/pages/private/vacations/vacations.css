@@ -160,7 +160,7 @@ app-sidebar {
   position: relative;
 }
 
-.weekend-cell, .weekend-header {
+.weekend-cell {
   background-color: var(--bg-page);
 }
 
@@ -211,9 +211,12 @@ app-sidebar {
   border-radius: 0;
 }
 
-.bg-green { background: #DCFCE7; color: #166534; }
-.bg-orange { background: #FFEDD5; color: #9A3412; }
-.bg-purple { background: #F3E8FF; color: #6B21A8; }
+.bg-green  { background-color: #DCFCE7; color: #166534; }
+.bg-orange { background-color: #FFEDD5; color: #9A3412; }
+.bg-purple { background-color: #F3E8FF; color: #6B21A8; }
+.bg-blue   { background-color: #DBEAFE; color: #1E40AF; }
+.bg-pink   { background-color: #FCE7F3; color: #9D174D; }
+.bg-teal   { background-color: #CCFBF1; color: #115E59; }
 
 .vacation-bar-item.fade-out {
   opacity: 0.15;
