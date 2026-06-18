@@ -243,6 +243,17 @@ export class Workers implements OnInit {
       },
     });
   }
+  itemToEdit = signal<any>(null);
+
+  openCreateModal() {
+    this.itemToEdit.set(null);
+    this.showAddWorker = true;
+  }
+
+  openEditModal(worker: any) {
+    this.itemToEdit.set(worker);
+    this.showAddWorker = true;
+  }
 
   cancelRoleChange() {
     const pending = this.pendingRoleChange();
@@ -259,6 +270,7 @@ export class Workers implements OnInit {
 
   onModalClose() {
     this.showAddWorker = false;
+    this.itemToEdit.set(null);
     this.loadWorkers();
   }
 

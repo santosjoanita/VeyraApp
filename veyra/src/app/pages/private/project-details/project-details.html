@@ -259,15 +259,32 @@
         </div>
 
         <div class="credential-form-group">
-          <label class="credential-label">Access Type</label>
-          <select [(ngModel)]="newCredentialData.type" class="credential-select">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label class="credential-label" style="margin: 0;">Access Type</label>
+            
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <input type="checkbox" id="customTypeToggle" 
+                     [(ngModel)]="isCustomCredentialType" 
+                     (change)="toggleCustomCredentialType()">
+              <label for="customTypeToggle" style="margin: 0; font-size: 13px; cursor: pointer; color: #64748b;">
+                Another type?
+              </label>
+            </div>
+          </div>
+
+          <select *ngIf="!isCustomCredentialType" [(ngModel)]="newCredentialData.type" class="credential-select">
             <option value="cpanel">CPanel</option>
             <option value="sftp">FTP / SFTP</option>        
             <option value="portal">WordPress / Portal</option> 
             <option value="db">Database (MySQL/Postgre)</option> 
             <option value="ssh">SSH Terminal</option>
-            <option value="other">Other</option>
           </select>
+
+          <input *ngIf="isCustomCredentialType" 
+                 type="text" 
+                 [(ngModel)]="newCredentialData.type" 
+                 placeholder="Ex: API Key, Cloudflare, Social Media..." 
+                 class="credential-input">
         </div>
 
         <div class="credential-form-group">

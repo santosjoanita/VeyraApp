@@ -22,11 +22,16 @@
               <option value="user">Worker</option> 
             </select>
           </div>
-          <button *ngIf="isAdmin" class="btn-add" (click)="showAddWorker = true">
+         <button *ngIf="isAdmin" class="btn-add" (click)="openCreateModal()">
             <span class="material-symbols-outlined add-icon">add</span>
             Add Worker
           </button>
 
+          <app-register-user
+            *ngIf="showAddWorker"
+            [editData]="itemToEdit()"
+            (close)="onModalClose()">
+          </app-register-user>
           <app-register-user
             *ngIf="showAddWorker"
             (close)="onModalClose()">
@@ -86,7 +91,7 @@
                 </td>
                 <td class="text-muted">{{ worker.lastAccess || 'Never' }}</td>
                 <td *ngIf="isAdmin" class="actions-cell">
-                  <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); editWorker(worker.id)">
+                  <button class="action-icon" title="Edit" (click)="$event.stopPropagation(); openEditModal(worker)">
                     <span class="material-symbols-outlined">edit</span>
                   </button>
                   <button class="action-icon delete" title="Delete" (click)="$event.stopPropagation(); openDeleteModal(worker)">
@@ -134,3 +139,8 @@
   (close)="cancelRoleChange()"
   (confirm)="confirmRoleChange()">
 </app-confirm-modal>
+<app-register-user
+  *ngIf="showAddWorker"
+  [editData]="itemToEdit()"
+  (close)="onModalClose()">
+</app-register-user>
