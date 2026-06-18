@@ -5,14 +5,13 @@ import { FormsModule } from '@angular/forms';
 
 import { Sidebar } from '../../../core/components/sidebar/sidebar';
 import { Header } from '../../../core/components/header/header';
-import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
+import { RegisterUser } from '../../../core/components/modals/register-user/register-user';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 import { ConfirmModal } from '../../../core/components/modals/confirm-modal/confirm-modal';
 import { DataHandlerService } from '../../../core/services/data-handler.service';
 import { WorkersService } from '../../../core/services/workers/workers.service';
 import { Worker } from '../../../core/class/worker.model';
 import { Paginator } from '../../../core/components/paginator/paginator';
-
 @Component({
   selector: 'app-workers',
   standalone: true,
@@ -22,7 +21,7 @@ import { Paginator } from '../../../core/components/paginator/paginator';
     FormsModule,
     Sidebar,
     Header,
-    AddWorkerModal,
+    RegisterUser,
     ConfirmDelete,
     ConfirmModal,
     Paginator,
@@ -111,11 +110,12 @@ export class Workers implements OnInit {
 
   get selectedRole() {
     return this._selectedRole();
-    this._currentPage.set(1);
   }
   set selectedRole(value: string) {
     this._selectedRole.set(value);
+    this._currentPage.set(1);
   }
+
   get isAdmin(): boolean {
     return localStorage.getItem('userRole') === 'admin';
   }
@@ -180,6 +180,7 @@ export class Workers implements OnInit {
       error: (err) => console.error('Error loading workers', err),
     });
   }
+
   onPageChange(event: { pageIndex: number; pageSize: number }) {
     this._currentPage.set(event.pageIndex);
     this._pageSize.set(event.pageSize);
@@ -256,14 +257,9 @@ export class Workers implements OnInit {
     this.pendingRoleChange.set(null);
   }
 
-  handleSaveWorker(newWorkerData: any) {
-    this.workersService.createWorker(newWorkerData).subscribe({
-      next: (createdWorker) => {
-        this._workersList.update((list) => [...list, createdWorker]);
-        this._showAddWorker.set(false);
-      },
-      error: (err) => console.error('Error while creating worker', err),
-    });
+  onModalClose() {
+    this.showAddWorker = false;
+    this.loadWorkers();
   }
 
   openDeleteModal(worker: Worker) {
@@ -284,5 +280,8 @@ export class Workers implements OnInit {
         error: (err) => console.error('Error while deleting worker', err),
       });
     }
+  }
+  cancelDelete() {
+    this.showDeleteModal = false;
   }
 }

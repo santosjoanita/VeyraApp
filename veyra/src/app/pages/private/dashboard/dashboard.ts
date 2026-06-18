@@ -10,22 +10,13 @@ import { ProjectWorkersService } from '../../../core/services/projects/project-w
 import { PreferencesService } from '../../../core/services/preferences.service';
 
 import { AddProjectModal } from '../../../core/components/modals/add-project/add-project';
-import { AddWorkerModal } from '../../../core/components/modals/add-worker/add-worker';
 import { AddClientModal } from '../../../core/components/modals/add-client/add-client';
 import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    Sidebar,
-    Header,
-    AddProjectModal,
-    AddWorkerModal,
-    AddClientModal,
-    ConfirmDelete,
-  ],
+  imports: [CommonModule, Sidebar, Header, AddProjectModal, AddClientModal, ConfirmDelete],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
