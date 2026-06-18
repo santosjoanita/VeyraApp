@@ -24,9 +24,10 @@
       <span class="nav-text">Projects</span>
     </a>
 
-    <a [routerLink]="isAdmin ? '/workers' : '/not-permitted'" 
+<a *ngIf="isAdmin" 
+       routerLink="/workers" 
        class="nav-item" 
-       [routerLinkActive]="isAdmin ? 'active' : ''">
+       routerLinkActive="active">
       <span class="material-symbols-outlined">work</span>
       <span class="nav-text">Workers</span>
     </a>

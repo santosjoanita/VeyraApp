@@ -143,13 +143,6 @@
   </app-add-project-modal>
 }
 
-@if (showAddWorker) {
-  <app-add-worker-modal 
-    (close)="showAddWorker = false" 
-    (save)="handleSaveWorker($event)">
-  </app-add-worker-modal>
-}
-
 @if (showAddClient) {
   <app-add-client-modal 
     (close)="showAddClient = false" 

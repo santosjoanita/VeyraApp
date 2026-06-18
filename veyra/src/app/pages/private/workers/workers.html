@@ -27,11 +27,11 @@
             Add Worker
           </button>
 
-          <app-add-worker-modal
+          <app-register-user
             *ngIf="showAddWorker"
-            (close)="showAddWorker = false"
-            (save)="handleSaveWorker($event)">
-          </app-add-worker-modal>
+            (close)="onModalClose()">
+          </app-register-user>
+          
         </div>
       </div>
 
@@ -120,7 +120,8 @@
   *ngIf="showDeleteModal"
   [itemName]="itemToDeleteName"
   (confirm)="handleConfirmDelete()"
-  (close)="showDeleteModal = false">
+  (close)="cancelDelete()"
+  (cancel)="cancelDelete()">
 </app-confirm-delete>
 
 <app-confirm-modal
