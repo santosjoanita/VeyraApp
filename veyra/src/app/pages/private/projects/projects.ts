@@ -254,7 +254,13 @@ export class Projects implements OnInit {
     const projectToEdit = this._editingProject();
 
     if (projectToEdit) {
-      this.projectsService.updateProject(projectToEdit.id, data).subscribe({
+      const payload = { ...data };
+
+      delete payload.clientId;
+      delete payload.id;
+      delete payload.client;
+
+      this.projectsService.updateProject(projectToEdit.id, payload).subscribe({
         next: () => {
           this.loadProjects();
           this.closeModal();

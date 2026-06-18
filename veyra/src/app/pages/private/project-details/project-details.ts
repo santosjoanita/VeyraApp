@@ -10,11 +10,12 @@ import { ProjectAccessesService } from '../../../core/services/projects/project-
 import { ProjectWorkersService } from '../../../core/services/projects/project-workers.service';
 import { WorkersService } from '../../../core/services/workers/workers.service';
 import { ClientsService } from '../../../core/services/clients/clients.service';
+import { ConfirmDelete } from '../../../core/components/modals/confirm-delete/confirm-delete';
 
 @Component({
   selector: 'app-project-details',
   standalone: true,
-  imports: [CommonModule, FormsModule, Sidebar, Header],
+  imports: [CommonModule, FormsModule, Sidebar, Header, ConfirmDelete],
   templateUrl: './project-details.html',
   styleUrls: ['./project-details.css', '../../../../assets/themes/variables.css'],
 })
@@ -38,6 +39,9 @@ export class ProjectDetails implements OnInit {
   showClientModal = false;
   showWorkerModal = false;
   showCredentialModal = false;
+
+  showDeleteAccessModal = false;
+  accessToDeleteId: string | null = null;
 
   clientSearchQuery = '';
   workerSearchQuery = '';
@@ -215,6 +219,37 @@ export class ProjectDetails implements OnInit {
         alert('Failed to save credential.');
       },
     });
+  }
+
+  deleteAccess(accessId: string) {
+    this.accessToDeleteId = accessId;
+    this.showDeleteAccessModal = true;
+    this.cdr.detectChanges();
+  }
+
+  confirmDeleteAccess() {
+    if (!this.accessToDeleteId) return;
+
+    this.accessesService.deleteAccess(this.accessToDeleteId).subscribe({
+      next: () => {
+        this.credentials = this.credentials.filter((cred) => cred.id !== this.accessToDeleteId);
+        this.showDeleteAccessModal = false;
+        this.accessToDeleteId = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error deleting credential:', err);
+        alert('Unable to delete this credential. Please try again.');
+        this.showDeleteAccessModal = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  cancelDeleteAccess() {
+    this.showDeleteAccessModal = false;
+    this.accessToDeleteId = null;
+    this.cdr.detectChanges();
   }
 
   togglePasswordVisibility(credId: string) {

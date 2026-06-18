@@ -60,12 +60,20 @@
             </button>
           </div>
           
-          <div class="credentials-list">
-            <ng-container *ngIf="credentials?.length; else noCredentials">
+       <div class="credentials-list">
+           <ng-container *ngIf="credentials.length; else noCredentials">
+              
               <div class="credential-item" *ngFor="let cred of credentials">
-                <div class="cred-header">
-                  <span class="cred-type">{{ cred.type | uppercase }}</span>
-                  <span class="cred-label">{{ cred.label }}</span>
+                
+                <div class="cred-header" style="display: flex; justify-content: space-between; align-items: center;">
+                  <div>
+                    <span class="cred-type">{{ cred.type | uppercase }}</span>
+                    <span class="cred-label">{{ cred.label }}</span>
+                  </div>
+                  
+                  <button class="btn-delete-access" (click)="deleteAccess(cred.id)" title="Delete Credential" style="background: none; border: none; cursor: pointer;">
+                    <span class="material-symbols-outlined" style="color: #ef4444; font-size: 20px;">close</span>
+                  </button>
                 </div>
                 
                 <div class="cred-body">
@@ -91,6 +99,7 @@
                   </div>
                 </div>
               </div>
+
             </ng-container>
             <ng-template #noCredentials>
               <p class="text-muted">No credentials added yet.</p>
@@ -107,7 +116,7 @@
           </div>
           
           <ul class="person-list">
-            <ng-container *ngIf="assignedClients?.length; else noAssignedClients">
+            <ng-container *ngIf="assignedClients.length; else noAssignedClients">
               <li class="person-item" *ngFor="let client of assignedClients">
                 <div class="person-avatar client-avatar">
                   {{ client.name?.charAt(0) || 'C' }}
@@ -136,7 +145,7 @@
           </div>
           
           <ul class="person-list">
-            <ng-container *ngIf="assignedTeam?.length; else noAssignedTeam">
+            <ng-container *ngIf="assignedTeam.length; else noAssignedTeam">
               <li class="person-item" *ngFor="let worker of assignedTeam">
                 <div class="person-avatar worker-avatar">
                   {{ worker.name?.charAt(0) || 'W' }}
@@ -174,7 +183,7 @@
       </div>
 
       <div class="modal-list">
-        <ng-container *ngIf="filteredClients?.length; else noClientsFound">
+        <ng-container *ngIf="filteredClients.length; else noClientsFound">
           <div class="modal-list-item" *ngFor="let client of filteredClients">
             <div class="person-info">
               <span class="person-name">{{ client.name }}</span>
@@ -251,14 +260,13 @@
 
         <div class="credential-form-group">
           <label class="credential-label">Access Type</label>
-          <select
-            [(ngModel)]="newCredentialData.type"
-            class="credential-select"
-          >
+          <select [(ngModel)]="newCredentialData.type" class="credential-select">
             <option value="cpanel">CPanel</option>
-            <option value="ftp">FTP / SFTP</option>
-            <option value="wordpress">WordPress</option>
-            <option value="database">Database (MySQL/Postgre)</option>
+            <option value="sftp">FTP / SFTP</option>        
+            <option value="portal">WordPress / Portal</option> 
+            <option value="db">Database (MySQL/Postgre)</option> 
+            <option value="ssh">SSH Terminal</option>
+            <option value="other">Other</option>
           </select>
         </div>
 
@@ -291,3 +299,10 @@
   </div>
 
 </div>
+
+<app-confirm-delete 
+  *ngIf="showDeleteAccessModal" 
+  [itemName]="'this credential'" 
+  (confirm)="confirmDeleteAccess()" 
+  (cancel)="cancelDeleteAccess()">
+</app-confirm-delete>
