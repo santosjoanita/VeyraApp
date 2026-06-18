@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -7,9 +7,10 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './add-client.html',
-  styleUrls: [] 
+  styleUrls: [],
 })
-export class AddClientModal {
+export class AddClientModal implements OnInit {
+  @Input() editData: any = null;
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<any>();
 
@@ -17,11 +18,26 @@ export class AddClientModal {
     name: '',
     email: '',
     phone: '',
-    notes: ''
+    notes: '',
   };
 
+  ngOnInit() {
+    if (this.editData) {
+      this.formData = {
+        name: this.editData.name || '',
+        email: this.editData.email || '',
+        phone: this.editData.phone || '',
+        notes: this.editData.notes || '',
+      };
+    }
+  }
+
   submitForm() {
-    this.save.emit(this.formData);
+    if (this.editData) {
+      this.save.emit({ ...this.formData, id: this.editData.id });
+    } else {
+      this.save.emit(this.formData);
+    }
   }
 
   cancel() {

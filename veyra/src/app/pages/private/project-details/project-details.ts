@@ -48,6 +48,8 @@ export class ProjectDetails implements OnInit {
   filteredClients: any[] = [];
   filteredWorkers: any[] = [];
 
+  isCustomCredentialType = false;
+
   newCredentialData = {
     label: '',
     type: 'cpanel',
@@ -179,7 +181,16 @@ export class ProjectDetails implements OnInit {
       username: '',
       password: '',
     };
+    this.isCustomCredentialType = false;
     this.showCredentialModal = true;
+    this.cdr.detectChanges();
+  }
+  toggleCustomCredentialType() {
+    if (this.isCustomCredentialType) {
+      this.newCredentialData.type = '';
+    } else {
+      this.newCredentialData.type = 'cpanel';
+    }
     this.cdr.detectChanges();
   }
 
