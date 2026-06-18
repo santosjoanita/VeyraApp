@@ -1,0 +1,7 @@
+.btn-cancel,
+.modal-actions, .btn-delete {
+  width: auto !important;
+  flex: none !important;
+  white-space: nowrap !important;
+  min-width: 100px;
+}

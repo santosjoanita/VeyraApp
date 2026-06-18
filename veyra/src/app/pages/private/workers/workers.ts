@@ -177,7 +177,7 @@ export class Workers implements OnInit {
         });
         this._workersList.set(normalizedWorkers);
       },
-      error: (err) => console.error('Erro ao carregar workers', err),
+      error: (err) => console.error('Error loading workers', err),
     });
   }
   onPageChange(event: { pageIndex: number; pageSize: number }) {
@@ -236,7 +236,7 @@ export class Workers implements OnInit {
         this.closeRoleModal();
       },
       error: (err) => {
-        console.error('Erro ao atualizar cargo do worker', err);
+        console.error('Erro while updating workers role', err);
         pending.selectElement.value = pending.oldRole;
         this.closeRoleModal();
       },
@@ -262,7 +262,7 @@ export class Workers implements OnInit {
         this._workersList.update((list) => [...list, createdWorker]);
         this._showAddWorker.set(false);
       },
-      error: (err) => console.error('Erro ao criar worker', err),
+      error: (err) => console.error('Error while creating worker', err),
     });
   }
 
@@ -281,7 +281,7 @@ export class Workers implements OnInit {
           this._showDeleteModal.set(false);
           this._itemToDeleteId.set(null);
         },
-        error: (err) => console.error('Erro ao apagar worker', err),
+        error: (err) => console.error('Error while deleting worker', err),
       });
     }
   }

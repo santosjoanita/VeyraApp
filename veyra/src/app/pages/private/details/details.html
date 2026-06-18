@@ -76,7 +76,7 @@
               </tr>
             </thead>
             <tbody>
-              <ng-container *ngIf="projects?.length; else noProjects">
+              <ng-container *ngIf="projects.length; else noProjects">
                 <tr *ngFor="let project of projects">
                   <td class="fw-bold">{{ project.name }}</td>
                   <td>{{ project.endDate | date:'dd MMM yyyy' }}</td>
