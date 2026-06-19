@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { Sidebar } from '../../../core/components/sidebar/sidebar';
@@ -12,6 +12,7 @@ import { DataHandlerService } from '../../../core/services/data-handler.service'
 import { WorkersService } from '../../../core/services/workers/workers.service';
 import { Worker } from '../../../core/class/worker.model';
 import { Paginator } from '../../../core/components/paginator/paginator';
+
 @Component({
   selector: 'app-workers',
   standalone: true,
@@ -33,6 +34,7 @@ export class Workers implements OnInit {
   private dataHandler = inject(DataHandlerService);
   private workersService = inject(WorkersService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   private _showAddWorker = signal(false);
   private _showDeleteModal = signal(false);
@@ -146,7 +148,16 @@ export class Workers implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      const pageFromUrl = params['page'] ? Number(params['page']) : 1;
+      const limitFromUrl = params['limit'] ? Number(params['limit']) : 10;
+
+      this._currentPage.set(pageFromUrl);
+      this._pageSize.set(limitFromUrl);
+    });
+
     this.loadWorkers();
+
     this.workersService.refresh.subscribe(() => {
       this.loadWorkers();
     });
@@ -293,6 +304,7 @@ export class Workers implements OnInit {
       });
     }
   }
+
   cancelDelete() {
     this.showDeleteModal = false;
   }
