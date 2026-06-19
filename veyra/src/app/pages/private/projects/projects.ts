@@ -14,6 +14,8 @@ import { ProjectWorkersService } from '../../../core/services/projects/project-w
 import { WorkersService } from '../../../core/services/workers/workers.service';
 import { Paginator } from '../../../core/components/paginator/paginator';
 
+import { MessageService } from 'primeng/api';
+
 @Component({
   selector: 'app-projects',
   standalone: true,
@@ -38,6 +40,7 @@ export class Projects implements OnInit {
   private workersService = inject(WorkersService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private messageService = inject(MessageService);
 
   private _showAddProject = signal(false);
   private _showDeleteModal = signal(false);
@@ -218,14 +221,28 @@ export class Projects implements OnInit {
   loadWorkers() {
     this.workersService.getWorkers().subscribe({
       next: (data) => this._workersList.set(data),
-      error: (err) => console.error('Error while loading workers', err),
+      error: (err) => {
+        console.error('Error while loading workers', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load workers.',
+        });
+      },
     });
   }
 
   loadClients() {
     this.clientsService.getClients().subscribe({
       next: (data) => this._clientsList.set(data),
-      error: (err) => console.error('Error while loading clients', err),
+      error: (err) => {
+        console.error('Error while loading clients', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load clients.',
+        });
+      },
     });
   }
 
@@ -247,7 +264,14 @@ export class Projects implements OnInit {
           });
         });
       },
-      error: (err) => console.error('Error while loading projects', err),
+      error: (err) => {
+        console.error('Error while loading projects', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load projects.',
+        });
+      },
     });
   }
 
@@ -273,16 +297,42 @@ export class Projects implements OnInit {
         next: () => {
           this.loadProjects();
           this.closeModal();
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Updated',
+            detail: 'Project updated successfully.',
+          });
         },
-        error: (err) => console.error('Error while updating project', err),
+        error: (err) => {
+          console.error('Error while updating project', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to update project.',
+          });
+        },
       });
     } else {
       this.projectsService.createProject(data).subscribe({
         next: () => {
           this.loadProjects();
           this.closeModal();
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Created',
+            detail: 'Project created successfully.',
+          });
         },
-        error: (err) => console.error('Error while creating project', err),
+        error: (err) => {
+          console.error('Error while creating project', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to create project.',
+          });
+        },
       });
     }
   }
@@ -306,8 +356,21 @@ export class Projects implements OnInit {
           this._projectsList.update((list) => list.filter((p) => p.id !== id));
           this._showDeleteModal.set(false);
           this._projectToDeleteId.set(null);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Deleted',
+            detail: 'Project deleted successfully.',
+          });
         },
-        error: (err) => console.error('Error while deleting project', err),
+        error: (err) => {
+          console.error('Error while deleting project', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to delete project.',
+          });
+        },
       });
     }
   }

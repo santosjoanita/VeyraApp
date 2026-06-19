@@ -29,7 +29,23 @@
 .profile-link:hover .user-name {
   color: var(--brand-primary, #004395); 
 }
+.btn-back {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  color: #495057;
+  transition: background 0.2s;
+}
 
+.btn-back:hover {
+  background-color: #f1f3f5; 
+  color: #212529;
+}
 .search-wrapper {
   position: relative;
   display: flex;
