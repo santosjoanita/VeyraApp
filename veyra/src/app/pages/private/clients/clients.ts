@@ -13,6 +13,8 @@ import { ProjectsService } from '../../../core/services/projects/projects.servic
 import { Client } from '../../../core/class/client.model';
 import { Paginator } from '../../../core/components/paginator/paginator';
 
+import { MessageService } from 'primeng/api';
+
 @Component({
   selector: 'app-clients',
   standalone: true,
@@ -35,6 +37,7 @@ export class Clients implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private projectsService = inject(ProjectsService);
+  private messageService = inject(MessageService);
 
   showAddClient = signal(false);
   showDeleteModal = signal(false);
@@ -46,7 +49,8 @@ export class Clients implements OnInit {
   itemToEdit = signal<any>(null);
 
   private _currentPage = signal(1);
-  private _pageSize = signal(10);
+  private _pageSize = signal(5);
+
   private _searchQuery = signal('');
   private _projectsList = signal<any[]>([]);
 
@@ -104,11 +108,17 @@ export class Clients implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      const pageFromUrl = params['page'] ? Number(params['page']) : 1;
-      const limitFromUrl = params['limit'] ? Number(params['limit']) : 10;
+      if (!params['page'] || !params['limit']) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { page: 1, limit: 5 },
+          queryParamsHandling: 'merge',
+        });
+        return;
+      }
 
-      this._currentPage.set(pageFromUrl);
-      this._pageSize.set(limitFromUrl);
+      this._currentPage.set(Number(params['page']));
+      this._pageSize.set(Number(params['limit']));
     });
 
     this.loadClients();
@@ -116,23 +126,37 @@ export class Clients implements OnInit {
   }
 
   onPageChange(event: { pageIndex: number; pageSize: number }) {
-    this._currentPage.set(event.pageIndex);
-    this._pageSize.set(event.pageSize);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        page: event.pageIndex,
+        limit: event.pageSize,
+      },
+      queryParamsHandling: 'merge',
+    });
   }
 
   loadClients() {
     this.clientsService.getClients().subscribe({
       next: (data) => this.clientsList.set(data),
-      error: (err) => console.error('Error while loading clients', err),
+      error: (err) => {
+        console.error('Error while loading clients', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Erro',
+          detail: 'Error while loading clients',
+        });
+      },
     });
   }
 
   loadProjects() {
     this.projectsService.getProjects().subscribe({
       next: (data) => this._projectsList.set(data),
-      error: (err) => console.error('Erro ao carregar projetos para os clientes', err),
+      error: (err) => console.error('Error while loading projects', err),
     });
   }
+
   toggleSort(): void {
     this.sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
   }
@@ -160,20 +184,47 @@ export class Clients implements OnInit {
     const editing = this.itemToEdit();
 
     if (editing) {
-      this.clientsService.updateClient(editing.id, clientData).subscribe({
+      const payload = { ...clientData };
+      delete payload.id;
+
+      this.clientsService.updateClient(editing.id, payload).subscribe({
         next: () => {
           this.loadClients();
           this.closeModal();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Client updated successfully!',
+          });
         },
-        error: (err) => console.error('Error while updating client', err),
+        error: (err) => {
+          console.error('Error while updating client', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to update client.',
+          });
+        },
       });
     } else {
       this.clientsService.createClient(clientData).subscribe({
         next: (createdClient) => {
           this.clientsList.update((list) => [...list, createdClient]);
           this.closeModal();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Client created successfully!',
+          });
         },
-        error: (err) => console.error('Error while creating client', err),
+        error: (err) => {
+          console.error('Error while creating client', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to create client.',
+          });
+        },
       });
     }
   }
@@ -192,8 +243,20 @@ export class Clients implements OnInit {
           this.clientsList.update((list) => list.filter((c) => c.id !== id));
           this.showDeleteModal.set(false);
           this.itemToDeleteId.set(null);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Cliente deleted with success',
+          });
         },
-        error: (err) => console.error('Error while deleting client', err),
+        error: (err) => {
+          console.error('Error while deleting client', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'It was not possible to delete the client',
+          });
+        },
       });
     }
   }

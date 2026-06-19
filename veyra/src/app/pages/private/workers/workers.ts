@@ -12,6 +12,7 @@ import { DataHandlerService } from '../../../core/services/data-handler.service'
 import { WorkersService } from '../../../core/services/workers/workers.service';
 import { Worker } from '../../../core/class/worker.model';
 import { Paginator } from '../../../core/components/paginator/paginator';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-workers',
@@ -35,6 +36,7 @@ export class Workers implements OnInit {
   private workersService = inject(WorkersService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private messageService = inject(MessageService);
 
   private _showAddWorker = signal(false);
   private _showDeleteModal = signal(false);
@@ -188,7 +190,14 @@ export class Workers implements OnInit {
         });
         this._workersList.set(normalizedWorkers);
       },
-      error: (err) => console.error('Error loading workers', err),
+      error: (err) => {
+        console.error('Error loading workers', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load workers from the server.',
+        });
+      },
     });
   }
 
@@ -246,14 +255,27 @@ export class Workers implements OnInit {
           list.map((w) => (w.id === pending.id ? { ...w, role: pending.newRole } : w)),
         );
         this.closeRoleModal();
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Updated',
+          detail: 'Worker role updated successfully.',
+        });
       },
       error: (err) => {
         console.error('Erro while updating workers role', err);
         pending.selectElement.value = pending.oldRole;
         this.closeRoleModal();
+
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to update worker role.',
+        });
       },
     });
   }
+
   itemToEdit = signal<any>(null);
 
   openCreateModal() {
@@ -299,8 +321,22 @@ export class Workers implements OnInit {
           this._workersList.update((list) => list.filter((w) => w.id !== id));
           this._showDeleteModal.set(false);
           this._itemToDeleteId.set(null);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Deleted!',
+            detail: 'Worker removed successfully.',
+          });
         },
-        error: (err) => console.error('Error while deleting worker', err),
+        error: (err) => {
+          console.error('Error while deleting worker', err);
+
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Unable to delete worker.',
+          });
+        },
       });
     }
   }
