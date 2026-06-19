@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { Sidebar } from '../../../core/components/sidebar/sidebar';
@@ -33,6 +33,7 @@ export class Clients implements OnInit {
   private dataHandler = inject(DataHandlerService);
   private clientsService = inject(ClientsService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private projectsService = inject(ProjectsService);
 
   showAddClient = signal(false);
@@ -41,6 +42,8 @@ export class Clients implements OnInit {
   itemToDeleteName = signal('');
   sortOrder = signal<'asc' | 'desc'>('asc');
   clientsList = signal<Client[]>([]);
+
+  itemToEdit = signal<any>(null);
 
   private _currentPage = signal(1);
   private _pageSize = signal(10);
@@ -100,6 +103,14 @@ export class Clients implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      const pageFromUrl = params['page'] ? Number(params['page']) : 1;
+      const limitFromUrl = params['limit'] ? Number(params['limit']) : 10;
+
+      this._currentPage.set(pageFromUrl);
+      this._pageSize.set(limitFromUrl);
+    });
+
     this.loadClients();
     this.loadProjects();
   }
@@ -130,18 +141,41 @@ export class Clients implements OnInit {
     this.router.navigate(['/clients/details', String(id)]);
   }
 
-  editClient(id: any): void {
-    this.router.navigate(['/clients/details', String(id)]);
+  openEditModal(client: any): void {
+    this.itemToEdit.set(client);
+    this.showAddClient.set(true);
   }
 
-  handleSaveClient(newClientData: any) {
-    this.clientsService.createClient(newClientData).subscribe({
-      next: (createdClient) => {
-        this._clientsList.update((list) => [...list, createdClient]);
-        this._showAddClient.set(false);
-      },
-      error: (err) => console.error('Error while creating client', err),
-    });
+  openCreateModal(): void {
+    this.itemToEdit.set(null);
+    this.showAddClient.set(true);
+  }
+
+  closeModal(): void {
+    this.showAddClient.set(false);
+    this.itemToEdit.set(null);
+  }
+
+  handleSaveClient(clientData: any) {
+    const editing = this.itemToEdit();
+
+    if (editing) {
+      this.clientsService.updateClient(editing.id, clientData).subscribe({
+        next: () => {
+          this.loadClients();
+          this.closeModal();
+        },
+        error: (err) => console.error('Error while updating client', err),
+      });
+    } else {
+      this.clientsService.createClient(clientData).subscribe({
+        next: (createdClient) => {
+          this.clientsList.update((list) => [...list, createdClient]);
+          this.closeModal();
+        },
+        error: (err) => console.error('Error while creating client', err),
+      });
+    }
   }
 
   openDeleteModal(client: Client) {

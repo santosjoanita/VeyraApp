@@ -1,5 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-paginator',
@@ -15,6 +16,9 @@ export class Paginator {
   @Input() pageSizeOptions = [5, 10, 25, 50];
 
   @Output() pageChange = new EventEmitter<{ pageIndex: number; pageSize: number }>();
+
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.pageSize) || 1;
@@ -33,12 +37,25 @@ export class Paginator {
     const newPage = this.currentPage + amount;
     if (newPage >= 1 && newPage <= this.totalPages) {
       this.pageChange.emit({ pageIndex: newPage, pageSize: this.pageSize });
+
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { page: newPage, limit: this.pageSize },
+        queryParamsHandling: 'merge',
+      });
     }
   }
 
   onPageSizeChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
     const newSize = Number(select.value);
+
     this.pageChange.emit({ pageIndex: 1, pageSize: newSize });
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: 1, limit: newSize },
+      queryParamsHandling: 'merge',
+    });
   }
 }
