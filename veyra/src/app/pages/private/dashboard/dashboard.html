@@ -68,7 +68,7 @@
       </div>
       
 
-      <div class="dashboard-bottom-row" [class.full-width]="!showActivityLog">
+      <div class="dashboard-bottom-row" [class.full-width]="!showActivityLog || !isAdmin">
         
         <div class="projects-section card-container">
           <h3>{{ isAdmin ? 'Overall Projects' : 'My Projects' }}</h3>
