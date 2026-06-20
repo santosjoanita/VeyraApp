@@ -6,6 +6,7 @@ import {
   OnInit,
   inject,
   ChangeDetectorRef,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +28,8 @@ export class RegisterUser implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private messageService = inject(MessageService);
 
+  showPassword = signal(false);
+
   @Input()
   set editData(value: any) {
     if (value) {
@@ -37,6 +40,7 @@ export class RegisterUser implements OnInit {
         password: '',
         role: value.role || 'worker',
       };
+      this.showPassword.set(false);
       this.cdr.detectChanges();
     } else {
       this._editDataPrivate = null;
@@ -63,6 +67,10 @@ export class RegisterUser implements OnInit {
 
   ngOnInit() {}
 
+  togglePasswordVisibility(): void {
+    this.showPassword.update((visible) => !visible);
+  }
+
   closeModal(): void {
     this.close.emit();
     this.resetForm();
@@ -83,16 +91,42 @@ export class RegisterUser implements OnInit {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.registerData.email)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Email',
+        detail: 'Please enter a valid email address (e.g., name@example.com).',
+      });
+      return;
+    }
+
+    if (this.registerData.password) {
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+      if (!passwordRegex.test(this.registerData.password)) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Weak Password',
+          detail:
+            'Password must be at least 8 characters long, contain one uppercase letter and one number.',
+        });
+        return;
+      }
+    }
+
     this.isLoading = true;
     this.cdr.detectChanges();
 
-    const { role, password, ...payload } = this.registerData;
-
     if (this.editData) {
-      const updatePayload: any = { ...payload, role };
-      if (password) updatePayload.password = password;
+      const updatePayload: any = {
+        name: this.registerData.name,
+        role: this.registerData.role,
+      };
 
-      delete updatePayload.email;
+      if (this.registerData.password) {
+        updatePayload.password = this.registerData.password;
+      }
 
       this.workersService.updateWorker(this.editData.id, updatePayload).subscribe({
         next: (response) => {
@@ -117,7 +151,13 @@ export class RegisterUser implements OnInit {
         },
       });
     } else {
-      this.authService.register(this.registerData).subscribe({
+      const registerPayload = {
+        name: this.registerData.name,
+        email: this.registerData.email,
+        password: this.registerData.password,
+      };
+
+      this.authService.register(registerPayload).subscribe({
         next: (response) => {
           this.isLoading = false;
           this.messageService.add({
@@ -131,11 +171,10 @@ export class RegisterUser implements OnInit {
         error: (err) => {
           this.isLoading = false;
           console.error('Error registering new user:', err);
-          // 🔥 Toast de Erro
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to register user. Please try again.',
+            detail: 'Failed to register user. Please check the provided data.',
           });
           this.cdr.detectChanges();
         },
@@ -150,5 +189,6 @@ export class RegisterUser implements OnInit {
       password: '',
       role: 'worker',
     };
+    this.showPassword.set(false);
   }
 }

@@ -43,13 +43,16 @@ export class Workers implements OnInit {
   private _showRoleModal = signal(false);
   private _itemToDeleteId = signal<string | number | null>(null);
   private _itemToDeleteName = signal('');
-  private _sortOrder = signal<'asc' | 'desc'>('asc');
   private _workersList = signal<Worker[]>([]);
   private _searchQuery = signal('');
   private _selectedRole = signal('all');
 
   private _currentPage = signal(1);
   private _pageSize = signal(5);
+
+  // 🔥 Signals de ordenação devidamente integrados
+  sortField = signal<string>('createdAt');
+  sortOrder = signal<'asc' | 'desc'>('desc');
 
   pendingRoleChange = signal<{
     id: string | number;
@@ -94,13 +97,6 @@ export class Workers implements OnInit {
     return this._pageSize();
   }
 
-  get sortOrder() {
-    return this._sortOrder();
-  }
-  set sortOrder(value: 'asc' | 'desc') {
-    this._sortOrder.set(value);
-  }
-
   get workersList() {
     return this._workersList();
   }
@@ -133,7 +129,7 @@ export class Workers implements OnInit {
     if (this.selectedRole !== 'all') {
       result = this.dataHandler.filterArrayByValue(result, 'role', this.selectedRole);
     }
-    return this.dataHandler.sortArray(result, 'createdAt', this.sortOrder);
+    return this.dataHandler.sortArray(result, this.sortField(), this.sortOrder());
   });
 
   get totalWorkersCount() {
@@ -219,8 +215,13 @@ export class Workers implements OnInit {
     });
   }
 
-  toggleSort(): void {
-    this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+  toggleSort(field: string): void {
+    if (this.sortField() === field) {
+      this.sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(field);
+      this.sortOrder.set('asc');
+    }
   }
 
   trackByWorkerId(index: number, worker: Worker) {

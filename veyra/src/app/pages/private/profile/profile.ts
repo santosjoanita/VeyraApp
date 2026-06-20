@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -37,7 +37,7 @@ export class Profile implements OnInit {
   };
 
   isEditing = false;
-  showPassword = false;
+  showPassword = signal(false);
   errorMessage = '';
 
   get isAdmin(): boolean {
@@ -91,7 +91,7 @@ export class Profile implements OnInit {
 
   startEditing(): void {
     this.isEditing = true;
-    this.showPassword = false;
+    this.showPassword.set(false);
     this.currentUser.password = '';
     this.errorMessage = '';
     this.cdr.detectChanges();
@@ -104,9 +104,8 @@ export class Profile implements OnInit {
     this.cdr.detectChanges();
   }
 
-  togglePassword() {
-    this.showPassword = !this.showPassword;
-    this.cdr.detectChanges();
+  togglePasswordVisibility(): void {
+    this.showPassword.update((visible) => !visible);
   }
 
   saveChanges(): void {
@@ -169,7 +168,7 @@ export class Profile implements OnInit {
 
         this.backupUser = { ...this.currentUser };
         this.isEditing = false;
-        this.showPassword = false;
+        this.showPassword.set(false);
         this.cdr.detectChanges();
       },
       error: (err) => {

@@ -2,7 +2,7 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     
     <div class="modal-header">
-      <h3>Register New User</h3>
+      <h3>{{ editData ? 'Edit User' : 'Register New User' }}</h3>
       <button class="modal-close" (click)="closeModal()">
         <span class="material-symbols-outlined">close</span>
       </button>
@@ -17,17 +17,32 @@
 
         <div class="form-group">
           <label>Email Address</label>
-          <input type="email" [(ngModel)]="registerData.email" name="email" class="form-input" placeholder="example@brandit.ws">
+          <input type="email" [(ngModel)]="registerData.email" name="email" class="form-input" placeholder="example@brandit.ws" [disabled]="editData" [title]="editData ? 'O email não pode ser alterado' : ''">
         </div>
 
         <div class="form-group">
           <label>Password</label>
-          <input type="password" [(ngModel)]="registerData.password" name="password" class="form-input" placeholder="••••••••">
+          <div class="password-wrapper">
+            <input 
+              [type]="showPassword() ? 'text' : 'password'" 
+              [(ngModel)]="registerData.password" 
+              name="password" 
+              class="form-input" 
+              placeholder="••••••••"
+              [disabled]="editData"
+              [title]="editData ? 'A password não pode ser alterada aqui' : ''">
+            
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+              <span class="material-symbols-outlined">
+                {{ showPassword() ? 'visibility_off' : 'visibility' }}
+              </span>
+            </button>
+          </div>
         </div>
 
         <div class="form-group">
           <label>User Role</label>
-          <select [(ngModel)]="registerData.role" name="role" class="form-input">
+          <select [(ngModel)]="registerData.role" name="role" class="form-input" [disabled]="editData" [title]="editData ? 'A role altera-se diretamente na tabela' : ''">
             <option value="worker">Worker</option>
             <option value="admin">Admin</option>
           </select>
@@ -41,7 +56,7 @@
       </button>
       
       <button class="btn-add-stat modal-submit-btn" type="submit" [disabled]="isLoading" (click)="handleRegister()">
-        <span class="add-icon"></span> {{ isLoading ? 'Registering...' : 'Register User' }}
+        <span class="add-icon"></span> {{ isLoading ? 'Saving...' : (editData ? 'Save Changes' : 'Register User') }}
       </button>
     </div>
 
