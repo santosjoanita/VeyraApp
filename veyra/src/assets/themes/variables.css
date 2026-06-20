@@ -15,6 +15,13 @@
   --border-light: #E2E8F0;
   
   --font-main: 'Inter', sans-serif;
+
+  --vacation-green: #DCFCE7; --text-green: #166534;
+  --vacation-orange: #FFEDD5; --text-orange: #9A3412;
+  --vacation-purple: #F3E8FF; --text-purple: #6B21A8;
+  --vacation-blue: #DBEAFE; --text-blue: #1E40AF;
+  --vacation-pink: #FCE7F3; --text-pink: #9D174D;
+  --vacation-teal: #CCFBF1; --text-teal: #115E59;
 }
 
 
@@ -91,6 +98,25 @@
   width: auto;
   padding: 8px 14px;
   min-width: 110px;
+}
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--brand-primary, #004395);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: var(--font-main, 'Inter', sans-serif);
+}
+
+.btn-add:hover {
+  background-color: #003377;
 }
 
 /* --- Temas para os modais --- */

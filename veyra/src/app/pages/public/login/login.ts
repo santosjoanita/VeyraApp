@@ -53,12 +53,13 @@ export class Login {
           localStorage.setItem('userRole', role);
           localStorage.setItem('userName', response.user?.name || response.name || 'Username');
 
+          localStorage.setItem('userId', response.user?.id || response.id || '');
+
           console.log('token kept in localStorage:', token);
           console.log('userRole kept in localStorage:', role);
+          console.log('userId kept in localStorage:', localStorage.getItem('userId'));
+
           this.router.navigate(['/dashboard']);
-        } else {
-          console.warn('the api did not return a valid token in the expected format:', response);
-          this.errorMessage.set('Error with the login response. Please try again later.');
         }
       },
       error: (err) => {
