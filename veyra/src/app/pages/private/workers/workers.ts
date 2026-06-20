@@ -50,7 +50,6 @@ export class Workers implements OnInit {
   private _currentPage = signal(1);
   private _pageSize = signal(5);
 
-  // 🔥 Signals de ordenação devidamente integrados
   sortField = signal<string>('createdAt');
   sortOrder = signal<'asc' | 'desc'>('desc');
 

@@ -23,7 +23,6 @@ app-sidebar {
   box-sizing: border-box;
 }
 
-/* --- TOPO DA PÁGINA --- */
 .vacations-header {
   display: flex;
   justify-content: space-between;
@@ -53,7 +52,8 @@ app-sidebar {
   overflow: hidden;
 }
 
-.btn-arrow, .btn-today {
+.btn-arrow,
+.btn-today {
   border: none;
   background: transparent;
   padding: 8px 16px;
@@ -65,7 +65,8 @@ app-sidebar {
   font-family: var(--font-main);
 }
 
-.btn-arrow:hover, .btn-today:hover {
+.btn-arrow:hover,
+.btn-today:hover {
   background: var(--bg-page);
 }
 
@@ -82,7 +83,7 @@ app-sidebar {
   padding: 6px 12px;
   font-size: 13px;
   font-weight: 600;
-  color: #64748B;
+  color: #64748b;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -95,33 +96,15 @@ app-sidebar {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.btn-add-timeoff {
-  background-color: var(--brand-secondary);
-  color: var(--text-white);
-  border: 1px solid var(--brand-secondary);
-  padding: 10px 16px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
-  font-family: var(--font-main);
-}
-
-.btn-add-timeoff:hover {
-  background-color: var(--brand-primary);
-  border-color: var(--brand-primary);
-  box-shadow: 0px 4px 12px rgba(0, 67, 149, 0.15);
-}
-
 .vacations-workspace {
   display: grid;
   grid-template-columns: 1fr 280px;
   gap: 24px;
   align-items: start;
+}
+
+.vacations-workspace.no-sidebar {
+  grid-template-columns: 1fr;
 }
 
 .calendar-card {
@@ -139,7 +122,7 @@ app-sidebar {
   text-align: center;
   font-size: 12px;
   font-weight: 700;
-  color: #64748B;
+  color: #64748b;
   padding: 12px 0;
   font-family: var(--font-main);
 }
@@ -167,7 +150,7 @@ app-sidebar {
 .cell-day-number {
   font-size: 14px;
   font-weight: 600;
-  color: #94A3B8;
+  color: #94a3b8;
   width: 24px;
   height: 24px;
   display: flex;
@@ -205,18 +188,40 @@ app-sidebar {
   box-sizing: border-box;
   transition: all 0.25s ease;
   font-family: var(--font-main);
-  
   margin-left: -1px;
   width: calc(100% + 2px);
   border-radius: 0;
 }
 
-.bg-green  { background-color: #DCFCE7; color: #166534; }
-.bg-orange { background-color: #FFEDD5; color: #9A3412; }
-.bg-purple { background-color: #F3E8FF; color: #6B21A8; }
-.bg-blue   { background-color: #DBEAFE; color: #1E40AF; }
-.bg-pink   { background-color: #FCE7F3; color: #9D174D; }
-.bg-teal   { background-color: #CCFBF1; color: #115E59; }
+.bg-green {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.bg-orange {
+  background-color: #ffedd5;
+  color: #9a3412;
+}
+
+.bg-purple {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.bg-blue {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.bg-pink {
+  background-color: #fce7f3;
+  color: #9d174d;
+}
+
+.bg-teal {
+  background-color: #ccfbf1;
+  color: #115e59;
+}
 
 .vacation-bar-item.fade-out {
   opacity: 0.15;
@@ -256,7 +261,7 @@ app-sidebar {
 .search-icon {
   position: absolute;
   left: 10px;
-  color: #94A3B8;
+  color: #94a3b8;
   font-size: 18px;
 }
 
@@ -275,7 +280,7 @@ app-sidebar {
   left: 0;
   width: 100%;
   height: 100%;
-  opacity: 0; 
+  opacity: 0;
   cursor: pointer;
   z-index: 3;
   -webkit-appearance: none;
@@ -297,7 +302,7 @@ app-sidebar {
   justify-content: center;
   transition: all 0.2s;
   z-index: 1;
-  pointer-events: none; 
+  pointer-events: none;
 }
 
 .select-filter-role option {
@@ -309,7 +314,6 @@ app-sidebar {
   background: var(--border-light);
 }
 
-/* --- LISTA DE TRABALHADORES --- */
 .workers-action-list {
   list-style: none;
   padding: 0;
@@ -329,12 +333,12 @@ app-sidebar {
   transition: all 0.2s ease;
 }
 
-.worker-action-item:hover, 
-.worker-action-item.selected-highlight {
+.worker-action-item:hover,
+.selected-highlight {
   background: var(--bg-page);
 }
 
-.worker-action-item.selected-highlight {
+.selected-highlight {
   box-shadow: inset 0 0 0 1px var(--border-light);
 }
 
@@ -357,7 +361,6 @@ app-sidebar {
   font-family: var(--font-main);
 }
 
-/* --- VISTAS DIARIA E SEMANAL --- */
 .placeholder-view {
   min-height: 400px;
   display: flex;
@@ -368,18 +371,6 @@ app-sidebar {
 
 .placeholder-content {
   text-align: center;
-  color: #64748B;
+  color: #64748b;
   font-family: var(--font-main);
-}
-
-.placeholder-content span {
-  font-size: 48px;
-  margin-bottom: 12px;
-  color: #94A3B8;
-}
-
-.placeholder-content p {
-  font-size: 15px;
-  font-weight: 500;
-  margin: 0;
 }

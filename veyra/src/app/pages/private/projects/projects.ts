@@ -30,7 +30,7 @@ import { MessageService } from 'primeng/api';
     Paginator,
   ],
   templateUrl: './projects.html',
-  styleUrl: './projects.css',
+  styleUrls: ['./projects.css', '../../../../assets/themes/variables.css'],
 })
 export class Projects implements OnInit {
   private dataHandler = inject(DataHandlerService);

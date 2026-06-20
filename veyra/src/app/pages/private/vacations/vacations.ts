@@ -12,7 +12,7 @@ import { Header } from '../../../core/components/header/header';
   standalone: true,
   imports: [CommonModule, FormsModule, AddVacationModal, Sidebar, Header],
   templateUrl: './vacations.html',
-  styleUrl: './vacations.css',
+  styleUrls: ['./vacations.css', '../../../../assets/themes/variables.css'],
 })
 export class Vacations implements OnInit {
   private vacationsService = inject(VacationsService);
@@ -40,10 +40,8 @@ export class Vacations implements OnInit {
   }
 
   loadInitialData() {
-    const currentUserId = localStorage.getItem('userId') || '';
-    const currentUserName = localStorage.getItem('userName') || 'My Vacations';
-
-    console.log('ID do User logado:', currentUserId);
+    const currentUserId = localStorage.getItem('userId');
+    const currentUserName = localStorage.getItem('userName') || 'Me';
 
     this.vacationsService.getVacations().subscribe({
       next: (data) => {
@@ -53,28 +51,22 @@ export class Vacations implements OnInit {
           this.workersService.getWorkers().subscribe((workers) => {
             this.workersList.set(workers);
             const newCache: { [key: string]: string } = {};
-            workers.forEach((w) => {
-              newCache[w.id] = w.name;
-            });
+            workers.forEach((w) => (newCache[w.id] = w.name));
             this.workersCache.set(newCache);
           });
         } else {
-          const myOwnVacations = data.filter((v: any) => {
-            const idToCompare = v.userId || v.workerId;
-
-            const match = String(idToCompare).trim() === String(currentUserId).trim();
-            return match;
-          });
-
-          console.log('Férias filtradas para o worker:', myOwnVacations);
+          const myOwnVacations = data.filter(
+            (v: any) => String(v.userId) === String(currentUserId),
+          );
 
           this.vacationsList.set(myOwnVacations);
-          this.workersCache.set({
-            [currentUserId || '']: currentUserName,
-          });
+
+          if (currentUserId) {
+            this.workersCache.set({ [currentUserId]: currentUserName });
+          }
         }
       },
-      error: (err) => console.error('Erro ao carregar férias:', err),
+      error: (err) => console.error('Error loading vacations:', err),
     });
   }
 
