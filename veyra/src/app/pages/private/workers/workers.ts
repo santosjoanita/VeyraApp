@@ -47,8 +47,9 @@ export class Workers implements OnInit {
   private _workersList = signal<Worker[]>([]);
   private _searchQuery = signal('');
   private _selectedRole = signal('all');
+
   private _currentPage = signal(1);
-  private _pageSize = signal(10);
+  private _pageSize = signal(5);
 
   pendingRoleChange = signal<{
     id: string | number;
@@ -132,7 +133,7 @@ export class Workers implements OnInit {
     if (this.selectedRole !== 'all') {
       result = this.dataHandler.filterArrayByValue(result, 'role', this.selectedRole);
     }
-    return this.dataHandler.sortArray(result, 'name', this.sortOrder);
+    return this.dataHandler.sortArray(result, 'createdAt', this.sortOrder);
   });
 
   get totalWorkersCount() {
@@ -151,11 +152,17 @@ export class Workers implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      const pageFromUrl = params['page'] ? Number(params['page']) : 1;
-      const limitFromUrl = params['limit'] ? Number(params['limit']) : 10;
+      if (!params['page'] || !params['limit']) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { page: 1, limit: 5 },
+          queryParamsHandling: 'merge',
+        });
+        return;
+      }
 
-      this._currentPage.set(pageFromUrl);
-      this._pageSize.set(limitFromUrl);
+      this._currentPage.set(Number(params['page']));
+      this._pageSize.set(Number(params['limit']));
     });
 
     this.loadWorkers();
@@ -202,8 +209,14 @@ export class Workers implements OnInit {
   }
 
   onPageChange(event: { pageIndex: number; pageSize: number }) {
-    this._currentPage.set(event.pageIndex);
-    this._pageSize.set(event.pageSize);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        page: event.pageIndex,
+        limit: event.pageSize,
+      },
+      queryParamsHandling: 'merge',
+    });
   }
 
   toggleSort(): void {

@@ -134,7 +134,10 @@
   border-collapse: collapse;
   min-width: 800px;
 }
-
+.clickable-row{
+   cursor: pointer;
+  transition: background-color 0.2s;
+}
 .clients-table th {
   text-align: left;
   font-size: 12px;
@@ -192,8 +195,8 @@
 }
 
 .status-active {
-  background-color: #ECFDF5;
-  color: #10B981;
+  background-color: #EFF6FF; 
+  color: var(--brand-accent); 
 }
 
 .status-inactive {

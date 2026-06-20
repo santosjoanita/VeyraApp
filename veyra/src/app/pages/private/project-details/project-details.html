@@ -66,13 +66,13 @@
               <div class="credential-item" *ngFor="let cred of credentials">
                 
                 <div class="cred-header" style="display: flex; justify-content: space-between; align-items: center;">
-                  <div>
+                  <div style="display: flex; align-items: center; gap: 10px;">
                     <span class="cred-type">{{ cred.type | uppercase }}</span>
                     <span class="cred-label">{{ cred.label }}</span>
                   </div>
                   
-                  <button class="btn-delete-access" (click)="deleteAccess(cred.id)" title="Delete Credential" style="background: none; border: none; cursor: pointer;">
-                    <span class="material-symbols-outlined" style="color: #ef4444; font-size: 20px;">close</span>
+                  <button class="btn-delete-access" (click)="deleteAccess(cred.id)" title="Delete Credential">
+                    <span class="material-symbols-outlined" style="color: var(--error-red); font-size: 20px;">close</span>
                   </button>
                 </div>
                 
@@ -179,7 +179,7 @@
       
       <div class="modal-search">
         <span class="material-symbols-outlined search-icon">search</span>
-        <input type="text" [(ngModel)]="clientSearchQuery" placeholder="Search client by name..." class="search-input">
+        <input type="text" [(ngModel)]="clientSearchQuery" placeholder="Search client by name..." class="form-input search-input">
       </div>
 
       <div class="modal-list">
@@ -214,7 +214,7 @@
       
       <div class="modal-search">
         <span class="material-symbols-outlined search-icon">search</span>
-        <input type="text" [(ngModel)]="workerSearchQuery" placeholder="Search worker by name..." class="search-input">
+        <input type="text" [(ngModel)]="workerSearchQuery" placeholder="Search worker by name..." class="form-input search-input">
       </div>
 
       <div class="modal-list">
@@ -247,32 +247,23 @@
         </button>
       </div>
 
-      <div class="modal-body credential-modal-body">
-        <div class="credential-form-group">
-          <label class="credential-label">Label / Reference</label>
-          <input
-            type="text"
-            [(ngModel)]="newCredentialData.label"
-            placeholder="e.g., Production Server, Staging CPanel"
-            class="credential-input"
-          />
+      <div class="modal-body">
+        
+        <div class="form-group">
+          <label>Label / Reference</label>
+          <input type="text" [(ngModel)]="newCredentialData.label" placeholder="e.g., Production Server" class="form-input" />
         </div>
 
-        <div class="credential-form-group">
+        <div class="form-group">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <label class="credential-label" style="margin: 0;">Access Type</label>
-            
+            <label style="margin: 0;">Access Type</label>
             <div style="display: flex; align-items: center; gap: 6px;">
-              <input type="checkbox" id="customTypeToggle" 
-                     [(ngModel)]="isCustomCredentialType" 
-                     (change)="toggleCustomCredentialType()">
-              <label for="customTypeToggle" style="margin: 0; font-size: 13px; cursor: pointer; color: #64748b;">
-                Another type?
-              </label>
+              <input type="checkbox" id="customTypeToggle" [(ngModel)]="isCustomCredentialType" (change)="toggleCustomCredentialType()">
+              <label for="customTypeToggle" style="margin: 0; font-size: 13px; cursor: pointer; color: #64748b;">Another type?</label>
             </div>
           </div>
 
-          <select *ngIf="!isCustomCredentialType" [(ngModel)]="newCredentialData.type" class="credential-select">
+          <select *ngIf="!isCustomCredentialType" [(ngModel)]="newCredentialData.type" class="form-input" style="cursor: pointer;">
             <option value="cpanel">CPanel</option>
             <option value="sftp">FTP / SFTP</option>        
             <option value="portal">WordPress / Portal</option> 
@@ -280,38 +271,25 @@
             <option value="ssh">SSH Terminal</option>
           </select>
 
-          <input *ngIf="isCustomCredentialType" 
-                 type="text" 
-                 [(ngModel)]="newCredentialData.type" 
-                 placeholder="Ex: API Key, Cloudflare, Social Media..." 
-                 class="credential-input">
+          <input *ngIf="isCustomCredentialType" type="text" [(ngModel)]="newCredentialData.type" placeholder="Ex: API Key, Cloudflare..." class="form-input">
         </div>
 
-        <div class="credential-form-group">
-          <label class="credential-label">Username / Email</label>
-          <input
-            type="text"
-            [(ngModel)]="newCredentialData.username"
-            placeholder="Enter access identity"
-            class="credential-input"
-          />
+        <div class="form-group">
+          <label>Username / Email</label>
+          <input type="text" [(ngModel)]="newCredentialData.username" placeholder="Enter access identity" class="form-input" />
         </div>
 
-        <div class="credential-form-group">
-          <label class="credential-label">Password</label>
-          <input
-            type="password"
-            [(ngModel)]="newCredentialData.password"
-            placeholder="Enter secure password"
-            class="credential-input"
-          />
-        </div>
-
-        <div class="form-actions credential-modal-actions">
-          <button type="button" class="btn-cancel" (click)="closeCredentialModal()">Cancel</button>
-          <button type="button" class="btn-save" (click)="addCredential()">Save Credential</button>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" [(ngModel)]="newCredentialData.password" placeholder="Enter secure password" class="form-input" />
         </div>
       </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="closeCredentialModal()">Cancel</button>
+        <button type="button" class="btn-save" (click)="addCredential()">Save</button>
+      </div>
+      
     </div>
   </div>
 

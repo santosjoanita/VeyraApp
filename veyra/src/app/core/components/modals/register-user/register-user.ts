@@ -10,8 +10,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/user/auth.service';
-
 import { WorkersService } from '../../../../core/services/workers/workers.service';
+
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-register-user',
@@ -23,8 +24,8 @@ import { WorkersService } from '../../../../core/services/workers/workers.servic
 export class RegisterUser implements OnInit {
   private authService = inject(AuthService);
   private workersService = inject(WorkersService);
-
   private cdr = inject(ChangeDetectorRef);
+  private messageService = inject(MessageService);
 
   @Input()
   set editData(value: any) {
@@ -74,7 +75,11 @@ export class RegisterUser implements OnInit {
       !this.registerData.email ||
       (!this.editData && !this.registerData.password)
     ) {
-      alert('Please fill in all mandatory fields.');
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please fill in all mandatory fields.',
+      });
       return;
     }
 
@@ -87,16 +92,27 @@ export class RegisterUser implements OnInit {
       const updatePayload: any = { ...payload, role };
       if (password) updatePayload.password = password;
 
+      delete updatePayload.email;
+
       this.workersService.updateWorker(this.editData.id, updatePayload).subscribe({
         next: (response) => {
           this.isLoading = false;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'User updated successfully!',
+          });
           this.saved.emit(response);
           this.closeModal();
         },
         error: (err) => {
           this.isLoading = false;
           console.error('Error updating user:', err);
-          alert('Failed to update user.');
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to update user.',
+          });
           this.cdr.detectChanges();
         },
       });
@@ -104,13 +120,23 @@ export class RegisterUser implements OnInit {
       this.authService.register(this.registerData).subscribe({
         next: (response) => {
           this.isLoading = false;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'User registered successfully!',
+          });
           this.saved.emit(response);
           this.closeModal();
         },
         error: (err) => {
           this.isLoading = false;
           console.error('Error registering new user:', err);
-          alert('Failed to register user. Please try again.');
+          // 🔥 Toast de Erro
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to register user. Please try again.',
+          });
           this.cdr.detectChanges();
         },
       });
