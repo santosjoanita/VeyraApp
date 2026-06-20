@@ -60,7 +60,7 @@
             </tr>
           </thead>
           <tbody>
-            <ng-container *ngIf="displayedWorkers.length; else noWorkers">
+            <ng-container *ngIf="displayedWorkers.length; else noWorkers" class="clickable-row">
               <tr
                 *ngFor="let worker of displayedWorkers; trackBy: trackByWorkerId"
                 [routerLink]="['/workers/details', worker.id]"

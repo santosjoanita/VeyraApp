@@ -28,9 +28,9 @@
           <thead>
             <tr>
               <th>
-                <div class="th-sortable" (click)="toggleSort()" style="cursor: pointer;">
+                <div class="th-sortable" (click)="toggleSort()"  style="cursor: pointer;">
                   <span>Name</span>
-                  <span class="material-symbols-outlined sort-icon" style="font-size: 16px; vertical-align: middle;">
+                  <span class="material-symbols-outlined sort-icon" style="font-size: 16px; cursor: pointer; vertical-align: middle;">
                     {{ sortOrder() === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
                   </span>
                 </div>
@@ -39,7 +39,14 @@
               <th>Phone</th>
               <th>Status</th>
               <th>Active Projects</th>
-              <th>Created At</th>
+             <th>
+                <div class="th-sortable" (click)="toggleSort()" style="cursor: pointer;">
+                  <span>Created At</span>
+                  <span class="material-symbols-outlined sort-icon" style="font-size: 16px; vertical-align: middle;">
+                    {{ sortOrder() === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
+                  </span>
+                </div>
+              </th>
               @if (isAdmin) {
                 <th class="text-center">Actions</th>
               }

@@ -177,7 +177,7 @@ export class Projects implements OnInit {
     if (this.selectedStatus !== 'all') {
       result = this.dataHandler.filterArrayByValue(result, 'status', this.selectedStatus);
     }
-    return this.dataHandler.sortArray(result, 'name', this.sortOrder);
+    return this.dataHandler.sortArray(result, 'createdAt', this.sortOrder);
   });
 
   get totalProjectsCount() {
@@ -196,11 +196,17 @@ export class Projects implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      const pageFromUrl = params['page'] ? Number(params['page']) : 1;
-      const limitFromUrl = params['limit'] ? Number(params['limit']) : 10;
+      if (!params['page'] || !params['limit']) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { page: 1, limit: 5 },
+          queryParamsHandling: 'merge',
+        });
+        return;
+      }
 
-      this._currentPage.set(pageFromUrl);
-      this._pageSize.set(limitFromUrl);
+      this._currentPage.set(Number(params['page']));
+      this._pageSize.set(Number(params['limit']));
     });
 
     this.loadWorkers();
@@ -214,10 +220,15 @@ export class Projects implements OnInit {
   }
 
   onPageChange(event: { pageIndex: number; pageSize: number }) {
-    this._currentPage.set(event.pageIndex);
-    this._pageSize.set(event.pageSize);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        page: event.pageIndex,
+        limit: event.pageSize,
+      },
+      queryParamsHandling: 'merge',
+    });
   }
-
   loadWorkers() {
     this.workersService.getWorkers().subscribe({
       next: (data) => this._workersList.set(data),

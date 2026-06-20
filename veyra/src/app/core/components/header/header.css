@@ -18,7 +18,7 @@
 .header-left {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 10px;
 }
 .profile-link {
   text-decoration: none; 
