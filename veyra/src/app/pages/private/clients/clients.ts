@@ -188,8 +188,8 @@ export class Clients implements OnInit {
     }
   }
 
-  viewClient(id: any): void {
-    this.router.navigate(['/clients/details', String(id)]);
+  viewClient(id: string): void {
+    this.router.navigate(['/clients/details', id]);
   }
 
   openEditModal(client: any): void {
@@ -257,13 +257,13 @@ export class Clients implements OnInit {
   }
 
   openDeleteModal(client: Client) {
-    this._itemToDeleteId.set(client.id || null);
-    this._itemToDeleteName.set(client.name || '');
-    this._showDeleteModal.set(true);
+    this.itemToDeleteId.set(client.id);
+    this.itemToDeleteName.set(client.name);
+    this.showDeleteModal.set(true);
   }
 
   handleConfirmDelete() {
-    const id = this._itemToDeleteId();
+    const id = this.itemToDeleteId();
     if (id) {
       this.clientsService.deleteClient(id).subscribe({
         next: () => {
