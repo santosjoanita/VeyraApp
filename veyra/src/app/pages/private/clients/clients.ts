@@ -43,9 +43,11 @@ export class Clients implements OnInit {
   showDeleteModal = signal(false);
   itemToDeleteId = signal<string | null>(null);
   itemToDeleteName = signal('');
-  sortOrder = signal<'asc' | 'desc'>('asc');
-  clientsList = signal<Client[]>([]);
 
+  sortField = signal<string>('createdAt');
+  sortOrder = signal<'asc' | 'desc'>('desc');
+
+  clientsList = signal<Client[]>([]);
   itemToEdit = signal<any>(null);
 
   private _currentPage = signal(1);
@@ -64,10 +66,10 @@ export class Clients implements OnInit {
   get pageSize() {
     return this._pageSize();
   }
-
   get searchQuery() {
     return this._searchQuery();
   }
+
   set searchQuery(value: string) {
     this._searchQuery.set(value);
     this._currentPage.set(1);
@@ -78,18 +80,35 @@ export class Clients implements OnInit {
     const projects = this._projectsList();
 
     const enrichedClients = clients.map((client) => {
-      const activeCount = projects.filter(
-        (p) => p.clientId === client.id && p.status === 'active',
-      ).length;
+      const clientIdStr = String(client.id);
+
+      const activeCount = projects.filter((p) => {
+        const isActive =
+          (p.status && String(p.status).toLowerCase() === 'active') || p.isActive === true;
+
+        if (!isActive) return false;
+
+        if (p.clientId != null && String(p.clientId) === clientIdStr) return true;
+        if (p.client_id != null && String(p.client_id) === clientIdStr) return true;
+        if (p.client != null && String(p.client?.id || p.client) === clientIdStr) return true;
+
+        if (Array.isArray(p.clients)) {
+          const inArray = p.clients.some((c: any) => String(c?.id || c) === clientIdStr);
+          if (inArray) return true;
+        }
+
+        return false;
+      }).length;
 
       return {
         ...client,
         activeProjects: activeCount,
+        ActiveProjects: activeCount,
       };
     });
 
     let result = this.dataHandler.filterArray(enrichedClients, this.searchQuery, ['name', 'email']);
-    return this.dataHandler.sortArray(result, 'name', this.sortOrder());
+    return this.dataHandler.sortArray(result, this.sortField(), this.sortOrder());
   });
 
   get totalClientsCount() {
@@ -152,13 +171,21 @@ export class Clients implements OnInit {
 
   loadProjects() {
     this.projectsService.getProjects().subscribe({
-      next: (data) => this._projectsList.set(data),
+      next: (data) => {
+        console.log('🔥 DADOS DOS PROJETOS DA API:', data); // Adiciona esta linha!
+        this._projectsList.set(data);
+      },
       error: (err) => console.error('Error while loading projects', err),
     });
   }
 
-  toggleSort(): void {
-    this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+  toggleSort(field: string): void {
+    if (this.sortField() === field) {
+      this.sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(field);
+      this.sortOrder.set('asc');
+    }
   }
 
   viewClient(id: any): void {
@@ -246,7 +273,7 @@ export class Clients implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: 'Cliente deleted with success',
+            detail: 'Client deleted with success',
           });
         },
         error: (err) => {

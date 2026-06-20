@@ -81,7 +81,9 @@
   font-size: 18px; 
   color: var(--brand-secondary); 
   margin: 0; 
+  padding-bottom: 10px;
 }
+
 
 .stat-label { 
   font-size: 14px; 

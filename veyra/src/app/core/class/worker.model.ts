@@ -1,8 +1,13 @@
 export interface Worker {
-  id: string | number;
-  name: string;
+  id: string;
   email: string;
+  name: string;
   role: string;
-  status: 'active' | 'inactive';
+
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+
+  status?: string;
   lastAccess?: string;
 }

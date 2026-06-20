@@ -41,6 +41,9 @@ export class Vacations implements OnInit {
 
   loadInitialData() {
     const currentUserId = localStorage.getItem('userId') || '';
+    const currentUserName = localStorage.getItem('userName') || 'My Vacations';
+
+    console.log('ID do User logado:', currentUserId);
 
     this.vacationsService.getVacations().subscribe({
       next: (data) => {
@@ -56,15 +59,22 @@ export class Vacations implements OnInit {
             this.workersCache.set(newCache);
           });
         } else {
-          const myOwnVacations = data.filter((v) => String(v.userId) === String(currentUserId));
-          this.vacationsList.set(myOwnVacations);
+          const myOwnVacations = data.filter((v: any) => {
+            const idToCompare = v.userId || v.workerId;
 
-          if (currentUserId) {
-            this.workersCache.set({ [currentUserId]: 'My Vacation' });
-          }
+            const match = String(idToCompare).trim() === String(currentUserId).trim();
+            return match;
+          });
+
+          console.log('Férias filtradas para o worker:', myOwnVacations);
+
+          this.vacationsList.set(myOwnVacations);
+          this.workersCache.set({
+            [currentUserId || '']: currentUserName,
+          });
         }
       },
-      error: (err) => console.error('Error while loading vacations:', err),
+      error: (err) => console.error('Erro ao carregar férias:', err),
     });
   }
 

@@ -27,26 +27,33 @@
         <table class="clients-table">
           <thead>
             <tr>
-              <th>
-                <div class="th-sortable" (click)="toggleSort()"  style="cursor: pointer;">
+              <th (click)="toggleSort('name')" style="cursor: pointer; user-select: none;">
+                <div style="display: flex; align-items: center; gap: 4px;">
                   <span>Name</span>
-                  <span class="material-symbols-outlined sort-icon" style="font-size: 16px; cursor: pointer; vertical-align: middle;">
-                    {{ sortOrder() === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
+                  <span class="material-symbols-outlined" 
+                        [style.opacity]="sortField() === 'name' ? '1' : '0.3'" 
+                        style="font-size: 16px;">
+                    {{ sortField() === 'name' && sortOrder() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}
                   </span>
                 </div>
               </th>
+              
               <th>Email</th>
               <th>Phone</th>
               <th>Status</th>
               <th>Active Projects</th>
-             <th>
-                <div class="th-sortable" (click)="toggleSort()" style="cursor: pointer;">
+              
+              <th (click)="toggleSort('createdAt')" style="cursor: pointer; user-select: none;">
+                <div style="display: flex; align-items: center; gap: 4px;">
                   <span>Created At</span>
-                  <span class="material-symbols-outlined sort-icon" style="font-size: 16px; vertical-align: middle;">
-                    {{ sortOrder() === 'asc' ? 'arrow_downward' : 'arrow_upward' }}
+                  <span class="material-symbols-outlined" 
+                        [style.opacity]="sortField() === 'createdAt' ? '1' : '0.3'" 
+                        style="font-size: 16px;">
+                    {{ sortField() === 'createdAt' && sortOrder() === 'desc' ? 'arrow_downward' : 'arrow_upward' }}
                   </span>
                 </div>
               </th>
+              
               @if (isAdmin) {
                 <th class="text-center">Actions</th>
               }
@@ -92,6 +99,7 @@
             }
           </tbody>
         </table>
+        
         <app-paginator
           [totalItems]="totalClientsCount"
           [pageSize]="pageSize"

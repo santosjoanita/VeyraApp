@@ -46,7 +46,6 @@ export class Projects implements OnInit {
   private _showDeleteModal = signal(false);
   private _projectToDeleteName = signal('');
   private _projectToDeleteId = signal<string | null>(null);
-  private _sortOrder = signal<'asc' | 'desc'>('asc');
   private _editingProject = signal<any | null>(null);
 
   private _projectsList = signal<any[]>([]);
@@ -58,7 +57,11 @@ export class Projects implements OnInit {
   private _searchQuery = signal('');
   private _selectedStatus = signal('all');
   private _currentPage = signal(1);
-  private _pageSize = signal(10);
+  private _pageSize = signal(5); // Mantém-se o 5 para consistência!
+
+  // 🔥 Signals de ordenação dinâmicos integrados
+  sortField = signal<string>('createdAt');
+  sortOrder = signal<'asc' | 'desc'>('desc');
 
   get showAddProject() {
     return this._showAddProject();
@@ -79,13 +82,6 @@ export class Projects implements OnInit {
   }
   set projectToDeleteName(value: string) {
     this._projectToDeleteName.set(value);
-  }
-
-  get sortOrder() {
-    return this._sortOrder();
-  }
-  set sortOrder(value: 'asc' | 'desc') {
-    this._sortOrder.set(value);
   }
 
   get projectsList() {
@@ -177,7 +173,8 @@ export class Projects implements OnInit {
     if (this.selectedStatus !== 'all') {
       result = this.dataHandler.filterArrayByValue(result, 'status', this.selectedStatus);
     }
-    return this.dataHandler.sortArray(result, 'createdAt', this.sortOrder);
+    // 🔥 Agora usa o sortField dinâmico
+    return this.dataHandler.sortArray(result, this.sortField(), this.sortOrder());
   });
 
   get totalProjectsCount() {
@@ -229,7 +226,23 @@ export class Projects implements OnInit {
       queryParamsHandling: 'merge',
     });
   }
+
+  // 🔥 Nova função de ordenação pronta para o HTML
+  toggleSort(field: string): void {
+    if (this.sortField() === field) {
+      this.sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(field);
+      this.sortOrder.set('asc');
+    }
+  }
+
   loadWorkers() {
+    // 🔥 BLOQUEIO DE SEGURANÇA: Só os admins podem carregar a lista completa de workers!
+    if (!this.isAdmin) {
+      return;
+    }
+
     this.workersService.getWorkers().subscribe({
       next: (data) => this._workersList.set(data),
       error: (err) => {
@@ -243,26 +256,16 @@ export class Projects implements OnInit {
     });
   }
 
-  loadClients() {
-    this.clientsService.getClients().subscribe({
-      next: (data) => this._clientsList.set(data),
-      error: (err) => {
-        console.error('Error while loading clients', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to load clients.',
-        });
-      },
-    });
-  }
-
   loadProjects() {
     this.projectsService.getProjects().subscribe({
       next: (projects) => {
-        this._projectsList.set(projects);
+        const currentUserId = localStorage.getItem('userId');
 
-        projects.forEach((project: any) => {
+        let projectsToKeep = projects;
+
+        this._projectsList.set(projectsToKeep);
+
+        projectsToKeep.forEach((project: any) => {
           this.projectWorkersService.getProjectWorkers(project.id).subscribe({
             next: (teamMembers) => {
               this._teamsMap.update((map) => ({
@@ -286,8 +289,18 @@ export class Projects implements OnInit {
     });
   }
 
-  toggleSort(): void {
-    this._sortOrder.update((order) => (order === 'asc' ? 'desc' : 'asc'));
+  loadClients() {
+    this.clientsService.getClients().subscribe({
+      next: (data) => this._clientsList.set(data),
+      error: (err) => {
+        console.error('Error while loading clients', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load clients.',
+        });
+      },
+    });
   }
 
   viewProject(id: string): void {
